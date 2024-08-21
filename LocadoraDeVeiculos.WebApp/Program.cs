@@ -1,8 +1,6 @@
 using LocadoraDeVeiculos.Infra.Orm.Compartilhado;
 using System.Reflection;
-
 namespace LocadoraDeVeiculos.WebApp;
-
 public class Program
 {
     public static void Main(string[] args)
@@ -20,13 +18,8 @@ public class Program
 
         var app = builder.Build();
 
-        if (!app.Environment.IsDevelopment())
-        {
-            // Faz com que a aplicação permita apenas conexões HTTPS em navegadores suportados
-            app.UseHsts();
-        }
+        if (!app.Environment.IsDevelopment()) app.UseHsts();
 
-        // Redireciona requisições HTTP para HTTPS
         app.UseHttpsRedirection();
         
         app.UseStaticFiles();
