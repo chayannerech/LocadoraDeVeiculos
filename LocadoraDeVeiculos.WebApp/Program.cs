@@ -7,7 +7,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddDbContext<LocadoraDbContext>();
+        builder.Services.AddDbContext<LocadoraDeVeiculosDbContext>();
 
         builder.Services.AddAutoMapper(cfg =>
         {
