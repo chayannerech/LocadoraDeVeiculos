@@ -17,7 +17,7 @@ public class MapeadorGrupoDeAutomoveisEmOrm : IEntityTypeConfiguration<GrupoDeAu
             .IsRequired()
             .HasColumnType("varchar(200)");
 
-        sBuilder.Property(s => s.UsuarioId)
+/*        sBuilder.Property(s => s.UsuarioId)
             .IsRequired()
             .HasColumnType("int")
             .HasColumnName("Usuario_Id");
@@ -25,6 +25,6 @@ public class MapeadorGrupoDeAutomoveisEmOrm : IEntityTypeConfiguration<GrupoDeAu
         sBuilder.HasOne(g => g.Usuario)
             .WithMany()
             .HasForeignKey(s => s.UsuarioId)
-            .OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.NoAction);*/
     }
 }

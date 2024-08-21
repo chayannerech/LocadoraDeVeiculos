@@ -2,38 +2,38 @@
 @model IEnumerable<ListarGrupoDeAutomoveisViewModel>
 
 @{
-    ViewBag.Title = "Grupos de Automoveis Disponíveis";
+    ViewBag.Title = "Grupos de Automóveis Disponíveis";
 }
 
 <div class="col">
-    <a class="btn btn-primary px-4 mt-3" href="/GrupoDeAutomoveis/inserir">
-        <i class="bi bi-circle-add"></i>
+    <a class="btn btn-outline-secondary px-4 mt-2" href="/GrupoDeAutomoveis/inserir">
+        <i class="bi bi-plus-circle"></i>
         Inserir novo registro
     </a>
 
     <div class="row gap-2 my-3 my-xl-5">
         @foreach (var GrupoDeAutomoveisVm in Model)
         {
-            <div class="card col-lg-4 col-xl-3">
+            <div class="card col-lg-3 col-xl-3">
                 <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
-                    <h5 class="p-0">@GrupoDeAutomoveisVm.Id</h5>
+                    <h6>@GrupoDeAutomoveisVm.Id</h6>
 
                     <div class="text-end d-flex align-items-center gap-3">
                         <a
                             title="Detalhes"
-                            class="text-info-emphasis fs-5"
+                            class="text-secondary fs-6"
                             href="/GrupoDeAutomoveis/detalhes/@GrupoDeAutomoveisVm.Id">
                             <i class="bi bi-search"></i>
                         </a>
                         <a
                             title="Editar"
-                            class="text-info-emphasis fs-5"
+                            class="text-secondary fs-6"
                             href="/GrupoDeAutomoveis/editar/@GrupoDeAutomoveisVm.Id">
                             <i class="bi bi-pencil-fill"></i>
                         </a>
                         <a
                             title="Excluir"
-                            class="text-info-emphasis fs-5" href="/GrupoDeAutomoveis/excluir/@GrupoDeAutomoveisVm.Id">
+                            class="text-danger fs-6" href="/GrupoDeAutomoveis/excluir/@GrupoDeAutomoveisVm.Id">
                             <i class="bi bi-trash-fill"></i>
                         </a>
                     </div>

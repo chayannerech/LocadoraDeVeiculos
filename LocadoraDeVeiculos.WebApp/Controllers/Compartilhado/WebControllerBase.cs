@@ -38,6 +38,17 @@ public abstract class WebControllerBase : Controller
             Titulo = "Falha",
             Mensagem = resultado.Errors[0].Message
         };
+
+        ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
+    }
+
+    protected void ApresentarMensagemSemRegistros()
+    {
+        ViewBag.Mensagem = new MensagemViewModel
+        {
+            Titulo = "Vazio",
+            Mensagem = $"Ainda não existem itens cadastrados"
+        };
     }
 
     protected void ApresentarMensagemSucesso(string mensagem)

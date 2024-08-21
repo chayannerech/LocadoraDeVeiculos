@@ -1,50 +1,84 @@
-﻿<!DOCTYPE html>
+﻿@using LocadoraDeVeiculos.WebApp.Models
+@{
+    string caminho = Context.Request.Path;
+
+    var grupoAtivo = caminho.StartsWith("/GrupoDeAutomoveis") ? "nav-link active fw-semibold" : "nav-link";
+
+    MensagemViewModel? mensagem = ViewBag.Mensagem ?? null;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewBag.Title - Locadora De Veículos</title>
+
+    <link rel="icon" type="image/png" href="~/img/rato1.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/LocadoraDeVeiculos.WebApp.styles.css" asp-append-version="true" />
+
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+        }
+        .navbar-light .navbar-brand {
+            color: #555;
+            display: flex;
+            align-items: center;
+            font-size: 22px;
+        }
+            .navbar-light .navbar-brand img {
+                margin-right: 0.5rem;
+                width: 32px;
+                height: auto;
+            }
+
+        .navbar-light .navbar-nav .nav-link {
+            color: #555;
+        }
+    </style>
 </head>
 <body>
-<header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container">
-            <a class="navbar-brand fw-semibold fs-4" asp-controller="Home" asp-action="Index">Locadora de Veículos</a>
-                
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom mb-5">
+            <div class="container">
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
+                    <img src="~/img/rato1.png" alt="Ícone de Rato"> Locadora de Veículos Afonso
+                </a>
 
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1 justify-content-end">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Início</a>
-                    </li>
-                </ul>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1 justify-content-end">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Início</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
+        </nav>
+    </header>
 
-        </div>
-    </nav>
-</header>
-
-    <div class="container">
-        <main role="main" class="pb-3">
-            <h1 class="fw-semibold">@ViewBag.Title</h1>
-            <hr>
+    <main class="container mt-4">
+        <div class="row px-2">
+            <h3 class="text-light-emphasis">@ViewBag.Title</h3>
+            <hr />
+            <partial name="_Mensagem" model="mensagem"></partial>
             @RenderBody()
-        </main>
-    </div>
+        </div>
+    </main>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer bg-light text-muted text-center">
         <div class="container">
-            &copy; 2024 - Locadora de Veículos <a asp-area="" asp-controller="Home" asp-action="Index">Início</a>
+            &copy; 2024 - Locadora de Veículos Afonso
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

@@ -2,15 +2,12 @@
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
-using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDeAutomoveis, IMapper mapeador) : WebControllerBase
 {
-    private readonly GrupoDeAutomoveisService servicoGrupoDeAutomoveis = servicoGrupoDeAutomoveis;
     private readonly IMapper mapeador = mapeador;
-
     public IActionResult Listar()
     {
         var resultado =
@@ -25,9 +22,10 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
         var registros = resultado.Value;
 
-        var listarGrupoDeAutomoveisVm = mapeador.Map<IEnumerable<ListarGrupoDeAutomoveisViewModel>>(registros);
+        if (registros.Count == 0)
+            ApresentarMensagemSemRegistros();
 
-        ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
+        var listarGrupoDeAutomoveisVm = mapeador.Map<IEnumerable<ListarGrupoDeAutomoveisViewModel>>(registros);
 
         return View(listarGrupoDeAutomoveisVm);
     }
@@ -42,7 +40,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
         var novoRegistro = mapeador.Map<GrupoDeAutomoveis>(inserirGrupoDeAutomoveisVm);
 
-        novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
+        //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
         var resultado = servicoGrupoDeAutomoveis.Inserir(novoRegistro);
 

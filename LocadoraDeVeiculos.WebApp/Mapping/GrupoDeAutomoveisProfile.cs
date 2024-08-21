@@ -1,14 +1,16 @@
 ﻿using AutoMapper;
+using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
+using LocadoraDeVeiculos.WebApp.Models;
 namespace LocadoraDeVeiculos.WebApp.Mapping;
 
 public class GrupoDeAutomoveisProfile : Profile
 {
     public GrupoDeAutomoveisProfile()
     {
-/*        CreateMap<InserirSalaViewModel, Sala>();
-        CreateMap<EditarSalaViewModel, Sala>();
-        CreateMap<Sala, ListarSalaViewModel>();
-        CreateMap<Sala, DetalhesSalaViewModel>();
-        CreateMap<Sala, EditarSalaViewModel>();*/
+        CreateMap<InserirGrupoDeAutomoveisViewModel, GrupoDeAutomoveis>();
+        CreateMap<EditarGrupoDeAutomoveisViewModel, GrupoDeAutomoveis>();
+        CreateMap<GrupoDeAutomoveis, ListarGrupoDeAutomoveisViewModel>();
+        CreateMap<GrupoDeAutomoveis, DetalhesGrupoDeAutomoveisViewModel>();
+        CreateMap<GrupoDeAutomoveis, EditarGrupoDeAutomoveisViewModel>();
     }
 }

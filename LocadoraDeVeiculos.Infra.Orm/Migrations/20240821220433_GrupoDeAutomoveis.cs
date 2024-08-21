@@ -53,6 +53,19 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TBGrupoDeAutomoveis",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nome = table.Column<string>(type: "varchar(200)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TBGrupoDeAutomoveis", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -158,25 +171,6 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "TBGrupoDeAutomoveis",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "varchar(200)", nullable: false),
-                    Usuario_Id = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TBGrupoDeAutomoveis", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TBGrupoDeAutomoveis_AspNetUsers_Usuario_Id",
-                        column: x => x.Usuario_Id,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -215,11 +209,6 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TBGrupoDeAutomoveis_Usuario_Id",
-                table: "TBGrupoDeAutomoveis",
-                column: "Usuario_Id");
         }
 
         /// <inheritdoc />

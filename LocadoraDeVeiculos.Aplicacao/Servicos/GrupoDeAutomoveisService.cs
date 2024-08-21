@@ -51,8 +51,13 @@ public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioG
 
     public Result<List<GrupoDeAutomoveis>> SelecionarTodos(int usuarioId)
     {
+        /*        var registros = repositorioGrupoDeAutomoveis
+                    .Filtrar(f => f.UsuarioId == usuarioId);
+
+                return Result.Ok(registros);*/
+
         var registros = repositorioGrupoDeAutomoveis
-            .Filtrar(f => f.UsuarioId == usuarioId);
+            .Filtrar(f => f.Id != 0);
 
         return Result.Ok(registros);
     }
