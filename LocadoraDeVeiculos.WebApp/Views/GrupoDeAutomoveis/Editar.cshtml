@@ -1,49 +1,30 @@
-﻿@* @model FormFilmeViewModel
+﻿@using LocadoraDeVeiculos.WebApp.Models
+@model EditarGrupoDeAutomoveisViewModel
 
 @{
-    ViewBag.Title = "Editar Filme";
+    ViewBag.Title = "Editar grupo de automóveis";
 }
 
 <div class="col">
     <div class="row gap-3 my-3 my-xl-5">
-        <form class="col-lg-6 d-grid gap-3 fs-5" asp-action="Editar">
+        <form class="col-lg-6 d-grid gap-3" asp-action="Editar">
             <div>
-                <label class="control-label fw-semibold mb-1">Título</label>
-                <input class="form-control mb-1" asp-for="Titulo"/>
-                <span class="text-danger fs-6" asp-validation-for="Titulo"></span>
+                <label class="control-label fw-bold mb-1">Nome</label>
+                <input class="form-control mb-1" asp-for="Nome" />
+                <span class="text-danger fs-6" asp-validation-for="Nome"></span>
             </div>
 
-            <div>
-                <label class="control-label fw-semibold mb-1">Duração (minutos)</label>
-                <input class="form-control mb-1" type="number" min="1" asp-for="Duracao"/>
-                <span class="text-danger fs-6" asp-validation-for="Duracao"></span>
-            </div>
-
-            <div>
-                <label class="control-label fw-semibold mb-1">Gênero do Filme</label>
-                <select class="form-select" asp-for="GeneroId" asp-items="Model.Generos">
-                    <option></option>
-                </select>
-                <span class="text-danger fs-6" asp-validation-for="GeneroId"></span>
-            </div>
-
-            <div class="form-check">
-                <input class="form-check-input mb-1" asp-for="Lancamento"/>
-                <label class="form-check-label fw-semibold mb-1">É Lançamento?</label>
-                <span class="text-danger fs-6" asp-validation-for="Lancamento"></span>
-            </div>
-
-            <div class="d-grid gap-2 d-md-block mt-4">
-                <button class="btn btn-primary px-5">
+            <div class="d-flex justify-content-center gap-3 mt-3">
+                <button class="btn btn-secondary px-5">
                     <i class="bi bi-floppy-fill me-1"></i>
                     Gravar
                 </button>
 
-                <a class="btn btn-outline-primary px-5" href="/filme/listar">
+                <a class="btn btn-outline-secondary px-5" href="/GrupoDeAutomoveis/listar">
                     <i class="bi bi-arrow-return-left me-1"></i>
                     Voltar
                 </a>
             </div>
         </form>
     </div>
-</div> *@
+</div>

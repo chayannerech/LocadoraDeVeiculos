@@ -109,7 +109,13 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
         var registro = resultado.Value;
 
+        //registro.Planos = [new("1"), new("2")];
+        registro.Planos = [];
+
         var detalhesGrupoDeAutomoveisViewModel = mapeador.Map<DetalhesGrupoDeAutomoveisViewModel>(registro);
+
+        if (registro.Planos.Count != 0)
+            ApresentarMensagemImpossivelExcluir();
 
         return View(detalhesGrupoDeAutomoveisViewModel);
     }
@@ -142,9 +148,11 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
             return RedirectToAction(nameof(Listar));
         }
 
-        var sala = resultado.Value;
+        var registro = resultado.Value;
 
-        var detalhesGrupoDeAutomoveisViewModel = mapeador.Map<DetalhesGrupoDeAutomoveisViewModel>(sala);
+        registro.Planos = [new("1", registro), new("2", registro)];
+
+        var detalhesGrupoDeAutomoveisViewModel = mapeador.Map<DetalhesGrupoDeAutomoveisViewModel>(registro);
 
         return View(detalhesGrupoDeAutomoveisViewModel);
     }

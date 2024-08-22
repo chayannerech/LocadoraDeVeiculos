@@ -50,6 +50,14 @@ public abstract class WebControllerBase : Controller
             Mensagem = $"Ainda não existem itens cadastrados"
         };
     }
+    protected void ApresentarMensagemImpossivelExcluir()
+    {
+        ViewBag.Mensagem = new MensagemViewModel
+        {
+            Titulo = "Aviso",
+            Mensagem = $"Não é possível excluir este registro"
+        };
+    }
 
     protected void ApresentarMensagemSucesso(string mensagem)
     {

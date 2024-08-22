@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
+using System.ComponentModel.DataAnnotations;
 namespace LocadoraDeVeiculos.WebApp.Models;
 
 public class InserirGrupoDeAutomoveisViewModel
@@ -27,4 +28,5 @@ public class DetalhesGrupoDeAutomoveisViewModel
 {
     public int Id { get; set; }
     public string Nome { get; set; }
+    public List<PlanoDeCobranca> Planos { get; set; }
 }

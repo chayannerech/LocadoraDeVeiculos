@@ -17,14 +17,19 @@ public class MapeadorGrupoDeAutomoveisEmOrm : IEntityTypeConfiguration<GrupoDeAu
             .IsRequired()
             .HasColumnType("varchar(200)");
 
-/*        sBuilder.Property(s => s.UsuarioId)
-            .IsRequired()
-            .HasColumnType("int")
-            .HasColumnName("Usuario_Id");
+        sBuilder.HasMany(s => s.Planos)
+            .WithOne(p => p.GrupoDeAutomoveis)
+            .HasForeignKey("Grupo_Id");
 
-        sBuilder.HasOne(g => g.Usuario)
-            .WithMany()
-            .HasForeignKey(s => s.UsuarioId)
-            .OnDelete(DeleteBehavior.NoAction);*/
+
+        /*        sBuilder.Property(s => s.UsuarioId)
+                    .IsRequired()
+                    .HasColumnType("int")
+                    .HasColumnName("Usuario_Id");
+
+                sBuilder.HasOne(g => g.Usuario)
+                    .WithMany()
+                    .HasForeignKey(s => s.UsuarioId)
+                    .OnDelete(DeleteBehavior.NoAction);*/
     }
 }
