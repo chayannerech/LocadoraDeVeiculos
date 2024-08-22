@@ -1,0 +1,31 @@
+﻿@using LocadoraDeVeiculos.WebApp.Models
+@model DetalhesGrupoDeAutomoveisViewModel
+
+<div class="row gap-3 my-3 my-xl-4">
+    <label class="fs-6"><strong>Grupo de automóvel:</strong> @Model.Nome</label>
+    <label class="fs-6"><strong>Id:</strong> [@Model.Id]</label>
+
+    <label class="fs-6"><strong>Planos existentes: </strong>
+    @{
+        var planos = "Ainda não existem planos associados";
+
+        //Isto é só um PlaceHolder pro negócio final <3
+
+        if (Model.Planos.Count != 0)
+        {
+            planos = "";
+
+            foreach (var plano in Model.Planos)
+            {
+                planos = $"Plano: oi, Valor: 50";
+                @planos
+            }
+        }
+        else
+        {
+            @planos
+        }
+    }
+    </label>
+
+</div>
