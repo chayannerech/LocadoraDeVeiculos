@@ -1,17 +1,17 @@
 ﻿using AutoMapper;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
-using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
+using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
-public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDeAutomoveis, IMapper mapeador) : WebControllerBase
+public class VeiculosController(VeiculosService servicoVeiculos, IMapper mapeador) : WebControllerBase
 {
     private readonly IMapper mapeador = mapeador;
     public IActionResult Listar()
     {
         var resultado =
-            servicoGrupoDeAutomoveis.SelecionarTodos(UsuarioId.GetValueOrDefault());
+            servicoVeiculos.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
         if (resultado.IsFailed)
         {
@@ -25,24 +25,24 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
         if (registros.Count == 0)
             ApresentarMensagemSemRegistros();
 
-        var listarGrupoDeAutomoveisVm = mapeador.Map<IEnumerable<ListarGrupoDeAutomoveisViewModel>>(registros);
+        var listarVeiculosVm = mapeador.Map<IEnumerable<ListarVeiculosViewModel>>(registros);
 
-        return View(listarGrupoDeAutomoveisVm);
+        return View(listarVeiculosVm);
     }
 
     public IActionResult Inserir() => View();
 
     [HttpPost]
-    public IActionResult Inserir(InserirGrupoDeAutomoveisViewModel inserirGrupoDeAutomoveisVm)
+    public IActionResult Inserir(InserirVeiculosViewModel inserirVeiculosVm)
     {
         if (!ModelState.IsValid)
-            return View(inserirGrupoDeAutomoveisVm);
+            return View(inserirVeiculosVm);
 
-        var novoRegistro = mapeador.Map<GrupoDeAutomoveis>(inserirGrupoDeAutomoveisVm);
+        var novoRegistro = mapeador.Map<Veiculos>(inserirVeiculosVm);
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
-        var resultado = servicoGrupoDeAutomoveis.Inserir(novoRegistro);
+        var resultado = servicoVeiculos.Inserir(novoRegistro);
 
         if (resultado.IsFailed)
         {
@@ -58,7 +58,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
     public IActionResult Editar(int id)
     {
-        var resultado = servicoGrupoDeAutomoveis.SelecionarPorId(id);
+        var resultado = servicoVeiculos.SelecionarPorId(id);
 
         if (resultado.IsFailed)
         {
@@ -69,20 +69,20 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
         var registro = resultado.Value;
 
-        var editarGrupoDeAutomoveisVm = mapeador.Map<EditarGrupoDeAutomoveisViewModel>(registro);
+        var editarVeiculosVm = mapeador.Map<EditarVeiculosViewModel>(registro);
 
-        return View(editarGrupoDeAutomoveisVm);
+        return View(editarVeiculosVm);
     }
 
     [HttpPost]
-    public IActionResult Editar(EditarGrupoDeAutomoveisViewModel editarGrupoDeAutomoveisVm)
+    public IActionResult Editar(EditarVeiculosViewModel editarVeiculosVm)
     {
         if (!ModelState.IsValid)
-            return View(editarGrupoDeAutomoveisVm);
+            return View(editarVeiculosVm);
 
-        var registro = mapeador.Map<GrupoDeAutomoveis>(editarGrupoDeAutomoveisVm);
+        var registro = mapeador.Map<Veiculos>(editarVeiculosVm);
 
-        var resultado = servicoGrupoDeAutomoveis.Editar(registro);
+        var resultado = servicoVeiculos.Editar(registro);
 
         if (resultado.IsFailed)
         {
@@ -98,7 +98,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
     public IActionResult Excluir(int id)
     {
-        var resultado = servicoGrupoDeAutomoveis.SelecionarPorId(id);
+        var resultado = servicoVeiculos.SelecionarPorId(id);
 
         if (resultado.IsFailed)
         {
@@ -112,18 +112,18 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
         //registro.Planos = [new("1"), new("2")];
         registro.Planos = [];
 
-        var detalhesGrupoDeAutomoveisViewModel = mapeador.Map<DetalhesGrupoDeAutomoveisViewModel>(registro);
+        var detalhesVeiculosViewModel = mapeador.Map<DetalhesVeiculosViewModel>(registro);
 
         if (registro.Planos.Count != 0)
             ApresentarMensagemImpossivelExcluir();
 
-        return View(detalhesGrupoDeAutomoveisViewModel);
+        return View(detalhesVeiculosViewModel);
     }
 
     [HttpPost]
-    public IActionResult Excluir(DetalhesGrupoDeAutomoveisViewModel detalhesGrupoDeAutomoveisViewModel)
+    public IActionResult Excluir(DetalhesVeiculosViewModel detalhesVeiculosViewModel)
     {
-        var resultado = servicoGrupoDeAutomoveis.Excluir(detalhesGrupoDeAutomoveisViewModel.Id);
+        var resultado = servicoVeiculos.Excluir(detalhesVeiculosViewModel.Id);
 
         if (resultado.IsFailed)
         {
@@ -132,14 +132,14 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
             return RedirectToAction(nameof(Listar));
         }
 
-        ApresentarMensagemSucesso($"O registro \"{detalhesGrupoDeAutomoveisViewModel.Nome}\" foi excluído com sucesso!");
+        ApresentarMensagemSucesso($"O registro \"{detalhesVeiculosViewModel.Nome}\" foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
 
     public IActionResult Detalhes(int id)
     {
-        var resultado = servicoGrupoDeAutomoveis.SelecionarPorId(id);
+        var resultado = servicoVeiculos.SelecionarPorId(id);
 
         if (resultado.IsFailed)
         {
@@ -152,8 +152,8 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
         registro.Planos = [new("1", registro), new("2", registro)];
 
-        var detalhesGrupoDeAutomoveisViewModel = mapeador.Map<DetalhesGrupoDeAutomoveisViewModel>(registro);
+        var detalhesVeiculosViewModel = mapeador.Map<DetalhesVeiculosViewModel>(registro);
 
-        return View(detalhesGrupoDeAutomoveisViewModel);
+        return View(detalhesVeiculosViewModel);
     }
 }

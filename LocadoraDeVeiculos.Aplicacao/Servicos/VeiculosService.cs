@@ -1,62 +1,62 @@
 ﻿using FluentResults;
-using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
+using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 
-public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioGrupoDeAutomoveis)
+public class VeiculosService(IRepositorioVeiculos repositorioVeiculos)
 {
-    private readonly IRepositorioGrupoDeAutomoveis repositorioGrupoDeAutomoveis = repositorioGrupoDeAutomoveis;
+    private readonly IRepositorioVeiculos repositorioVeiculos = repositorioVeiculos;
 
-    public Result<GrupoDeAutomoveis> Inserir(GrupoDeAutomoveis registro)
+    public Result<Veiculos> Inserir(Veiculos registro)
     {
-        repositorioGrupoDeAutomoveis.Inserir(registro);
+        repositorioVeiculos.Inserir(registro);
 
         return Result.Ok(registro);
     }
 
-    public Result<GrupoDeAutomoveis> Editar(GrupoDeAutomoveis registroAtualizado)
+    public Result<Veiculos> Editar(Veiculos registroAtualizado)
     {
-        var registro = repositorioGrupoDeAutomoveis.SelecionarPorId(registroAtualizado.Id);
+        var registro = repositorioVeiculos.SelecionarPorId(registroAtualizado.Id);
 
         if (registro is null)
-            return Result.Fail("O grupo de automóveis não foi encontrado!");
+            return Result.Fail("O veículo não foi encontrado!");
 
         registro.Nome = registroAtualizado.Nome;
 
-        repositorioGrupoDeAutomoveis.Editar(registro);
+        repositorioVeiculos.Editar(registro);
 
         return Result.Ok(registro);
     }
 
     public Result Excluir(int registroId)
     {
-        var registro = repositorioGrupoDeAutomoveis.SelecionarPorId(registroId);
+        var registro = repositorioVeiculos.SelecionarPorId(registroId);
 
         if (registro is null)
-            return Result.Fail("O grupo de automóveis não foi encontrado!");
+            return Result.Fail("O veículo não foi encontrado!");
 
-        repositorioGrupoDeAutomoveis.Excluir(registro);
+        repositorioVeiculos.Excluir(registro);
 
         return Result.Ok();
     }
 
-    public Result<GrupoDeAutomoveis> SelecionarPorId(int registroId)
+    public Result<Veiculos> SelecionarPorId(int registroId)
     {
-        var registro = repositorioGrupoDeAutomoveis.SelecionarPorId(registroId);
+        var registro = repositorioVeiculos.SelecionarPorId(registroId);
 
         if (registro is null)
-            return Result.Fail("O grupo de automóveis não foi encontrado!");
+            return Result.Fail("O veículo não foi encontrado!");
 
         return Result.Ok(registro);
     }
 
-    public Result<List<GrupoDeAutomoveis>> SelecionarTodos(int usuarioId)
+    public Result<List<Veiculos>> SelecionarTodos(int usuarioId)
     {
-        /*        var registros = repositorioGrupoDeAutomoveis
+        /*        var registros = repositorioVeiculos
                     .Filtrar(f => f.UsuarioId == usuarioId);
 
                 return Result.Ok(registros);*/
 
-        var registros = repositorioGrupoDeAutomoveis
+        var registros = repositorioVeiculos
             .Filtrar(f => f.Id != 0);
 
         return Result.Ok(registros);
