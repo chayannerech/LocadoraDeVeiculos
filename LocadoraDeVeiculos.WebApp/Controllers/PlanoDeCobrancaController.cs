@@ -17,11 +17,12 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobr
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
-
             return RedirectToAction("Index", "Inicio");
         }
 
         var registros = resultado.Value;
+
+        registros = [new()];
 
         if (registros.Count == 0)
             ApresentarMensagemSemRegistros();

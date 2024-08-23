@@ -3,8 +3,6 @@ using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class PlanoDeCobrancaService(IRepositorioPlanoDeCobranca repositorioPlanoDeCobranca)
 {
-    private readonly IRepositorioPlanoDeCobranca repositorioPlanoDeCobranca = repositorioPlanoDeCobranca;
-
     public Result<PlanoDeCobranca> Inserir(PlanoDeCobranca registro)
     {
         repositorioPlanoDeCobranca.Inserir(registro);

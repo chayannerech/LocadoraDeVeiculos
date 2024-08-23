@@ -3,9 +3,9 @@ using LocadoraDeVeiculos.Infra.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 namespace LocadoraDeVeiculos.Infra.Orm.ModuloPlanoDeCobrancas;
 
-public class RepositorioPlanoDeCobrancasEmOrm : RepositorioBaseEmOrm<PlanoDeCobranca>, IRepositorioPlanoDeCobranca
+public class RepositorioPlanoDeCobrancaEmOrm : RepositorioBaseEmOrm<PlanoDeCobranca>, IRepositorioPlanoDeCobranca
 {
-    public RepositorioPlanoDeCobrancasEmOrm(LocadoraDeVeiculosDbContext dbContext) : base(dbContext) { }
+    public RepositorioPlanoDeCobrancaEmOrm(LocadoraDeVeiculosDbContext dbContext) : base(dbContext) { }
 
     protected override DbSet<PlanoDeCobranca> ObterRegistros() 
         => _dbContext.PlanosDeCobranca;

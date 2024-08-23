@@ -1,45 +1,59 @@
 ﻿@using LocadoraDeVeiculos.WebApp.Models
-@model IEnumerable<ListarGrupoDeAutomoveisViewModel>
+@model IEnumerable<ListarPlanoDeCobrancaViewModel>
 
 @{
-    ViewBag.Title = "Grupos de Automóveis Disponíveis";
+    ViewBag.Title = "Planos Disponíveis";
 }
 
 <div class="col">
-    <a class="btn btn-outline-secondary px-4 mt-2" href="/GrupoDeAutomoveis/inserir">
+    <a class="btn btn-outline-secondary px-4 mt-2" href="/PlanoDeCobranca/inserir">
         <i class="bi bi-plus-circle"></i>
         Inserir novo registro
     </a>
 
     <div class="row gap-2 my-3 my-xl-5">
-        @foreach (var GrupoDeAutomoveisVm in Model)
+        @foreach (var PlanoDeCobrancaVm in Model)
         {
-            <div class="card col-lg-3 col-xl-2">
+            <div class="card col-lg-4 col-xl-3">
                 <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
-                    <h6 class="m-0">Id: @GrupoDeAutomoveisVm.Id</h6>
+                    <h6 class="m-0">Id: @PlanoDeCobrancaVm.Id</h6>
 
                     <div class="text-end d-flex align-items-center gap-2">
                         <a
                             title="Detalhes"
                             class="text-secondary fs-6"
-                            href="/GrupoDeAutomoveis/detalhes/@GrupoDeAutomoveisVm.Id">
+                            href="/PlanoDeCobranca/detalhes/@PlanoDeCobrancaVm.Id">
                             <i class="bi bi-search"></i>
                         </a>
                         <a
                             title="Editar"
                             class="text-secondary fs-6"
-                            href="/GrupoDeAutomoveis/editar/@GrupoDeAutomoveisVm.Id">
+                            href="/PlanoDeCobranca/editar/@PlanoDeCobrancaVm.Id">
                             <i class="bi bi-pencil-fill"></i>
                         </a>
                         <a
                             title="Excluir"
-                            class="text-danger fs-6" href="/GrupoDeAutomoveis/excluir/@GrupoDeAutomoveisVm.Id">
+                            class="text-danger fs-6" href="/PlanoDeCobranca/excluir/@PlanoDeCobrancaVm.Id">
                             <i class="bi bi-trash-fill"></i>
                         </a>
                     </div>
                 </div>
                 <div class="card-body d-grid">
-                    <h5 class="card-title">@GrupoDeAutomoveisVm.Nome</h5>
+                    <h5 class="card-title">Categoria: @PlanoDeCobrancaVm.Categoria</h5>
+                    @{if (PlanoDeCobrancaVm.Categoria == LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca.CategoriaDePlanoEnum.Diário)
+                        {   <h6>Preço da diária: @PlanoDeCobrancaVm.PrecoDiaria</h6>
+                            <h6>Preço por Km: @PlanoDeCobrancaVm.PrecoKm</h6>
+                        }
+                        else if (PlanoDeCobrancaVm.Categoria == LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca.CategoriaDePlanoEnum.Controlado)
+                        {
+                            <h6>Preço da diária: @PlanoDeCobrancaVm.PrecoDiaria</h6>
+                            <h6>Preço por Km extrapolado: @PlanoDeCobrancaVm.PrecoKm</h6>
+                        }
+                        else
+                        {
+                            <h6>Preço: @PlanoDeCobrancaVm.PrecoLivre</h6>
+                        }                    
+                    }
                 </div>
             </div>
         }

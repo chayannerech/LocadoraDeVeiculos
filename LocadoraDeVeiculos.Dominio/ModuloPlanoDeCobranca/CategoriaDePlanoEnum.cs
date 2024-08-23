@@ -2,7 +2,7 @@
 
 public enum CategoriaDePlanoEnum
 {
-    Diario,
+    Diário,
     Controlado,
     Livre
 }

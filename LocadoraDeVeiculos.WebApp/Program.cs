@@ -25,12 +25,12 @@ public class Program
 
         builder.Services.AddScoped<IRepositorioGrupoDeAutomoveis, RepositorioGrupoDeAutomoveisEmOrm>();
         builder.Services.AddScoped<IRepositorioVeiculo, RepositorioVeiculoEmOrm>();
-        builder.Services.AddScoped<IRepositorioPlanoDeCobranca, RepositorioPlanoDeCobrancasEmOrm>();
+        builder.Services.AddScoped<IRepositorioPlanoDeCobranca, RepositorioPlanoDeCobrancaEmOrm>();
 
 
         builder.Services.AddScoped<GrupoDeAutomoveisService>();
         builder.Services.AddScoped<VeiculoService>();
-        builder.Services.AddScoped<PlanoDeCobranca>();
+        builder.Services.AddScoped<PlanoDeCobrancaService>();
 
 
         builder.Services.AddAutoMapper( cfg => { cfg.AddMaps(Assembly.GetExecutingAssembly()); });
