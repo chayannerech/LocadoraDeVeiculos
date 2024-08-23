@@ -4,9 +4,9 @@ using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using Microsoft.AspNetCore.Http;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 
-public class VeiculosService(IRepositorioVeiculos repositorioVeiculos, IRepositorioGrupoDeAutomoveis repositorioGrupo)
+public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositorioGrupoDeAutomoveis repositorioGrupo)
 {
-    public Result<Veiculos> Inserir(Veiculos registro, int grupoId)
+    public Result<Veiculo> Inserir(Veiculo registro, int grupoId)
     {
         var grupoSelecionado = repositorioGrupo
             .SelecionarPorId(grupoId);
@@ -25,7 +25,7 @@ public class VeiculosService(IRepositorioVeiculos repositorioVeiculos, IReposito
         return Result.Ok(registro);
     }
 
-    public Result<Veiculos> Editar(Veiculos registroAtualizado, int grupoId)
+    public Result<Veiculo> Editar(Veiculo registroAtualizado, int grupoId)
     {
         var registro = repositorioVeiculos.SelecionarPorId(registroAtualizado.Id);
 
@@ -61,7 +61,7 @@ public class VeiculosService(IRepositorioVeiculos repositorioVeiculos, IReposito
         return Result.Ok();
     }
 
-    public Result<Veiculos> SelecionarPorId(int registroId)
+    public Result<Veiculo> SelecionarPorId(int registroId)
     {
         var registro = repositorioVeiculos.SelecionarPorId(registroId);
 
@@ -71,7 +71,7 @@ public class VeiculosService(IRepositorioVeiculos repositorioVeiculos, IReposito
         return Result.Ok(registro);
     }
 
-    public Result<List<Veiculos>> SelecionarTodos(int usuarioId)
+    public Result<List<Veiculo>> SelecionarTodos(int usuarioId)
     {
         /*        var registros = repositorioVeiculos
                     .Filtrar(f => f.UsuarioId == usuarioId);
@@ -84,7 +84,7 @@ public class VeiculosService(IRepositorioVeiculos repositorioVeiculos, IReposito
         return Result.Ok(registros);
     }
 
-    public Result<List<IGrouping<string, Veiculos>>> ObterVeiculosAgrupadosPorGrupo(int? usuarioId = null)
+    public Result<List<IGrouping<string, Veiculo>>> ObterVeiculosAgrupadosPorGrupo(int? usuarioId = null)
     {
         if (usuarioId is not null)
             return Result.Ok(repositorioVeiculos.ObterVeiculosAgrupadosPorGrupo(usuarioId.Value));

@@ -3,37 +3,37 @@ using LocadoraDeVeiculos.Infra.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 namespace LocadoraDeVeiculos.Infra.Orm.ModuloVeiculos;
 
-public class RepositorioVeiculosEmOrm : RepositorioBaseEmOrm<Veiculos>, IRepositorioVeiculos
+public class RepositorioVeiculoEmOrm : RepositorioBaseEmOrm<Veiculo>, IRepositorioVeiculo
 {
-    public RepositorioVeiculosEmOrm(LocadoraDeVeiculosDbContext dbContext) : base(dbContext) { }
+    public RepositorioVeiculoEmOrm(LocadoraDeVeiculosDbContext dbContext) : base(dbContext) { }
 
-    protected override DbSet<Veiculos> ObterRegistros() 
+    protected override DbSet<Veiculo> ObterRegistros() 
         => _dbContext.Veiculos;
 
-    public Veiculos? SelecionarPorId(int id)
+    public Veiculo? SelecionarPorId(int id)
     {
         return _dbContext.Veiculos
             .Include(s => s.GrupoDeAutomoveis)
             .FirstOrDefault(s => s.Id == id);
     }
 
-    public List<Veiculos> SelecionarTodos()
+    public List<Veiculo> SelecionarTodos()
         => [.. _dbContext.Veiculos
             .Include(s => s.GrupoDeAutomoveis)
             .AsNoTracking()];
 
-    public List<Veiculos> Filtrar(Func<Veiculos, bool> predicate)
+    public List<Veiculo> Filtrar(Func<Veiculo, bool> predicate)
         => ObterRegistros()
             .Where(predicate)
             .ToList();
 
-    public List<IGrouping<string, Veiculos>> ObterVeiculosAgrupadosPorGrupo(int usuarioId)
+    public List<IGrouping<string, Veiculo>> ObterVeiculosAgrupadosPorGrupo(int usuarioId)
         => [.. _dbContext.Veiculos
             //.Where(s => s.UsuarioId == usuarioId)
             .Include(s => s.GrupoDeAutomoveis)
             .GroupBy(s => s.GrupoDeAutomoveis.Nome)
             .AsNoTracking()];
-    public List<IGrouping<string, Veiculos>> ObterVeiculosAgrupadosPorGrupo()
+    public List<IGrouping<string, Veiculo>> ObterVeiculosAgrupadosPorGrupo()
         => [.. _dbContext.Veiculos
             .Include(s => s.GrupoDeAutomoveis)
             .GroupBy(s => s.GrupoDeAutomoveis.Nome)

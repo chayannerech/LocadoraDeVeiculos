@@ -8,7 +8,7 @@ using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
-public class VeiculosController(VeiculosService servicoVeiculos, GrupoDeAutomoveisService servicoGrupos, IMapper mapeador) : WebControllerBase
+public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveisService servicoGrupos, IMapper mapeador) : WebControllerBase
 {
     private readonly IMapper mapeador = mapeador;
     public IActionResult Listar()
@@ -41,7 +41,7 @@ public class VeiculosController(VeiculosService servicoVeiculos, GrupoDeAutomove
         if (!ModelState.IsValid)
             return View(CarregarInformacoes(inserirVeiculosVm));
 
-        var novoRegistro = mapeador.Map<Veiculos>(inserirVeiculosVm);
+        var novoRegistro = mapeador.Map<Veiculo>(inserirVeiculosVm);
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
@@ -105,7 +105,7 @@ public class VeiculosController(VeiculosService servicoVeiculos, GrupoDeAutomove
             editarVeiculosVm.TipoDaImagem = editarVeiculosVm.Foto.ContentType;
         }
 
-        var registro = mapeador.Map<Veiculos>(editarVeiculosVm);
+        var registro = mapeador.Map<Veiculo>(editarVeiculosVm);
 
         var resultado = servicoVeiculos.Editar(registro, editarVeiculosVm.GrupoId);
 
@@ -192,7 +192,7 @@ public class VeiculosController(VeiculosService servicoVeiculos, GrupoDeAutomove
 
         return inserirVeiculosVm;
     }
-    private AgrupamentoVeiculosPorGrupoViewModel MapearAgrupamentoVeiculos(IGrouping<string, Veiculos> grp)
+    private AgrupamentoVeiculosPorGrupoViewModel MapearAgrupamentoVeiculos(IGrouping<string, Veiculo> grp)
         => new()
         {
             Grupo = grp.Key,

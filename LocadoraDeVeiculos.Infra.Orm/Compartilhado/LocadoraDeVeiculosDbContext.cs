@@ -11,7 +11,7 @@ namespace LocadoraDeVeiculos.Infra.Orm.Compartilhado;
 public class LocadoraDeVeiculosDbContext : IdentityDbContext<Usuario, Perfil, int>
 {
     public DbSet<GrupoDeAutomoveis> GrupoDeAutomoveis { get; set; }
-    public DbSet<Veiculos> Veiculos { get; set; }
+    public DbSet<Veiculo> Veiculos { get; set; }
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -34,7 +34,7 @@ public class LocadoraDeVeiculosDbContext : IdentityDbContext<Usuario, Perfil, in
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new MapeadorGrupoDeAutomoveisEmOrm());
-        modelBuilder.ApplyConfiguration(new MapeadorVeiculosEmOrm());
+        modelBuilder.ApplyConfiguration(new MapeadorVeiculoEmOrm());
         modelBuilder.Ignore<PlanoDeCobranca>();
 
         base.OnModelCreating(modelBuilder);

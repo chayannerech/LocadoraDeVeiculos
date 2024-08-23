@@ -22,10 +22,10 @@ public class Program
         builder.Services.AddDbContext<LocadoraDeVeiculosDbContext>();
 
         builder.Services.AddScoped<IRepositorioGrupoDeAutomoveis, RepositorioGrupoDeAutomoveisEmOrm>();
-        builder.Services.AddScoped<IRepositorioVeiculos, RepositorioVeiculosEmOrm>();
+        builder.Services.AddScoped<IRepositorioVeiculo, RepositorioVeiculoEmOrm>();
 
         builder.Services.AddScoped<GrupoDeAutomoveisService>();
-        builder.Services.AddScoped<VeiculosService>();
+        builder.Services.AddScoped<VeiculoService>();
 
         builder.Services.AddIdentity<Usuario, Perfil>()
               .AddEntityFrameworkStores<LocadoraDeVeiculosDbContext>()

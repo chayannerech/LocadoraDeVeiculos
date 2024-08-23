@@ -2,7 +2,7 @@
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 namespace LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 
-public class Veiculos() : EntidadeBase
+public class Veiculo() : EntidadeBase
 {
     public string Placa { get; set; }
     public string Marca { get; set; }
