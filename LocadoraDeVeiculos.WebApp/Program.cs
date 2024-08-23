@@ -1,8 +1,10 @@
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloUsuario;
+using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.Infra.Orm.Compartilhado;
 using LocadoraDeVeiculos.Infra.Orm.ModuloGrupoDeAutomoveis;
+using LocadoraDeVeiculos.Infra.Orm.ModuloVeiculos;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using System.Reflection;
@@ -20,8 +22,10 @@ public class Program
         builder.Services.AddDbContext<LocadoraDeVeiculosDbContext>();
 
         builder.Services.AddScoped<IRepositorioGrupoDeAutomoveis, RepositorioGrupoDeAutomoveisEmOrm>();
+        builder.Services.AddScoped<IRepositorioVeiculos, RepositorioVeiculosEmOrm>();
 
         builder.Services.AddScoped<GrupoDeAutomoveisService>();
+        builder.Services.AddScoped<VeiculosService>();
 
         builder.Services.AddIdentity<Usuario, Perfil>()
               .AddEntityFrameworkStores<LocadoraDeVeiculosDbContext>()

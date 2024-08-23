@@ -2,6 +2,7 @@
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
+using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
@@ -26,6 +27,8 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
             ApresentarMensagemSemRegistros();
 
         var listarGrupoDeAutomoveisVm = mapeador.Map<IEnumerable<ListarGrupoDeAutomoveisViewModel>>(registros);
+
+        ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 
         return View(listarGrupoDeAutomoveisVm);
     }

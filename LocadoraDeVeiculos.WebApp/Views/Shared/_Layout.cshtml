@@ -3,12 +3,13 @@
     string caminho = Context.Request.Path;
 
     var grupoAtivo = caminho.StartsWith("/GrupoDeAutomoveis") ? "nav-link active fw-semibold" : "nav-link";
+    var veiculoAtivo = caminho.StartsWith("/Veiculos") ? "nav-link active fw-semibold" : "nav-link";
 
     MensagemViewModel? mensagem = ViewBag.Mensagem ?? null;
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="utf-8" />
 
@@ -16,7 +17,7 @@
 
     <link rel="icon" type="image/png" href="~/img/rato1.png" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/LocadoraDeVeiculos.WebApp.styles.css" asp-append-version="true" />
@@ -24,13 +25,19 @@
     <style>
         body {
             font-family: 'Roboto Condensed', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
         }
+
         .navbar-light .navbar-brand {
             color: #555;
             display: flex;
             align-items: center;
             font-size: 22px;
         }
+
             .navbar-light .navbar-brand img {
                 margin-right: 0.5rem;
                 width: 32px;
@@ -75,7 +82,7 @@
         </div>
     </main>
 
-    <footer class="border-top footer bg-light text-muted text-center">
+    <footer class="border-top footer bg-light text-muted text-center position-fixed sticky-bottom">
         <div class="container">
             &copy; 2024 - Locadora de Veículos Afonso
         </div>
@@ -84,7 +91,14 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

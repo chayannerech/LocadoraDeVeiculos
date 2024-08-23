@@ -171,6 +171,34 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "TBVeiculos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Placa = table.Column<string>(type: "varchar(10)", nullable: false),
+                    Marca = table.Column<string>(type: "varchar(50)", nullable: false),
+                    Cor = table.Column<string>(type: "varchar(30)", nullable: false),
+                    Modelo = table.Column<string>(type: "varchar(50)", nullable: false),
+                    TipoCombustivel = table.Column<string>(type: "varchar(50)", nullable: false),
+                    CapacidadeCombustivel = table.Column<int>(type: "int", nullable: false),
+                    Ano = table.Column<int>(type: "int", nullable: false),
+                    ImagemEmBytes = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
+                    TipoDaImagem = table.Column<string>(type: "nvarchar(255)", nullable: false),
+                    Grupo_Id = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TBVeiculos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TBVeiculos_TBGrupoDeAutomoveis_Grupo_Id",
+                        column: x => x.Grupo_Id,
+                        principalTable: "TBGrupoDeAutomoveis",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -209,6 +237,11 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TBVeiculos_Grupo_Id",
+                table: "TBVeiculos",
+                column: "Grupo_Id");
         }
 
         /// <inheritdoc />
@@ -230,13 +263,16 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "TBGrupoDeAutomoveis");
+                name: "TBVeiculos");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "TBGrupoDeAutomoveis");
         }
     }
 }

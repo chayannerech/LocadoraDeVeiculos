@@ -1,26 +1,88 @@
 ﻿@using LocadoraDeVeiculos.WebApp.Models
-@model InserirGrupoDeAutomoveisViewModel
+@model InserirVeiculosViewModel
 
 @{
-    ViewBag.Title = "Inserir novo grupo";
+    ViewBag.Title = "Inserir novo veículo";
+    List<string> combustiveis = ["gasolina","diesel","etanol","gás natural (GNV)","eletricidade"];
 }
 
 <div class="col">
     <div class="row gap-3 my-3 my-xl-5">
-        <form class="col-lg-6 d-grid gap-3" asp-action="Inserir">
+        <form class="col-lg-6 d-grid gap-3" asp-action="Inserir" enctype="multipart/form-data">
             <div>
-                <label class="control-label fw-bold mb-1">Nome</label>
-                <input class="form-control mb-1" asp-for="Nome" />
-                <span class="text-danger fs-6" asp-validation-for="Nome"></span>
+                <label class="control-label fw-bold mb-1">Grupo de Automóveis</label>
+                <select class="form-select mb-1" asp-for="GrupoId" asp-items="Model.Grupos">
+                    <option value="" selected disabled></option>
+                </select>
+                <span class="text-danger fs-6" asp-validation-for="GrupoId"></span>
             </div>
 
-            <div class="d-flex justify-content-center gap-3 mt-3">
+            <div>
+                <label class="control-label fw-bold mb-1 mt-2">Placa</label>
+                <input class="form-control mb-1" asp-for="Placa" />
+                <span class="text-danger fs-6" asp-validation-for="Placa"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mb-1 mt-2">Modelo</label>
+                <input class="form-control mb-1" asp-for="Modelo" />
+                <span class="text-danger fs-6" asp-validation-for="Modelo"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mb-1 mt-2">Marca</label>
+                <input class="form-control mb-1" asp-for="Marca" />
+                <span class="text-danger fs-6" asp-validation-for="Marca"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mb-1 mt-2">Cor</label>
+                <input class="form-control mb-1" asp-for="Cor" />
+                <span class="text-danger fs-6" asp-validation-for="Cor"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mb-1 mt-2">Ano</label>
+                <input type="number" class="form-control mb-1" asp-for="Ano"/>
+                <span class="text-danger fs-6" asp-validation-for="Ano"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mb-1 mt-2">Tipo de combustível</label>
+                <select class="form-select mb-1" asp-for="TipoCombustivel">
+                    <option value="" selected disabled></option>
+                    @foreach (var c in combustiveis){
+                        <option value="@c">@c</option> }
+                </select>
+                <span class="text-danger fs-6" asp-validation-for="TipoCombustivel"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mb-1 mt-2">Capacidade de Combustível</label>
+                <input type="number" class="form-control mb-1" asp-for="CapacidadeCombustivel" />
+                <span class="text-danger fs-6" asp-validation-for="CapacidadeCombustivel"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mb-1 mt-2">Foto do veículo</label>
+                <div class="d-flex align-items-center">
+                    <input type="file" class="form-control mb-1" style="max-width: 400px" asp-for="Foto" id="fotoInput" style="max-width: 300px;" />
+
+                    <img id="fotoPreview" src="~/img/carro.jpg"
+                         alt="Pré-visualização"
+                         style="display:block; margin-left:30px; max-width:130px; height:auto;" />
+                </div>
+                <span class="text-danger fs-6" asp-validation-for="Foto"></span>
+            </div>
+
+
+            <div class="d-flex justify-content-center gap-3 mt-3 mb-5">
                 <button class="btn btn-secondary px-5">
                     <i class="bi bi-floppy-fill me-1"></i>
                     Gravar
                 </button>
 
-                <a class="btn btn-outline-secondary px-5" href="/GrupoDeAutomoveis/listar">
+                <a class="btn btn-outline-secondary px-5" href="/Veiculos/listar">
                     <i class="bi bi-arrow-return-left me-1"></i>
                     Voltar
                 </a>
@@ -28,3 +90,24 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.getElementById('fotoInput').addEventListener('change', function (event) {
+        const fotoInput = event.target;
+        const fotoPreview = document.getElementById('fotoPreview');
+
+        // Verifica se um arquivo foi selecionado
+        if (fotoInput.files && fotoInput.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                fotoPreview.src = e.target.result; // Define o src da imagem como o resultado do arquivo lido
+            };
+
+            reader.readAsDataURL(fotoInput.files[0]); // Lê o arquivo como uma URL de dados
+        } else {
+            // Restaura a imagem placeholder se nenhum arquivo for selecionado
+            fotoPreview.src = "~/img/rato1.png";
+        }
+    });
+</script>

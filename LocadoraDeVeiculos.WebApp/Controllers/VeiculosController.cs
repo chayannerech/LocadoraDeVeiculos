@@ -1,48 +1,51 @@
 ﻿using AutoMapper;
+using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
+using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
-public class VeiculosController(VeiculosService servicoVeiculos, IMapper mapeador) : WebControllerBase
+public class VeiculosController(VeiculosService servicoVeiculos, GrupoDeAutomoveisService servicoGrupos, IMapper mapeador) : WebControllerBase
 {
     private readonly IMapper mapeador = mapeador;
     public IActionResult Listar()
     {
         var resultado =
-            servicoVeiculos.SelecionarTodos(UsuarioId.GetValueOrDefault());
+            servicoVeiculos.ObterVeiculosAgrupadosPorGrupo(UsuarioId.GetValueOrDefault());
 
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
 
-            return RedirectToAction("Index", "Inicio");
+            return RedirectToAction(nameof(Listar));
         }
 
-        var registros = resultado.Value;
+        var agrupamentos = resultado.Value;
 
-        if (registros.Count == 0)
-            ApresentarMensagemSemRegistros();
+        var agrupamentosVeiculosVm = agrupamentos
+            .Select(MapearAgrupamentoVeiculos);
 
-        var listarVeiculosVm = mapeador.Map<IEnumerable<ListarVeiculosViewModel>>(registros);
+        ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 
-        return View(listarVeiculosVm);
+        return View(agrupamentosVeiculosVm);
     }
 
-    public IActionResult Inserir() => View();
+    public IActionResult Inserir() => View(CarregarInformacoes(new InserirVeiculosViewModel()));
 
     [HttpPost]
     public IActionResult Inserir(InserirVeiculosViewModel inserirVeiculosVm)
     {
         if (!ModelState.IsValid)
-            return View(inserirVeiculosVm);
+            return View(CarregarInformacoes(inserirVeiculosVm));
 
         var novoRegistro = mapeador.Map<Veiculos>(inserirVeiculosVm);
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
-        var resultado = servicoVeiculos.Inserir(novoRegistro);
+        var resultado = servicoVeiculos.Inserir(novoRegistro, inserirVeiculosVm.GrupoId);
 
         if (resultado.IsFailed)
         {
@@ -67,11 +70,27 @@ public class VeiculosController(VeiculosService servicoVeiculos, IMapper mapeado
             return RedirectToAction(nameof(Listar));
         }
 
-        var registro = resultado.Value;
+        var resultadoGrupos = servicoGrupos.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
-        var editarVeiculosVm = mapeador.Map<EditarVeiculosViewModel>(registro);
+        if (resultadoGrupos.IsFailed)
+        {
+            ApresentarMensagemFalha(resultadoGrupos.ToResult());
 
-        return View(editarVeiculosVm);
+            return null;
+        }
+
+        var veiculo = resultado.Value;
+
+        var editarVm = mapeador.Map<EditarVeiculosViewModel>(veiculo);
+
+        var gruposDisponiveis = resultadoGrupos.Value;
+
+        editarVm.GrupoId = veiculo.GrupoDeAutomoveis.Id;
+
+        editarVm.Grupos = gruposDisponiveis
+            .Select(g => new SelectListItem(g.Nome, g.Id.ToString()));
+
+        return View(editarVm);
     }
 
     [HttpPost]
@@ -80,9 +99,15 @@ public class VeiculosController(VeiculosService servicoVeiculos, IMapper mapeado
         if (!ModelState.IsValid)
             return View(editarVeiculosVm);
 
+        if (editarVeiculosVm.Foto != null)
+        {
+            editarVeiculosVm.ImagemEmBytes = ConverterImagemParaArrayDeBytes(editarVeiculosVm.Foto);
+            editarVeiculosVm.TipoDaImagem = editarVeiculosVm.Foto.ContentType;
+        }
+
         var registro = mapeador.Map<Veiculos>(editarVeiculosVm);
 
-        var resultado = servicoVeiculos.Editar(registro);
+        var resultado = servicoVeiculos.Editar(registro, editarVeiculosVm.GrupoId);
 
         if (resultado.IsFailed)
         {
@@ -109,13 +134,7 @@ public class VeiculosController(VeiculosService servicoVeiculos, IMapper mapeado
 
         var registro = resultado.Value;
 
-        //registro.Planos = [new("1"), new("2")];
-        registro.Planos = [];
-
         var detalhesVeiculosViewModel = mapeador.Map<DetalhesVeiculosViewModel>(registro);
-
-        if (registro.Planos.Count != 0)
-            ApresentarMensagemImpossivelExcluir();
 
         return View(detalhesVeiculosViewModel);
     }
@@ -150,10 +169,44 @@ public class VeiculosController(VeiculosService servicoVeiculos, IMapper mapeado
 
         var registro = resultado.Value;
 
-        registro.Planos = [new("1", registro), new("2", registro)];
-
         var detalhesVeiculosViewModel = mapeador.Map<DetalhesVeiculosViewModel>(registro);
 
         return View(detalhesVeiculosViewModel);
+    }
+
+    private InserirVeiculosViewModel? CarregarInformacoes(InserirVeiculosViewModel inserirVeiculosVm)
+    {
+        var resultadoGrupos = servicoGrupos.SelecionarTodos(UsuarioId.GetValueOrDefault());
+
+        if (resultadoGrupos.IsFailed)
+        {
+            ApresentarMensagemFalha(Result.Fail("Falha ao encontrar dados necessários!"));
+
+            return null;
+        }
+
+        var grupos = resultadoGrupos.Value;
+
+        inserirVeiculosVm.Grupos = grupos.Select(g =>
+            new SelectListItem(g.Nome, g.Id.ToString()));
+
+        return inserirVeiculosVm;
+    }
+    private AgrupamentoVeiculosPorGrupoViewModel MapearAgrupamentoVeiculos(IGrouping<string, Veiculos> grp)
+        => new()
+        {
+            Grupo = grp.Key,
+            Veiculos = mapeador.Map<IEnumerable<ListarVeiculosViewModel>>(grp)
+        };
+    private byte[] ConverterImagemParaArrayDeBytes(IFormFile imagem)
+    {
+        if (imagem == null || imagem.Length == 0)
+        {
+            throw new ArgumentNullException(nameof(imagem), "A imagem não pode ser nula ou vazia");
+        }
+
+        using var memoryStream = new MemoryStream();
+        imagem.CopyTo(memoryStream);
+        return memoryStream.ToArray();
     }
 }
