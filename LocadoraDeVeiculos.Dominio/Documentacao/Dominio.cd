@@ -6,6 +6,29 @@
       <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAgEAAAA=</HashCode>
       <FileName>ModuloGrupoDeAutomoveis\GrupoDeAutomoveis.cs</FileName>
     </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Planos" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca.PlanoDeCobranca">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAIAAAAAAAAAAAAAEAAABEAAAAAAAAAAAAAAABAAAg=</HashCode>
+      <FileName>ModuloPlanoDeCobranca\PlanoDeCobranca.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="GrupoDeAutomoveis" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="LocadoraDeVeiculos.Dominio.ModuloVeiculos.Veiculo">
+    <Position X="6" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAABABABAEAAAAAEAAAAABAAAEEAAQAAAAgAAAAAAAA=</HashCode>
+      <FileName>ModuloVeiculo\Veiculo.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="GrupoDeAutomoveis" />
+    </ShowAsAssociation>
   </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

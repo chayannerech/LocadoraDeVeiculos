@@ -4,13 +4,13 @@ namespace LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 
 public class PlanoDeCobranca() : EntidadeBase
 {
-    public string Nome { get; set; }
     public GrupoDeAutomoveis GrupoDeAutomoveis { get; set; }
-
-    public PlanoDeCobranca(string nome, GrupoDeAutomoveis grupoDeAutomoveis) : this()
-    {
-        Nome = nome;
-        GrupoDeAutomoveis = grupoDeAutomoveis;
-    }
+    //public Enum Categoria { get; set; }
+    public decimal PrecoDiaria { get; set; }
+    public decimal PrecoKm { get; set;}
+    public int KmDisponivel { get; set; }
+    public decimal PrecoDiariaControlada { get; set; }
+    public decimal PrecoExtrapolado { get; set; }
+    public decimal PrecoLivre { get; set; }
 }
 
