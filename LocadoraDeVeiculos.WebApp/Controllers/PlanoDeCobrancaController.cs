@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
+using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobranca, IMapper mapeador) : WebControllerBase
@@ -110,13 +112,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobr
 
         var registro = resultado.Value;
 
-        //registro.Planos = [new("1"), new("2")];
-        registro.Planos = [];
-
         var detalhesPlanoDeCobrancaViewModel = mapeador.Map<DetalhesPlanoDeCobrancaViewModel>(registro);
-
-        if (registro.Planos.Count != 0)
-            ApresentarMensagemImpossivelExcluir();
 
         return View(detalhesPlanoDeCobrancaViewModel);
     }
@@ -150,8 +146,6 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobr
         }
 
         var registro = resultado.Value;
-
-        registro.Planos = [new("1", registro), new("2", registro)];
 
         var detalhesPlanoDeCobrancaViewModel = mapeador.Map<DetalhesPlanoDeCobrancaViewModel>(registro);
 

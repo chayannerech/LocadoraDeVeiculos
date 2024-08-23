@@ -1,7 +1,6 @@
 ﻿using FluentResults;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
-
 public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioGrupoDeAutomoveis)
 {
     private readonly IRepositorioGrupoDeAutomoveis repositorioGrupoDeAutomoveis = repositorioGrupoDeAutomoveis;

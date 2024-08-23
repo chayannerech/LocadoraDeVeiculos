@@ -4,7 +4,7 @@ namespace LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 public class GrupoDeAutomoveis() : EntidadeBase
 {
     public string Nome { get; set; }
-    public List<PlanoDeCobranca> Planos { get; set; }
+    public List<PlanoDeCobranca> Planos { get; set; } = [];
 
     public List<string> Validar()
     {
@@ -14,6 +14,6 @@ public class GrupoDeAutomoveis() : EntidadeBase
         return erros;
     }
 
-    public override string ToString() => $"Grupo de {Nome}";
+    public override string ToString() => Nome;
 }
 

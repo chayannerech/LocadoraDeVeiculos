@@ -4,7 +4,6 @@ using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 namespace LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
-
 public abstract class WebControllerBase : Controller
 {
     protected int? UsuarioId
@@ -38,17 +37,24 @@ public abstract class WebControllerBase : Controller
             Titulo = "Falha",
             Mensagem = resultado.Errors[0].Message
         };
+    }
 
-        ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
+    protected void ApresentarMensagemRegistroExistente()
+    {
+        ViewBag.Mensagem = new MensagemViewModel
+        {
+            Titulo = "Falha",
+            Mensagem = "Este registro já existe"
+        };
     }
 
     protected void ApresentarMensagemSemRegistros()
     {
-        ViewBag.Mensagem = new MensagemViewModel
+        TempData.SerializarMensagemViewModel(new MensagemViewModel
         {
             Titulo = "Vazio",
             Mensagem = $"Ainda não existem itens cadastrados"
-        };
+        });
     }
     protected void ApresentarMensagemImpossivelExcluir()
     {

@@ -11,8 +11,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
     private readonly IMapper mapeador = mapeador;
     public IActionResult Listar()
     {
-        var resultado =
-            servicoGrupoDeAutomoveis.SelecionarTodos(UsuarioId.GetValueOrDefault());
+        var resultado = servicoGrupoDeAutomoveis.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
         if (resultado.IsFailed)
         {
@@ -42,6 +41,14 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
             return View(inserirGrupoDeAutomoveisVm);
 
         var novoRegistro = mapeador.Map<GrupoDeAutomoveis>(inserirGrupoDeAutomoveisVm);
+
+        var registrosExistentes = servicoGrupoDeAutomoveis.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
+
+        if (registrosExistentes.Exists(r => r.Nome == novoRegistro.Nome))
+        {
+            ApresentarMensagemRegistroExistente();
+            return View(inserirGrupoDeAutomoveisVm); 
+        }
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
@@ -85,6 +92,14 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
         var registro = mapeador.Map<GrupoDeAutomoveis>(editarGrupoDeAutomoveisVm);
 
+        var registrosExistentes = servicoGrupoDeAutomoveis.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
+
+        if (registrosExistentes.Exists(r => r.Nome == registro.Nome))
+        {
+            ApresentarMensagemRegistroExistente();
+            return View(editarGrupoDeAutomoveisVm);
+        }
+
         var resultado = servicoGrupoDeAutomoveis.Editar(registro);
 
         if (resultado.IsFailed)
@@ -112,9 +127,6 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
         var registro = resultado.Value;
 
-        //registro.Planos = [new("1"), new("2")];
-        registro.Planos = [];
-
         var detalhesGrupoDeAutomoveisViewModel = mapeador.Map<DetalhesGrupoDeAutomoveisViewModel>(registro);
 
         if (registro.Planos.Count != 0)
@@ -126,6 +138,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
     [HttpPost]
     public IActionResult Excluir(DetalhesGrupoDeAutomoveisViewModel detalhesGrupoDeAutomoveisViewModel)
     {
+        var nome = servicoGrupoDeAutomoveis.SelecionarPorId(detalhesGrupoDeAutomoveisViewModel.Id).Value.Nome;
         var resultado = servicoGrupoDeAutomoveis.Excluir(detalhesGrupoDeAutomoveisViewModel.Id);
 
         if (resultado.IsFailed)
@@ -135,7 +148,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
             return RedirectToAction(nameof(Listar));
         }
 
-        ApresentarMensagemSucesso($"O registro \"{detalhesGrupoDeAutomoveisViewModel.Nome}\" foi excluído com sucesso!");
+        ApresentarMensagemSucesso($"O registro \"{nome}\" foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
@@ -152,8 +165,6 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
         }
 
         var registro = resultado.Value;
-
-        registro.Planos = [new("1", registro), new("2", registro)];
 
         var detalhesGrupoDeAutomoveisViewModel = mapeador.Map<DetalhesGrupoDeAutomoveisViewModel>(registro);
 
