@@ -6,7 +6,7 @@ using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
-public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDeAutomoveis, IMapper mapeador) : WebControllerBase
+public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDeAutomoveis, VeiculoService servicoVeiculo, IMapper mapeador) : WebControllerBase
 {
     private readonly IMapper mapeador = mapeador;
     public IActionResult Listar()
@@ -16,7 +16,6 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
-
             return RedirectToAction("Index", "Inicio");
         }
 
@@ -57,7 +56,6 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
-
             return RedirectToAction(nameof(Listar));
         }
 
@@ -129,8 +127,14 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
         var detalhesGrupoDeAutomoveisViewModel = mapeador.Map<DetalhesGrupoDeAutomoveisViewModel>(registro);
 
-        if (registro.Planos.Count != 0)
-            ApresentarMensagemImpossivelExcluir();
+        foreach(var veiculo in servicoVeiculo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value)
+        {
+            if (veiculo.GrupoDeAutomoveis.Id == registro.Id)
+            {
+                ApresentarMensagemImpossivelExcluir();
+                return RedirectToAction(nameof(Listar));
+            }
+        }
 
         return View(detalhesGrupoDeAutomoveisViewModel);
     }

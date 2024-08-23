@@ -17,10 +17,6 @@ public class MapeadorGrupoDeAutomoveisEmOrm : IEntityTypeConfiguration<GrupoDeAu
             .IsRequired()
             .HasColumnType("varchar(200)");
 
-        gBuilder.HasMany(g => g.Planos)
-            .WithOne(p => p.GrupoDeAutomoveis)
-            .HasForeignKey("Grupo_Id");
-
 
         /*        gBuilder.Property(s => s.UsuarioId)
                     .IsRequired()

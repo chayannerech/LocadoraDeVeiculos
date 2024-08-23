@@ -58,11 +58,11 @@ public abstract class WebControllerBase : Controller
     }
     protected void ApresentarMensagemImpossivelExcluir()
     {
-        ViewBag.Mensagem = new MensagemViewModel
+        TempData.SerializarMensagemViewModel(new MensagemViewModel
         {
             Titulo = "Aviso",
             Mensagem = $"Não é possível excluir este registro"
-        };
+        });
     }
 
     protected void ApresentarMensagemSucesso(string mensagem)

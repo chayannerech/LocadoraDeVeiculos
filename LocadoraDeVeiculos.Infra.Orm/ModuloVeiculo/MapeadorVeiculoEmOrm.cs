@@ -2,7 +2,6 @@ using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace LocadoraDeVeiculos.Infra.Orm.ModuloVeiculos;
-
 public class MapeadorVeiculoEmOrm : IEntityTypeConfiguration<Veiculo>
 {
     public void Configure(EntityTypeBuilder<Veiculo> vBuilder)

@@ -1,6 +1,4 @@
-﻿using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
-using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 namespace LocadoraDeVeiculos.WebApp.Models;
 
@@ -45,10 +43,7 @@ public class PropriedadesVeiculosViewModel
     public int Ano { get; set; }
 
     public IEnumerable<SelectListItem>? Grupos { get; set; }
-}
 
-public class InserirVeiculosViewModel : PropriedadesVeiculosViewModel
-{
     [Required(ErrorMessage = "A foto do veículo é obrigatória")]
     public IFormFile Foto { get; set; }
     public byte[] ImagemEmBytes
@@ -74,43 +69,13 @@ public class InserirVeiculosViewModel : PropriedadesVeiculosViewModel
     }
 }
 
-public class EditarVeiculosViewModel : PropriedadesVeiculosViewModel
-{
-    public int Id { get; set; }
+public class InserirVeiculosViewModel : PropriedadesVeiculosViewModel { }
 
-    public IFormFile Foto
-    {
-        get => CriarFormFile(ImagemEmBytes, TipoDaImagem);
-        set {}
-    }
+public class EditarVeiculosViewModel : PropriedadesVeiculosViewModel
+{    
+    public int Id { get; set; }
     public byte[] ImagemEmBytes { get; set; }
     public string TipoDaImagem { get; set; }
-
-    private IFormFile CriarFormFile(byte[] imagemEmBytes, string tipoDaImagem)
-    {
-        if (imagemEmBytes == null || imagemEmBytes.Length == 0)
-        {
-            return null;
-        }
-
-        var stream = new MemoryStream(imagemEmBytes);
-        return new FormFile(stream, 0, imagemEmBytes.Length, null, $"arquivo.{ObterExtensao(tipoDaImagem)}")
-        {
-            Headers = new HeaderDictionary(),
-            ContentType = tipoDaImagem
-        };
-    }
-    private string ObterExtensao(string tipoDaImagem)
-    {
-        return tipoDaImagem switch
-        {
-            "image/jpeg" => "jpg",
-            "image/png" => "png",
-            "image/gif" => "gif",
-            "image/bmp" => "bmp",
-            _ => "bin"
-        };
-    }
 }
 
 public class ListarVeiculosViewModel
@@ -133,7 +98,7 @@ public class AgrupamentoVeiculosPorGrupoViewModel
 public class DetalhesVeiculosViewModel
 {
     public int Id { get; set; }
-    public int GrupoId { get; set; }
+    public string GrupoNome { get; set; }
     public string Placa { get; set; }
     public string Marca { get; set; }
     public string Cor { get; set; }

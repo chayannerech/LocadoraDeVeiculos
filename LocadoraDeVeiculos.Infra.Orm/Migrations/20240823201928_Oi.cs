@@ -172,6 +172,32 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TBPlanoDeCobranca",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GrupoDeAutomoveisId = table.Column<int>(type: "int", nullable: false),
+                    Categoria = table.Column<int>(type: "int", nullable: false),
+                    PrecoDiaria = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PrecoKm = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    KmDisponivel = table.Column<int>(type: "int", nullable: false),
+                    PrecoDiariaControlada = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PrecoExtrapolado = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PrecoLivre = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TBPlanoDeCobranca", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TBPlanoDeCobranca_TBGrupoDeAutomoveis_GrupoDeAutomoveisId",
+                        column: x => x.GrupoDeAutomoveisId,
+                        principalTable: "TBGrupoDeAutomoveis",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TBVeiculos",
                 columns: table => new
                 {
@@ -239,6 +265,11 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TBPlanoDeCobranca_GrupoDeAutomoveisId",
+                table: "TBPlanoDeCobranca",
+                column: "GrupoDeAutomoveisId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TBVeiculos_Grupo_Id",
                 table: "TBVeiculos",
                 column: "Grupo_Id");
@@ -261,6 +292,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "TBPlanoDeCobranca");
 
             migrationBuilder.DropTable(
                 name: "TBVeiculos");

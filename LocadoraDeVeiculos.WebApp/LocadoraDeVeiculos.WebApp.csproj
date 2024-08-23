@@ -26,4 +26,11 @@
     <Folder Include="Views\PlanoDeCobranca\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\PlanoDeCobranca\Listar.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

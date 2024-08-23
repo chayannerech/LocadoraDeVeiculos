@@ -85,7 +85,7 @@ public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositori
                 return Result.Ok(registros);*/
 
         var registros = repositorioVeiculos
-            .Filtrar(f => f.Id != 0);
+            .SelecionarTodos();
 
         return Result.Ok(registros);
     }

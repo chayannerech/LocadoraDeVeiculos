@@ -12,11 +12,6 @@ public class MapeadorPlanoDeCobrancaEmOrm : IEntityTypeConfiguration<PlanoDeCobr
             .IsRequired()
             .ValueGeneratedOnAdd();
 
-        pBuilder.HasOne(p => p.GrupoDeAutomoveis)
-            .WithMany(g => g.Planos)
-            .IsRequired()
-            .HasForeignKey("Grupo_Id");
-
         pBuilder.Property(p => p.Categoria)
             .IsRequired()
             .HasColumnType("int");

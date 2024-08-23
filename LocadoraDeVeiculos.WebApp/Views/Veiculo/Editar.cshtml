@@ -1,4 +1,4 @@
-﻿@using LocadoraDeVeiculos.WebApp.Models
+﻿﻿@using LocadoraDeVeiculos.WebApp.Models
 @model EditarVeiculosViewModel
 
 @{
@@ -86,7 +86,7 @@
                     Gravar
                 </button>
 
-                <a class="btn btn-outline-secondary px-5" href="/Veiculos/listar">
+                <a class="btn btn-outline-secondary px-5" href="/Veiculo/listar">
                     <i class="bi bi-arrow-return-left me-1"></i>
                     Voltar
                 </a>
@@ -104,10 +104,10 @@
             const reader = new FileReader();
 
             reader.onload = function (e) {
-                fotoPreview.src = e.target.result; 
+                fotoPreview.src = e.target.result;
             };
 
-            reader.readAsDataURL(fotoInput.files[0]); 
+            reader.readAsDataURL(fotoInput.files[0]);
         } else {
             fotoPreview.src = "@(Model.ImagemEmBytes != null ? $"data:{Model.TipoDaImagem};base64,{Convert.ToBase64String(Model.ImagemEmBytes)}" : Url.Content("~/img/carro.jpg"))";
         }

@@ -3,6 +3,7 @@ using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloUsuario;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.Infra.Orm.ModuloGrupoDeAutomoveis;
+using LocadoraDeVeiculos.Infra.Orm.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.Infra.Orm.ModuloVeiculos;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +37,7 @@ public class LocadoraDeVeiculosDbContext : IdentityDbContext<Usuario, Perfil, in
     {
         modelBuilder.ApplyConfiguration(new MapeadorGrupoDeAutomoveisEmOrm());
         modelBuilder.ApplyConfiguration(new MapeadorVeiculoEmOrm());
-        modelBuilder.Ignore<PlanoDeCobranca>();
+        modelBuilder.ApplyConfiguration(new MapeadorPlanoDeCobrancaEmOrm());
 
         base.OnModelCreating(modelBuilder);
     }
