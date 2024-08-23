@@ -1,9 +1,7 @@
 ﻿using FluentResults;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
-using Microsoft.AspNetCore.Http;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
-
 public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositorioGrupoDeAutomoveis repositorioGrupo)
 {
     public Result<Veiculo> Inserir(Veiculo registro, int grupoId)
@@ -32,17 +30,25 @@ public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositori
         if (registro is null)
             return Result.Fail("O veículo não foi encontrado!");
 
-        var grupoSelecionado = repositorioGrupo
-            .SelecionarPorId(grupoId);
+        var grupoSelecionado = repositorioGrupo.SelecionarPorId(grupoId);
 
         if (grupoSelecionado is null)
             return Result.Fail("O grupo não foi selecionado!");
 
         registro.GrupoDeAutomoveis = grupoSelecionado;
+        registro.Placa = registroAtualizado.Placa;
+        registro.Marca = registroAtualizado.Marca;
+        registro.Cor = registroAtualizado.Cor;
+        registro.Modelo = registroAtualizado.Modelo;
+        registro.TipoCombustivel = registroAtualizado.TipoCombustivel;
+        registro.CapacidadeCombustivel = registroAtualizado.CapacidadeCombustivel;
+        registro.Ano = registroAtualizado.Ano;
+        registro.ImagemEmBytes = registroAtualizado.ImagemEmBytes;
+        registro.TipoDaImagem = registroAtualizado.TipoDaImagem;
 
         var erros = registro.Validar();
-        if (erros.Count != 0)
-            return Result.Fail(erros[0]);
+            if (erros.Count != 0)
+                return Result.Fail(erros[0]);
 
         repositorioVeiculos.Editar(registro);
 

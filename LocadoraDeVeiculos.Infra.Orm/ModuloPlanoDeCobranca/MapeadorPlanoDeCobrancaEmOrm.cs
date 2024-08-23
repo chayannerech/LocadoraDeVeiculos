@@ -2,34 +2,57 @@ using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace LocadoraDeVeiculos.Infra.Orm.ModuloPlanoDeCobranca;
-
 public class MapeadorPlanoDeCobrancaEmOrm : IEntityTypeConfiguration<PlanoDeCobranca>
 {
-    public void Configure(EntityTypeBuilder<PlanoDeCobranca> sBuilder)
+    public void Configure(EntityTypeBuilder<PlanoDeCobranca> pBuilder)
     {
-        sBuilder.ToTable("TBPlanoDeCobranca");
+        pBuilder.ToTable("TBPlanoDeCobranca");
 
-        sBuilder.Property(s => s.Id)
+        pBuilder.Property(p => p.Id)
             .IsRequired()
             .ValueGeneratedOnAdd();
 
-        sBuilder.Property(s => s.Nome)
+        pBuilder.HasOne(p => p.GrupoDeAutomoveis)
+            .WithMany(g => g.Planos)
             .IsRequired()
-            .HasColumnType("varchar(200)");
-
-        sBuilder.HasMany(s => s.Planos)
-            .WithOne(p => p.PlanoDeCobranca)
             .HasForeignKey("Grupo_Id");
 
+        pBuilder.Property(p => p.Categoria)
+            .IsRequired()
+            .HasColumnType("int");
 
-        /*        sBuilder.Property(s => s.UsuarioId)
-                    .IsRequired()
-                    .HasColumnType("int")
-                    .HasColumnName("Usuario_Id");
+        pBuilder.Property(p => p.PrecoDiaria)
+            .IsRequired()
+            .HasColumnType("decimal(18,2)");
 
-                sBuilder.HasOne(g => g.Usuario)
-                    .WithMany()
-                    .HasForeignKey(s => s.UsuarioId)
-                    .OnDelete(DeleteBehavior.NoAction);*/
+        pBuilder.Property(p => p.PrecoKm)
+            .IsRequired()
+            .HasColumnType("decimal(18,2)");
+
+        pBuilder.Property(p => p.KmDisponivel)
+            .IsRequired()
+            .HasColumnType("int");
+
+        pBuilder.Property(p => p.PrecoDiariaControlada)
+            .IsRequired()
+            .HasColumnType("decimal(18,2)");
+
+        pBuilder.Property(p => p.PrecoExtrapolado)
+            .IsRequired()
+            .HasColumnType("decimal(18,2)");
+
+        pBuilder.Property(p => p.PrecoLivre)
+            .IsRequired()
+            .HasColumnType("decimal(18,2)");
+
+    /*        pBuilder.Property(s => s.UsuarioId)
+                .IsRequired()
+                .HasColumnType("int")
+                .HasColumnName("Usuario_Id");
+
+            pBuilder.HasOne(g => g.Usuario)
+                .WithMany()
+                .HasForeignKey(s => s.UsuarioId)
+                .OnDelete(DeleteBehavior.NoAction);*/
     }
 }

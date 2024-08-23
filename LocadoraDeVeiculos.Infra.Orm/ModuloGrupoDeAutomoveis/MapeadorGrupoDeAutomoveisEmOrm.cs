@@ -5,29 +5,29 @@ namespace LocadoraDeVeiculos.Infra.Orm.ModuloGrupoDeAutomoveis;
 
 public class MapeadorGrupoDeAutomoveisEmOrm : IEntityTypeConfiguration<GrupoDeAutomoveis>
 {
-    public void Configure(EntityTypeBuilder<GrupoDeAutomoveis> sBuilder)
+    public void Configure(EntityTypeBuilder<GrupoDeAutomoveis> gBuilder)
     {
-        sBuilder.ToTable("TBGrupoDeAutomoveis");
+        gBuilder.ToTable("TBGrupoDeAutomoveis");
 
-        sBuilder.Property(s => s.Id)
+        gBuilder.Property(g => g.Id)
             .IsRequired()
             .ValueGeneratedOnAdd();
 
-        sBuilder.Property(s => s.Nome)
+        gBuilder.Property(g => g.Nome)
             .IsRequired()
             .HasColumnType("varchar(200)");
 
-        sBuilder.HasMany(s => s.Planos)
+        gBuilder.HasMany(g => g.Planos)
             .WithOne(p => p.GrupoDeAutomoveis)
             .HasForeignKey("Grupo_Id");
 
 
-        /*        sBuilder.Property(s => s.UsuarioId)
+        /*        gBuilder.Property(s => s.UsuarioId)
                     .IsRequired()
                     .HasColumnType("int")
                     .HasColumnName("Usuario_Id");
 
-                sBuilder.HasOne(g => g.Usuario)
+                gBuilder.HasOne(g => g.Usuario)
                     .WithMany()
                     .HasForeignKey(s => s.UsuarioId)
                     .OnDelete(DeleteBehavior.NoAction);*/

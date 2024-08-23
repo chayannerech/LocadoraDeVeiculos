@@ -1,19 +1,19 @@
 ﻿using LocadoraDeVeiculos.Dominio.Compartilhado;
-using LocadoraDeVeiculos.Dominio.Compartilhado.Extensions;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 namespace LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
-
-public class GrupoDeAutomoveis : EntidadeBase
+public class GrupoDeAutomoveis() : EntidadeBase
 {
     public string Nome { get; set; }
     public List<PlanoDeCobranca> Planos { get; set; }
 
-    public GrupoDeAutomoveis() { }
-    public GrupoDeAutomoveis(string nome)
+    public List<string> Validar()
     {
-        Nome = nome.ToTitleCase();
-        Planos = [];
+        List<string> erros = [];
+
+        VerificaNulo(ref erros, Nome, "Nome");
+        return erros;
     }
-    public override string ToString() => Nome;
+
+    public override string ToString() => $"Grupo de {Nome}";
 }
 

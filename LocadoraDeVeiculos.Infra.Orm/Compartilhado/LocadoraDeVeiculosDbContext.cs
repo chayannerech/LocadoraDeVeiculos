@@ -12,6 +12,7 @@ public class LocadoraDeVeiculosDbContext : IdentityDbContext<Usuario, Perfil, in
 {
     public DbSet<GrupoDeAutomoveis> GrupoDeAutomoveis { get; set; }
     public DbSet<Veiculo> Veiculos { get; set; }
+    public DbSet<PlanoDeCobranca> PlanosDeCobranca { get; set; }
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

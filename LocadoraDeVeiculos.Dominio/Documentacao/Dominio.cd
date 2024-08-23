@@ -11,17 +11,18 @@
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca.PlanoDeCobranca">
-    <Position X="3.5" Y="0.5" Width="1.5" />
+    <Position X="3.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CAAIAAAAAAAAAAAAAEAAABEAAAAAAAAAAAAAAABAAAg=</HashCode>
+      <HashCode>CAAIAAAAAAAAAAAgAEAAABEAAAAAAAAAAAAAAABAAAg=</HashCode>
       <FileName>ModuloPlanoDeCobranca\PlanoDeCobranca.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="GrupoDeAutomoveis" />
+      <Property Name="Categoria" />
     </ShowAsAssociation>
   </Class>
   <Class Name="LocadoraDeVeiculos.Dominio.ModuloVeiculos.Veiculo">
-    <Position X="6" Y="0.5" Width="1.5" />
+    <Position X="2.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>IAABABABAEAAAAAEAAAAABAAAEEAAQAAAAgAAAAAAAA=</HashCode>
       <FileName>ModuloVeiculo\Veiculo.cs</FileName>
@@ -30,5 +31,12 @@
       <Property Name="GrupoDeAutomoveis" />
     </ShowAsAssociation>
   </Class>
+  <Enum Name="LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca.CategoriaDePlanoEnum">
+    <Position X="6.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <FileName>ModuloPlanoDeCobranca\CategoriaDePlanoEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>
