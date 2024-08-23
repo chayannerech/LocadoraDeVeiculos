@@ -1,7 +1,5 @@
 ﻿using LocadoraDeVeiculos.Dominio.Compartilhado;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
-using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations.Schema;
 namespace LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 
 public class Veiculos() : EntidadeBase

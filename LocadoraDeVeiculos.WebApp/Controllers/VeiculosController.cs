@@ -151,7 +151,7 @@ public class VeiculosController(VeiculosService servicoVeiculos, GrupoDeAutomove
             return RedirectToAction(nameof(Listar));
         }
 
-        ApresentarMensagemSucesso($"O registro \"{detalhesVeiculosViewModel.Nome}\" foi excluído com sucesso!");
+        ApresentarMensagemSucesso($"O registro \"{detalhesVeiculosViewModel.Placa}\" foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }

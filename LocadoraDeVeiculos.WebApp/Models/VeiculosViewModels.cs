@@ -45,7 +45,6 @@ public class PropriedadesVeiculosViewModel
     public int Ano { get; set; }
 
     public IEnumerable<SelectListItem>? Grupos { get; set; }
-
 }
 
 public class InserirVeiculosViewModel : PropriedadesVeiculosViewModel
@@ -134,6 +133,14 @@ public class AgrupamentoVeiculosPorGrupoViewModel
 public class DetalhesVeiculosViewModel
 {
     public int Id { get; set; }
-    public string Nome { get; set; }
-    public List<PlanoDeCobranca> Planos { get; set; }
+    public int GrupoId { get; set; }
+    public string Placa { get; set; }
+    public string Marca { get; set; }
+    public string Cor { get; set; }
+    public string Modelo { get; set; }
+    public string TipoCombustivel { get; set; }
+    public int CapacidadeCombustivel { get; set; }
+    public int Ano { get; set; }
+    public byte[] ImagemEmBytes { get; set; }
+    public string TipoDaImagem { get; set; }
 }
