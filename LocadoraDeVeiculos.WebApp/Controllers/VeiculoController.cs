@@ -34,8 +34,8 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
         return View(agrupamentosVeiculosVm);
     }
 
-    public IActionResult Inserir() => View(CarregarInformacoes(new InserirVeiculosViewModel()));
 
+    public IActionResult Inserir() => View(CarregarInformacoes(new InserirVeiculosViewModel()));
     [HttpPost]
     public IActionResult Inserir(InserirVeiculosViewModel inserirVeiculosVm)
     {
@@ -68,6 +68,7 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
         return RedirectToAction(nameof(Listar));
     }
 
+
     public IActionResult Editar(int id)
     {
         var resultado = servicoVeiculos.SelecionarPorId(id);
@@ -87,7 +88,6 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
 
         return View(CarregarInformacoes(editarVeiculoVm));
     }
-
     [HttpPost]
     public IActionResult Editar(EditarVeiculosViewModel editarVeiculosVm)
     {
@@ -126,6 +126,7 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
         return RedirectToAction(nameof(Listar));
     }
 
+
     public IActionResult Excluir(int id)
     {
         var resultado = servicoVeiculos.SelecionarPorId(id);
@@ -143,7 +144,6 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
 
         return View(detalhesVeiculosViewModel);
     }
-
     [HttpPost]
     public IActionResult Excluir(DetalhesVeiculosViewModel detalhesVeiculosViewModel)
     {
@@ -160,6 +160,7 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
 
         return RedirectToAction(nameof(Listar));
     }
+
 
     public IActionResult Detalhes(int id)
     {
@@ -180,6 +181,7 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
         return View(detalhesVeiculosViewModel);
     }
 
+    #region Auxiliares
     private InserirVeiculosViewModel? CarregarInformacoes(InserirVeiculosViewModel inserirVeiculosVm)
     {
         var resultadoGrupos = servicoGrupos.SelecionarTodos(UsuarioId.GetValueOrDefault());
@@ -234,4 +236,5 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
         imagem.CopyTo(memoryStream);
         return memoryStream.ToArray();
     }
+    #endregion
 }

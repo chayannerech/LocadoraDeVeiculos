@@ -4,7 +4,6 @@ namespace LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 public class PlanoDeCobranca() : EntidadeBase
 {
     public GrupoDeAutomoveis GrupoDeAutomoveis { get; set; }
-    public CategoriaDePlanoEnum Categoria { get; set; }
     public decimal PrecoDiaria { get; set; } = 0;
     public decimal PrecoKm { get; set; } = 0;
     public int KmDisponivel { get; set; } = 0;
@@ -21,5 +20,5 @@ public class PlanoDeCobranca() : EntidadeBase
 
         return erros;
     }
-    public override string ToString() => $"Plano {Categoria} para o Grupo {GrupoDeAutomoveis}";
+    public override string ToString() => $"Plano para o Grupo {GrupoDeAutomoveis}";
 }

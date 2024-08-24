@@ -12,10 +12,6 @@ public class MapeadorPlanoDeCobrancaEmOrm : IEntityTypeConfiguration<PlanoDeCobr
             .IsRequired()
             .ValueGeneratedOnAdd();
 
-        pBuilder.Property(p => p.Categoria)
-            .IsRequired()
-            .HasColumnType("int");
-
         pBuilder.Property(p => p.PrecoDiaria)
             .IsRequired()
             .HasColumnType("decimal(18,2)");

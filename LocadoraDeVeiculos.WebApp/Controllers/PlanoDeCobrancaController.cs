@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
+using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
-namespace LocadoraDeVeiculos.WebApp.Controllers;
-public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobranca, IMapper mapeador) : WebControllerBase
+using Microsoft.AspNetCore.Mvc.Rendering;
+namespace LocadoraDePlanoDeCobranca.WebApp.Controllers;
+public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobranca, GrupoDeAutomoveisService servicoGrupos, IMapper mapeador) : WebControllerBase
 {
     private readonly IMapper mapeador = mapeador;
     public IActionResult Listar()
@@ -22,8 +24,6 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobr
 
         var registros = resultado.Value;
 
-        registros = [new()];
-
         if (registros.Count == 0)
             ApresentarMensagemSemRegistros();
 
@@ -34,24 +34,31 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobr
         return View(listarPlanoDeCobrancaVm);
     }
 
-    public IActionResult Inserir() => View();
+    public IActionResult Inserir() => View(CarregarInformacoes(new InserirPlanoDeCobrancaViewModel()));
 
     [HttpPost]
     public IActionResult Inserir(InserirPlanoDeCobrancaViewModel inserirPlanoDeCobrancaVm)
     {
         if (!ModelState.IsValid)
-            return View(inserirPlanoDeCobrancaVm);
+            return View(CarregarInformacoes(inserirPlanoDeCobrancaVm));
 
         var novoRegistro = mapeador.Map<PlanoDeCobranca>(inserirPlanoDeCobrancaVm);
 
+        var registrosExistentes = servicoPlanoDeCobranca.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
+
+        if (registrosExistentes.Exists(r => r.GrupoDeAutomoveis.Id == inserirPlanoDeCobrancaVm.GrupoId && r.Categoria == novoRegistro.Categoria))
+        {
+            ApresentarMensagemRegistroExistente();
+            return View(CarregarInformacoes(inserirPlanoDeCobrancaVm));
+        }
+
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
-        var resultado = servicoPlanoDeCobranca.Inserir(novoRegistro);
+        var resultado = servicoPlanoDeCobranca.Inserir(novoRegistro, inserirPlanoDeCobrancaVm.GrupoId);
 
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
-
             return RedirectToAction(nameof(Listar));
         }
 
@@ -151,5 +158,42 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobr
         var detalhesPlanoDeCobrancaViewModel = mapeador.Map<DetalhesPlanoDeCobrancaViewModel>(registro);
 
         return View(detalhesPlanoDeCobrancaViewModel);
+    }
+
+    private InserirPlanoDeCobrancaViewModel? CarregarInformacoes(InserirPlanoDeCobrancaViewModel inserirPlanoDeCobrancaVm)
+    {
+        var resultadoGrupos = servicoGrupos.SelecionarTodos(UsuarioId.GetValueOrDefault());
+
+        if (resultadoGrupos.IsFailed)
+        {
+            ApresentarMensagemFalha(Result.Fail("Falha ao encontrar dados necessários!"));
+
+            return null;
+        }
+
+        var grupos = resultadoGrupos.Value;
+
+        inserirPlanoDeCobrancaVm.Grupos = grupos.Select(g =>
+            new SelectListItem(g.Nome, g.Id.ToString()));
+
+        return inserirPlanoDeCobrancaVm;
+    }
+    private EditarPlanoDeCobrancaViewModel? CarregarInformacoes(EditarPlanoDeCobrancaViewModel editarPlanoDeCobrancaVm)
+    {
+        var resultadoGrupos = servicoGrupos.SelecionarTodos(UsuarioId.GetValueOrDefault());
+
+        if (resultadoGrupos.IsFailed)
+        {
+            ApresentarMensagemFalha(Result.Fail("Falha ao encontrar dados necessários!"));
+
+            return null;
+        }
+
+        var grupos = resultadoGrupos.Value;
+
+        editarPlanoDeCobrancaVm.Grupos = grupos.Select(g =>
+            new SelectListItem(g.Nome, g.Id.ToString()));
+
+        return editarPlanoDeCobrancaVm;
     }
 }
