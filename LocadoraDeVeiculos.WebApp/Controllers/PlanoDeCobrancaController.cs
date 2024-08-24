@@ -147,7 +147,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
             return RedirectToAction(nameof(Listar));
         }
 
-        ApresentarMensagemSucesso($"O registro \"{detalhesPlanoDeCobrancaViewModel.Nome}\" foi excluído com sucesso!");
+        ApresentarMensagemSucesso($"O registro \"Plano para o grupo: {detalhesPlanoDeCobrancaViewModel.GrupoNome}\" foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
