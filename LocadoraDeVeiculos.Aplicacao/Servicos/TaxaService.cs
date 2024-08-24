@@ -31,7 +31,7 @@ public class TaxaService(IRepositorioTaxa repositorioTaxa)
         var registro = repositorioTaxa.SelecionarPorId(registroId);
 
         if (registro is null)
-            return Result.Fail("O grupo de automóveis não foi encontrado!");
+            return Result.Fail("A taxa ou serviço não foi encontrada!");
 
         repositorioTaxa.Excluir(registro);
 
@@ -43,7 +43,7 @@ public class TaxaService(IRepositorioTaxa repositorioTaxa)
         var registro = repositorioTaxa.SelecionarPorId(registroId);
 
         if (registro is null)
-            return Result.Fail("O grupo de automóveis não foi encontrado!");
+            return Result.Fail("A taxa ou serviço não foi encontrada!");
 
         return Result.Ok(registro);
     }

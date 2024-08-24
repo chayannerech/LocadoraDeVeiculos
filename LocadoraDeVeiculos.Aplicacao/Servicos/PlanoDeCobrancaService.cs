@@ -29,7 +29,7 @@ public class PlanoDeCobrancaService(IRepositorioPlanoDeCobranca repositorioPlano
         var registro = repositorioPlano.SelecionarPorId(registroAtualizado.Id);
 
         if (registro is null)
-            return Result.Fail("O grupo de automóveis não foi encontrado!");
+            return Result.Fail("O plano de cobrança não foi encontrado!");
 
         var grupoSelecionado = repositorioGrupo.SelecionarPorId(grupoId);
 
@@ -58,7 +58,7 @@ public class PlanoDeCobrancaService(IRepositorioPlanoDeCobranca repositorioPlano
         var registro = repositorioPlano.SelecionarPorId(registroId);
 
         if (registro is null)
-            return Result.Fail("O grupo de automóveis não foi encontrado!");
+            return Result.Fail("O plano de cobrança não foi encontrado!");
 
         repositorioPlano.Excluir(registro);
 
@@ -70,7 +70,7 @@ public class PlanoDeCobrancaService(IRepositorioPlanoDeCobranca repositorioPlano
         var registro = repositorioPlano.SelecionarPorId(registroId);
 
         if (registro is null)
-            return Result.Fail("O grupo de automóveis não foi encontrado!");
+            return Result.Fail("O plano de cobrança não foi encontrado!");
 
         return Result.Ok(registro);
     }
