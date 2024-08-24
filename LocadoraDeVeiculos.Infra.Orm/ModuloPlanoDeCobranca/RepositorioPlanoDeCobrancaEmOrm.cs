@@ -10,8 +10,21 @@ public class RepositorioPlanoDeCobrancaEmOrm : RepositorioBaseEmOrm<PlanoDeCobra
     protected override DbSet<PlanoDeCobranca> ObterRegistros() 
         => _dbContext.PlanosDeCobranca;
 
+    public PlanoDeCobranca? SelecionarPorId(int id)
+    {
+        return _dbContext.PlanosDeCobranca
+            .Include(s => s.GrupoDeAutomoveis)
+            .FirstOrDefault(s => s.Id == id);
+    }
+
+    public List<PlanoDeCobranca> SelecionarTodos()
+        => [.. _dbContext.PlanosDeCobranca
+            .Include(s => s.GrupoDeAutomoveis)
+            .AsNoTracking()];
+
     public List<PlanoDeCobranca> Filtrar(Func<PlanoDeCobranca, bool> predicate)
         => ObterRegistros()
+            .Include(s => s.GrupoDeAutomoveis)
             .Where(predicate)
             .ToList();
 }

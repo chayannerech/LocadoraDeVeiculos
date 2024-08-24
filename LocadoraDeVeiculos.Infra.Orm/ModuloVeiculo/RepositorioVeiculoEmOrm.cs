@@ -24,6 +24,7 @@ public class RepositorioVeiculoEmOrm : RepositorioBaseEmOrm<Veiculo>, IRepositor
 
     public List<Veiculo> Filtrar(Func<Veiculo, bool> predicate)
         => ObterRegistros()
+            .Include(s => s.GrupoDeAutomoveis)
             .Where(predicate)
             .ToList();
 

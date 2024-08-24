@@ -24,21 +24,29 @@ public class PlanoDeCobrancaService(IRepositorioPlanoDeCobranca repositorioPlano
         return Result.Ok(registro);
     }
 
-    public Result<PlanoDeCobranca> Editar(PlanoDeCobranca registroAtualizado)
+    public Result<PlanoDeCobranca> Editar(PlanoDeCobranca registroAtualizado, int grupoId)
     {
         var registro = repositorioPlano.SelecionarPorId(registroAtualizado.Id);
 
         if (registro is null)
             return Result.Fail("O grupo de automóveis não foi encontrado!");
 
-        registro.GrupoDeAutomoveis = registroAtualizado.GrupoDeAutomoveis;
-        registro.Categoria = registroAtualizado.Categoria;
+        var grupoSelecionado = repositorioGrupo.SelecionarPorId(grupoId);
+
+        if (grupoSelecionado is null)
+            return Result.Fail("O grupo não foi selecionado!");
+
         registro.PrecoDiaria = registroAtualizado.PrecoDiaria;
         registro.PrecoKm = registroAtualizado.PrecoKm;
         registro.KmDisponivel = registroAtualizado.KmDisponivel;
         registro.PrecoDiariaControlada = registroAtualizado.PrecoDiariaControlada;
         registro.PrecoExtrapolado = registroAtualizado.PrecoExtrapolado;
         registro.PrecoLivre = registroAtualizado.PrecoLivre;
+        registro.GrupoDeAutomoveis = grupoSelecionado;
+
+        var erros = registro.Validar();
+        if (erros.Count != 0)
+            return Result.Fail(erros[0]);
 
         repositorioPlano.Editar(registro);
 
@@ -75,7 +83,7 @@ public class PlanoDeCobrancaService(IRepositorioPlanoDeCobranca repositorioPlano
                 return Result.Ok(registros);*/
 
         var registros = repositorioPlano
-            .Filtrar(f => f.Id != 0);
+            .SelecionarTodos();
 
         return Result.Ok(registros);
     }

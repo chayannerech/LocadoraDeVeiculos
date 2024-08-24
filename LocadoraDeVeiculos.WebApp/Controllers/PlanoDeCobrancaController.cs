@@ -2,19 +2,20 @@
 using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
+using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDePlanoDeCobranca.WebApp.Controllers;
-public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobranca, GrupoDeAutomoveisService servicoGrupos, IMapper mapeador) : WebControllerBase
+public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, GrupoDeAutomoveisService servicoGrupos, IMapper mapeador) : WebControllerBase
 {
     private readonly IMapper mapeador = mapeador;
     public IActionResult Listar()
     {
         var resultado =
-            servicoPlanoDeCobranca.SelecionarTodos(UsuarioId.GetValueOrDefault());
+            servicoPlanos.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
         if (resultado.IsFailed)
         {
@@ -34,27 +35,27 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobr
         return View(listarPlanoDeCobrancaVm);
     }
 
-    public IActionResult Inserir() => View(CarregarInformacoes(new InserirPlanoDeCobrancaViewModel()));
 
+    public IActionResult Inserir() => View(CarregarInformacoes(new InserirPlanoDeCobrancaViewModel()));
     [HttpPost]
-    public IActionResult Inserir(InserirPlanoDeCobrancaViewModel inserirPlanoDeCobrancaVm)
+    public IActionResult Inserir(InserirPlanoDeCobrancaViewModel inserirRegistroVm)
     {
         if (!ModelState.IsValid)
-            return View(CarregarInformacoes(inserirPlanoDeCobrancaVm));
+            return View(CarregarInformacoes(inserirRegistroVm));
 
-        var novoRegistro = mapeador.Map<PlanoDeCobranca>(inserirPlanoDeCobrancaVm);
+        var novoRegistro = mapeador.Map<PlanoDeCobranca>(inserirRegistroVm);
 
-        var registrosExistentes = servicoPlanoDeCobranca.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
+        var registrosExistentes = servicoPlanos.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
 
-        if (registrosExistentes.Exists(r => r.GrupoDeAutomoveis.Id == inserirPlanoDeCobrancaVm.GrupoId && r.Categoria == novoRegistro.Categoria))
+        if (registrosExistentes.Exists(r => r.GrupoDeAutomoveis.Id == inserirRegistroVm.GrupoId))
         {
             ApresentarMensagemRegistroExistente();
-            return View(CarregarInformacoes(inserirPlanoDeCobrancaVm));
+            return View(CarregarInformacoes(inserirRegistroVm));
         }
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
-        var resultado = servicoPlanoDeCobranca.Inserir(novoRegistro, inserirPlanoDeCobrancaVm.GrupoId);
+        var resultado = servicoPlanos.Inserir(novoRegistro, inserirRegistroVm.GrupoId);
 
         if (resultado.IsFailed)
         {
@@ -67,38 +68,47 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobr
         return RedirectToAction(nameof(Listar));
     }
 
+
     public IActionResult Editar(int id)
     {
-        var resultado = servicoPlanoDeCobranca.SelecionarPorId(id);
+        var resultado = servicoPlanos.SelecionarPorId(id);
 
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
-
             return RedirectToAction(nameof(Listar));
         }
 
         var registro = resultado.Value;
 
-        var editarPlanoDeCobrancaVm = mapeador.Map<EditarPlanoDeCobrancaViewModel>(registro);
+        var editarPlanoVm = mapeador.Map<EditarPlanoDeCobrancaViewModel>(registro);
 
-        return View(editarPlanoDeCobrancaVm);
+        editarPlanoVm.GrupoId = registro.GrupoDeAutomoveis.Id;
+
+        return View(CarregarInformacoes(editarPlanoVm));
     }
-
     [HttpPost]
-    public IActionResult Editar(EditarPlanoDeCobrancaViewModel editarPlanoDeCobrancaVm)
+    public IActionResult Editar(EditarPlanoDeCobrancaViewModel editarRegistroVm)
     {
         if (!ModelState.IsValid)
-            return View(editarPlanoDeCobrancaVm);
+            return View(editarRegistroVm);
 
-        var registro = mapeador.Map<PlanoDeCobranca>(editarPlanoDeCobrancaVm);
+        var registro = mapeador.Map<PlanoDeCobranca>(editarRegistroVm);
 
-        var resultado = servicoPlanoDeCobranca.Editar(registro);
+        var registroAtual = servicoPlanos.SelecionarPorId(editarRegistroVm.Id).Value;
+        var registrosExistentes = servicoPlanos.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
+
+        if (registrosExistentes.Exists(r => r.GrupoDeAutomoveis.Id == editarRegistroVm.GrupoId && r.GrupoDeAutomoveis.Id != registroAtual.GrupoDeAutomoveis.Id))
+        {
+            ApresentarMensagemRegistroExistente();
+            return View(CarregarInformacoes(editarRegistroVm));
+        }
+
+        var resultado = servicoPlanos.Editar(registro, editarRegistroVm.GrupoId);
 
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
-
             return RedirectToAction(nameof(Listar));
         }
 
@@ -107,9 +117,10 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobr
         return RedirectToAction(nameof(Listar));
     }
 
+
     public IActionResult Excluir(int id)
     {
-        var resultado = servicoPlanoDeCobranca.SelecionarPorId(id);
+        var resultado = servicoPlanos.SelecionarPorId(id);
 
         if (resultado.IsFailed)
         {
@@ -124,11 +135,10 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobr
 
         return View(detalhesPlanoDeCobrancaViewModel);
     }
-
     [HttpPost]
     public IActionResult Excluir(DetalhesPlanoDeCobrancaViewModel detalhesPlanoDeCobrancaViewModel)
     {
-        var resultado = servicoPlanoDeCobranca.Excluir(detalhesPlanoDeCobrancaViewModel.Id);
+        var resultado = servicoPlanos.Excluir(detalhesPlanoDeCobrancaViewModel.Id);
 
         if (resultado.IsFailed)
         {
@@ -142,9 +152,10 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobr
         return RedirectToAction(nameof(Listar));
     }
 
+
     public IActionResult Detalhes(int id)
     {
-        var resultado = servicoPlanoDeCobranca.SelecionarPorId(id);
+        var resultado = servicoPlanos.SelecionarPorId(id);
 
         if (resultado.IsFailed)
         {
@@ -160,6 +171,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobr
         return View(detalhesPlanoDeCobrancaViewModel);
     }
 
+    #region Auxiliares
     private InserirPlanoDeCobrancaViewModel? CarregarInformacoes(InserirPlanoDeCobrancaViewModel inserirPlanoDeCobrancaVm)
     {
         var resultadoGrupos = servicoGrupos.SelecionarTodos(UsuarioId.GetValueOrDefault());
@@ -196,4 +208,5 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanoDeCobr
 
         return editarPlanoDeCobrancaVm;
     }
+    #endregion
 }

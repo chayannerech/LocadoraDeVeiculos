@@ -1,8 +1,8 @@
 ﻿@using LocadoraDeVeiculos.WebApp.Models
-@model InserirPlanoDeCobrancaViewModel
+@model EditarPlanoDeCobrancaViewModel
 
 @{
-    ViewBag.Title = "Inserir novo plano de cobrança";
+    ViewBag.Title = "Editar plano de cobrança";
     List<string> categorias = [ "Diário", "Controlado", "Livre" ];
 }
 
@@ -14,7 +14,7 @@
 
 <div class="col">
     <div class="row gap-3 my-3 my-xl-5">
-        <form asp-action="Inserir">
+        <form asp-action="Editar">
             <div class="col-lg-6 d-grid mb-4">
                 <label class="control-label fw-bold mb-1">Grupo de Automóveis</label>
                 <select class="form-select mb-1" asp-for="GrupoId" asp-items="Model.Grupos">

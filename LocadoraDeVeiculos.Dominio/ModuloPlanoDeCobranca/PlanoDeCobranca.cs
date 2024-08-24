@@ -15,7 +15,6 @@ public class PlanoDeCobranca() : EntidadeBase
     {
         List<string> erros = [];
 
-        VerificaNulo(ref erros, Categoria, "Categoria");
         VerificaNulo(ref erros, GrupoDeAutomoveis, "Grupo de Automóveis");
 
         return erros;
