@@ -7,20 +7,41 @@
 
 <div class="col">
     <div class="row gap-3 my-3 my-xl-5">
-        <form class="col-lg-6 d-grid gap-3" asp-action="Editar">
+        <form class="col-lg-6 d-grid" asp-action="Editar">
             <div>
                 <label class="control-label fw-bold mb-1">Nome</label>
                 <input class="form-control mb-1" asp-for="Nome" />
                 <span class="text-danger fs-6" asp-validation-for="Nome"></span>
             </div>
 
-            <div class="d-flex justify-content-center gap-3 mt-3">
-                <button class="btn btn-secondary px-5">
+            <div>
+                <label class="control-label fw-bold mb-1 mt-3">Valor</label>
+                <input type="number" class="form-control mb-1" asp-for="Preco" />
+                <span class="text-danger fs-6" asp-validation-for="Preco"></span>
+            </div>
+
+            <label class="control-label fw-bold mb-2 mt-4">Método de cobrança</label>
+
+            <div class="d-flex justify-content-center gap-5" style="border: 1px solid #ced4da; border-radius: .25rem; padding: .375rem;">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" asp-for="PrecoFixo" value="true">
+                    <label class="form-check-label">Cobrança fixa</label>
+                </div>
+
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" asp-for="PrecoFixo" value="false">
+                    <label class="form-check-label">Cobrança diária</label>
+                </div>
+            </div>
+            <span class="text-danger fs-6" asp-validation-for="PrecoFixo"></span>
+
+            <div class="d-flex justify-content-center my-5 gap-3">
+                <button class="btn btn-secondary px-5 style=" width: 160px"">
                     <i class="bi bi-floppy-fill me-1"></i>
                     Gravar
                 </button>
 
-                <a class="btn btn-outline-secondary px-5" href="/Taxa/listar">
+                <a class="btn btn-outline-secondary px-5" style="width: 160px" href="/Taxa/listar">
                     <i class="bi bi-arrow-return-left me-1"></i>
                     Voltar
                 </a>

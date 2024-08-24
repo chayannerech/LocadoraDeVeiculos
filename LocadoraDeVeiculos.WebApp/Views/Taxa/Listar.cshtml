@@ -2,7 +2,7 @@
 @model IEnumerable<ListarTaxaViewModel>
 
 @{
-    ViewBag.Title = "Grupos de Automóveis Disponíveis";
+    ViewBag.Title = "Taxas e Serviços";
 }
 
 <div class="col">
@@ -40,6 +40,7 @@
                 </div>
                 <div class="card-body d-grid">
                     <h5 class="card-title">@TaxaVm.Nome</h5>
+                    <p class="card-subtitle">Valor: @TaxaVm.Preco R$</p>
                 </div>
             </div>
         }
