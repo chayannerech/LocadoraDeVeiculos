@@ -1,0 +1,12 @@
+﻿@using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca
+@using LocadoraDeVeiculos.WebApp.Models
+@model DetalhesTaxaViewModel
+
+@{
+    PlanoDeCobranca plano = ViewBag.Plano;
+}
+
+<div class="row gap-3 my-3 my-xl-4">
+    <label class="fs-6"><strong>Grupo de automóvel:</strong> @Model.Nome</label>
+    <label class="fs-6"><strong>Id:</strong> [@Model.Id]</label>
+</div>

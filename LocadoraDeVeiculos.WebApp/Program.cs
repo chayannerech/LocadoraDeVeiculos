@@ -1,11 +1,13 @@
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
+using LocadoraDeVeiculos.Dominio.ModuloTaxa;
 using LocadoraDeVeiculos.Dominio.ModuloUsuario;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.Infra.Orm.Compartilhado;
 using LocadoraDeVeiculos.Infra.Orm.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Infra.Orm.ModuloPlanoDeCobrancas;
+using LocadoraDeVeiculos.Infra.Orm.ModuloTaxa;
 using LocadoraDeVeiculos.Infra.Orm.ModuloVeiculos;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -26,11 +28,13 @@ public class Program
         builder.Services.AddScoped<IRepositorioGrupoDeAutomoveis, RepositorioGrupoDeAutomoveisEmOrm>();
         builder.Services.AddScoped<IRepositorioVeiculo, RepositorioVeiculoEmOrm>();
         builder.Services.AddScoped<IRepositorioPlanoDeCobranca, RepositorioPlanoDeCobrancaEmOrm>();
+        builder.Services.AddScoped<IRepositorioTaxa, RepositorioTaxaEmOrm>();
 
 
         builder.Services.AddScoped<GrupoDeAutomoveisService>();
         builder.Services.AddScoped<VeiculoService>();
         builder.Services.AddScoped<PlanoDeCobrancaService>();
+        builder.Services.AddScoped<TaxaService>();
 
 
         builder.Services.AddAutoMapper( cfg => { cfg.AddMaps(Assembly.GetExecutingAssembly()); });

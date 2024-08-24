@@ -3,40 +3,36 @@
   <Class Name="LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis.GrupoDeAutomoveis">
     <Position X="1" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAgEAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAQAAAAAAAAEAAAA=</HashCode>
       <FileName>ModuloGrupoDeAutomoveis\GrupoDeAutomoveis.cs</FileName>
     </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Property Name="Planos" />
-    </ShowAsCollectionAssociation>
   </Class>
   <Class Name="LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca.PlanoDeCobranca">
-    <Position X="3.75" Y="0.5" Width="1.5" />
+    <Position X="4.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CAAIAAAAAAAAAAAgAEAAABEAAAAAAAAAAAAAAABAAAg=</HashCode>
+      <HashCode>CAAIAAAAAAAAAAAEAEAAABEAAAAAAQAAAAAAAABAAAg=</HashCode>
       <FileName>ModuloPlanoDeCobranca\PlanoDeCobranca.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="GrupoDeAutomoveis" />
-      <Property Name="Categoria" />
     </ShowAsAssociation>
   </Class>
   <Class Name="LocadoraDeVeiculos.Dominio.ModuloVeiculos.Veiculo">
     <Position X="2.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAABABABAEAAAAAEAAAAABAAAEEAAQAAAAgAAAAAAAA=</HashCode>
+      <HashCode>IAABABgBAEAAAAAEAAAAABAAAEEAAQAAAAgCAAAAAAA=</HashCode>
       <FileName>ModuloVeiculo\Veiculo.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="GrupoDeAutomoveis" />
     </ShowAsAssociation>
   </Class>
-  <Enum Name="LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca.CategoriaDePlanoEnum">
-    <Position X="6.25" Y="0.5" Width="1.5" />
+  <Class Name="LocadoraDeVeiculos.Dominio.ModuloTaxa.Taxa">
+    <Position X="6.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAEAAAAAAA=</HashCode>
-      <FileName>ModuloPlanoDeCobranca\CategoriaDePlanoEnum.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAQAAAAAEAAEAAIA=</HashCode>
+      <FileName>ModuloTaxa\Taxa.cs</FileName>
     </TypeIdentifier>
-  </Enum>
+  </Class>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

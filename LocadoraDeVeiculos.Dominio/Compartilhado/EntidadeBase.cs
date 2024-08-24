@@ -12,7 +12,12 @@ public abstract class EntidadeBase
     }
     protected void VerificaNulo(ref List<string> erros, int campoTestado, string mostraCampo)
     {
-        if (string.IsNullOrEmpty(campoTestado.ToString()))
+        if (campoTestado == 0)
+            erros.Add($"\nO campo \"{mostraCampo}\" é obrigatório. Tente novamente ");
+    }
+    protected void VerificaNulo(ref List<string> erros, decimal campoTestado, string mostraCampo)
+    {
+        if (campoTestado == 0)
             erros.Add($"\nO campo \"{mostraCampo}\" é obrigatório. Tente novamente ");
     }
     protected void VerificaNulo(ref List<string> erros, EntidadeBase campoTestado, string mostraCampo)

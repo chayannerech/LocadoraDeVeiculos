@@ -3,8 +3,6 @@ using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioGrupoDeAutomoveis)
 {
-    private readonly IRepositorioGrupoDeAutomoveis repositorioGrupoDeAutomoveis = repositorioGrupoDeAutomoveis;
-
     public Result<GrupoDeAutomoveis> Inserir(GrupoDeAutomoveis registro)
     {
         repositorioGrupoDeAutomoveis.Inserir(registro);

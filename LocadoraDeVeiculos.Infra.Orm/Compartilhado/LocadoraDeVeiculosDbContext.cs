@@ -1,9 +1,11 @@
 ﻿using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
+using LocadoraDeVeiculos.Dominio.ModuloTaxa;
 using LocadoraDeVeiculos.Dominio.ModuloUsuario;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.Infra.Orm.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Infra.Orm.ModuloPlanoDeCobranca;
+using LocadoraDeVeiculos.Infra.Orm.ModuloTaxa;
 using LocadoraDeVeiculos.Infra.Orm.ModuloVeiculos;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +16,7 @@ public class LocadoraDeVeiculosDbContext : IdentityDbContext<Usuario, Perfil, in
     public DbSet<GrupoDeAutomoveis> GrupoDeAutomoveis { get; set; }
     public DbSet<Veiculo> Veiculos { get; set; }
     public DbSet<PlanoDeCobranca> PlanosDeCobranca { get; set; }
+    public DbSet<Taxa> Taxas { get; set; }
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -38,6 +41,7 @@ public class LocadoraDeVeiculosDbContext : IdentityDbContext<Usuario, Perfil, in
         modelBuilder.ApplyConfiguration(new MapeadorGrupoDeAutomoveisEmOrm());
         modelBuilder.ApplyConfiguration(new MapeadorVeiculoEmOrm());
         modelBuilder.ApplyConfiguration(new MapeadorPlanoDeCobrancaEmOrm());
+        modelBuilder.ApplyConfiguration(new MapeadorTaxaEmOrm());
 
         base.OnModelCreating(modelBuilder);
     }

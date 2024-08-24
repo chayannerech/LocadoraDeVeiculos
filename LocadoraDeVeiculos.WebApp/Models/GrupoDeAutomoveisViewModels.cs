@@ -9,13 +9,9 @@ public class InserirGrupoDeAutomoveisViewModel
     public string Nome { get; set; }
 }
 
-public class EditarGrupoDeAutomoveisViewModel
+public class EditarGrupoDeAutomoveisViewModel : InserirGrupoDeAutomoveisViewModel
 {
     public int Id { get; set; }
-
-    [Required(ErrorMessage = "O nome é obrigatório")]
-    [MinLength(6, ErrorMessage = "O nome deve conter ao menos 6 caracteres")]
-    public string Nome { get; set; }
 }
 
 public class ListarGrupoDeAutomoveisViewModel
