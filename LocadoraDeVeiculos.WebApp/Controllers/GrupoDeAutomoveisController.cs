@@ -6,7 +6,6 @@ using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Numerics;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, VeiculoService servicoVeiculo, PlanoDeCobrancaService servicoPlano, IMapper mapeador) : WebControllerBase
 {
@@ -182,6 +181,10 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
         }
 
         var registro = resultado.Value;
+
+        var planoAssociado = servicoPlano.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Find(p => p.GrupoDeAutomoveis.Id == registro.Id);
+
+        ViewBag.Plano = planoAssociado;
 
         var detalhesGrupoDeAutomoveisViewModel = mapeador.Map<DetalhesGrupoDeAutomoveisViewModel>(registro);
 

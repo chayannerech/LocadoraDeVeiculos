@@ -1,31 +1,48 @@
-﻿@using LocadoraDeVeiculos.WebApp.Models
+﻿@using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca
+@using LocadoraDeVeiculos.WebApp.Models
 @model DetalhesGrupoDeAutomoveisViewModel
+
+@{
+    PlanoDeCobranca plano = ViewBag.Plano;
+    var existemPlanos = plano is null ? "Ainda não existem planos associados" : "";
+}
 
 <div class="row gap-3 my-3 my-xl-4">
     <label class="fs-6"><strong>Grupo de automóvel:</strong> @Model.Nome</label>
     <label class="fs-6"><strong>Id:</strong> [@Model.Id]</label>
 
-    <label class="fs-6"><strong>Planos existentes: </strong>
+    <label class="fs-6"><strong>Planos: @existemPlanos</strong></label>
+
     @{
-        var planos = "Ainda não existem planos associados";
-
-        //Isto é só um PlaceHolder pro negócio final <3
-
-        if (Model.Planos.Count != 0)
+        if (plano is not null)
         {
-            planos = "";
-
-            foreach (var plano in Model.Planos)
-            {
-                planos = $"Plano: oi, Valor: 50";
-                @planos
-            }
-        }
-        else
-        {
-            @planos
+            <div class="card col-lg-4 col-xl-3 shadow-sm">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                    <h6 class="m-0">Diário</h6>
+                </div>
+                <div class="card-body d-grid">
+                    <p class="card-title">Preço diária: @plano.PrecoDiaria R$</p>
+                    <p class="card-title">Preço Km: @plano.PrecoKm R$</p>
+                </div>
+            </div>
+            <div class="card col-lg-4 col-xl-3 shadow-sm">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                    <h6 class="m-0">Controlado</h6>
+                </div>
+                <div class="card-body d-grid">
+                    <p class="card-title">Km disponíveis: @plano.KmDisponivel km</p>
+                    <p class="card-title">Preço diária: @plano.PrecoKm R$</p>
+                    <p class="card-title">Preço Km excedido: @plano.PrecoExtrapolado R$</p>
+                </div>
+            </div>
+            <div class="card col-lg-4 col-xl-3 shadow-sm">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                    <h6 class="m-0">Livre</h6>
+                </div>
+                <div class="card-body d-grid">
+                    <p class="card-title">Preço: @plano.PrecoLivre R$</p>
+                </div>
+            </div>
         }
     }
-    </label>
-
 </div>
