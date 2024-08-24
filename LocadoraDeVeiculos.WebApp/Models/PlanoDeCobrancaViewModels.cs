@@ -46,6 +46,8 @@ public class InserirPlanoDeCobrancaViewModel
     [Range(1, 10000, ErrorMessage = "O preço deve ser maior que zero")]
     public decimal PrecoLivre { get; set; } = 0;
 
+    public List<string> Categorias = new(Enum.GetNames(typeof(CategoriaDePlanoEnum)));
+
     public IEnumerable<SelectListItem>? Grupos { get; set; }
 }
 
