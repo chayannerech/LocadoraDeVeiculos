@@ -1,17 +1,19 @@
 ﻿using AutoMapper;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
+using LocadoraDeVeiculos.Dominio.Compartilhado.Extensions;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Numerics;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
-public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDeAutomoveis, VeiculoService servicoVeiculo, IMapper mapeador) : WebControllerBase
+public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, VeiculoService servicoVeiculo, PlanoDeCobrancaService servicoPlano, IMapper mapeador) : WebControllerBase
 {
     private readonly IMapper mapeador = mapeador;
     public IActionResult Listar()
     {
-        var resultado = servicoGrupoDeAutomoveis.SelecionarTodos(UsuarioId.GetValueOrDefault());
+        var resultado = servicoGrupo.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
         if (resultado.IsFailed)
         {
@@ -34,24 +36,24 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
     public IActionResult Inserir() => View();
 
     [HttpPost]
-    public IActionResult Inserir(InserirGrupoDeAutomoveisViewModel inserirGrupoDeAutomoveisVm)
+    public IActionResult Inserir(InserirGrupoDeAutomoveisViewModel inserirRegistroVm)
     {
         if (!ModelState.IsValid)
-            return View(inserirGrupoDeAutomoveisVm);
+            return View(inserirRegistroVm);
 
-        var novoRegistro = mapeador.Map<GrupoDeAutomoveis>(inserirGrupoDeAutomoveisVm);
+        var novoRegistro = mapeador.Map<GrupoDeAutomoveis>(inserirRegistroVm);
 
-        var registrosExistentes = servicoGrupoDeAutomoveis.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
+        var registrosExistentes = servicoGrupo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
 
-        if (registrosExistentes.Exists(r => r.Nome == novoRegistro.Nome))
+        if (registrosExistentes.Exists(r => r.Nome.Validation() == novoRegistro.Nome.Validation()))
         {
             ApresentarMensagemRegistroExistente();
-            return View(inserirGrupoDeAutomoveisVm); 
+            return View(inserirRegistroVm); 
         }
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
-        var resultado = servicoGrupoDeAutomoveis.Inserir(novoRegistro);
+        var resultado = servicoGrupo.Inserir(novoRegistro);
 
         if (resultado.IsFailed)
         {
@@ -66,7 +68,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
     public IActionResult Editar(int id)
     {
-        var resultado = servicoGrupoDeAutomoveis.SelecionarPorId(id);
+        var resultado = servicoGrupo.SelecionarPorId(id);
 
         if (resultado.IsFailed)
         {
@@ -81,24 +83,26 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
         return View(editarGrupoDeAutomoveisVm);
     }
-
     [HttpPost]
-    public IActionResult Editar(EditarGrupoDeAutomoveisViewModel editarGrupoDeAutomoveisVm)
+    public IActionResult Editar(EditarGrupoDeAutomoveisViewModel editarRegistroVm)
     {
         if (!ModelState.IsValid)
-            return View(editarGrupoDeAutomoveisVm);
+            return View(editarRegistroVm);
 
-        var registro = mapeador.Map<GrupoDeAutomoveis>(editarGrupoDeAutomoveisVm);
+        var registro = mapeador.Map<GrupoDeAutomoveis>(editarRegistroVm);
 
-        var registrosExistentes = servicoGrupoDeAutomoveis.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
+        var registroAtual = servicoGrupo.SelecionarPorId(editarRegistroVm.Id).Value;
+        var registrosExistentes = servicoGrupo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
 
-        if (registrosExistentes.Exists(r => r.Nome == registro.Nome))
+        if (registrosExistentes.Exists(r => 
+            r.Nome.Validation() == registro.Nome.Validation() && 
+            r.Nome.Validation() != registroAtual.Nome.Validation()))
         {
             ApresentarMensagemRegistroExistente();
-            return View(editarGrupoDeAutomoveisVm);
+            return View(editarRegistroVm);
         }
 
-        var resultado = servicoGrupoDeAutomoveis.Editar(registro);
+        var resultado = servicoGrupo.Editar(registro);
 
         if (resultado.IsFailed)
         {
@@ -114,7 +118,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
     public IActionResult Excluir(int id)
     {
-        var resultado = servicoGrupoDeAutomoveis.SelecionarPorId(id);
+        var resultado = servicoGrupo.SelecionarPorId(id);
 
         if (resultado.IsFailed)
         {
@@ -127,9 +131,18 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
         var detalhesGrupoDeAutomoveisViewModel = mapeador.Map<DetalhesGrupoDeAutomoveisViewModel>(registro);
 
-        foreach(var veiculo in servicoVeiculo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value)
+        foreach (var veiculo in servicoVeiculo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value)
         {
             if (veiculo.GrupoDeAutomoveis.Id == registro.Id)
+            {
+                ApresentarMensagemImpossivelExcluir();
+                return RedirectToAction(nameof(Listar));
+            }
+        }
+
+        foreach (var plano in servicoPlano.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value)
+        {
+            if (plano.GrupoDeAutomoveis.Id == registro.Id)
             {
                 ApresentarMensagemImpossivelExcluir();
                 return RedirectToAction(nameof(Listar));
@@ -142,8 +155,8 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
     [HttpPost]
     public IActionResult Excluir(DetalhesGrupoDeAutomoveisViewModel detalhesGrupoDeAutomoveisViewModel)
     {
-        var nome = servicoGrupoDeAutomoveis.SelecionarPorId(detalhesGrupoDeAutomoveisViewModel.Id).Value.Nome;
-        var resultado = servicoGrupoDeAutomoveis.Excluir(detalhesGrupoDeAutomoveisViewModel.Id);
+        var nome = servicoGrupo.SelecionarPorId(detalhesGrupoDeAutomoveisViewModel.Id).Value.Nome;
+        var resultado = servicoGrupo.Excluir(detalhesGrupoDeAutomoveisViewModel.Id);
 
         if (resultado.IsFailed)
         {
@@ -159,7 +172,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupoDe
 
     public IActionResult Detalhes(int id)
     {
-        var resultado = servicoGrupoDeAutomoveis.SelecionarPorId(id);
+        var resultado = servicoGrupo.SelecionarPorId(id);
 
         if (resultado.IsFailed)
         {
