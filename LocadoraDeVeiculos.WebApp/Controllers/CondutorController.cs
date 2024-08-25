@@ -36,7 +36,7 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
     public IActionResult Inserir() => View(CarregarInformacoes(new InserirCondutorViewModel()));
     [HttpPost]
     public IActionResult Inserir(InserirCondutorViewModel inserirRegistroVm)
-    {
+    {   
         if (inserirRegistroVm.ClienteId != 0)
         {
             var clienteSelecionado = servicoClientes.SelecionarPorId(inserirRegistroVm.ClienteId).Value;

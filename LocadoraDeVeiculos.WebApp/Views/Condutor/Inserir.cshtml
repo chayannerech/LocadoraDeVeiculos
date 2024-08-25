@@ -95,10 +95,36 @@
             $('#cpf').mask('000.000.000-00');
             $('#cnh').mask('00000000000');
 
+            $('#clienteSelect').change(function () {
+                if (this.selected) {
+                    $('#nome').val(this.data('nome'));
+                    $('#nome').prop('disabled', true);
+                    $('#email').val(this.data('email'));
+                    $('#email').prop('disabled', true);
+                    $('#cnh').val(this.data('cnh'));
+                    $('#cnh').prop('disabled', true);
+                    $('#telefone').val(this.data('telefone'));
+                    $('#telefone').prop('disabled', true);
+                    $('#cpf').val(this.data('cpf'));
+                    $('#cpf').prop('disabled', true);
+                } else {
+                    $('#check').prop('checked', false);
+                    $('#nome').val('');
+                    $('#nome').prop('disabled', false);
+                    $('#email').val('');
+                    $('#email').prop('disabled', false);
+                    $('#cnh').val('');
+                    $('#cnh').prop('disabled', false);
+                    $('#telefone').val('');
+                    $('#telefone').prop('disabled', false);
+                    $('#cpf').val('');
+                    $('#cpf').prop('disabled', false);
+                }
+            });
+
             $('#check').change(function () {
                 if (this.checked) {
                     const clienteSelecionado = $('#clienteSelect option:selected');
-                    $('#check').prop('disabled', false);
                     $('#nome').val(clienteSelecionado.data('nome'));
                     $('#nome').prop('disabled', true);
                     $('#email').val(clienteSelecionado.data('email'));
