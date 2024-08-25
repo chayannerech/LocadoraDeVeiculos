@@ -1,64 +1,28 @@
-using LocadoraDeVeiculos.Dominio.ModuloCliente;
+using LocadoraDeVeiculos.Dominio.ModuloConfiguracao;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-namespace LocadoraDeVeiculos.Infra.Orm.ModuloCliente;
-public class MapeadorClienteEmOrm : IEntityTypeConfiguration<Cliente>
+namespace LocadoraDeVeiculos.Infra.Orm.ModuloConfiguracao;
+public class MapeadorConfiguracaoEmOrm : IEntityTypeConfiguration<Configuracao>
 {
-    public void Configure(EntityTypeBuilder<Cliente> cBuilder)
+    public void Configure(EntityTypeBuilder<Configuracao> cBuilder)
     {
-        cBuilder.ToTable("TBCliente");
+        cBuilder.ToTable("TBConfiguracao");
 
-        cBuilder.Property(c => c.Id)
+        cBuilder.Property(c => c.Gasolina)
             .IsRequired()
-            .ValueGeneratedOnAdd();
+            .HasColumnType("decimal(18,2)");
 
-        cBuilder.Property(c => c.Nome)
+        cBuilder.Property(c => c.Diesel)
             .IsRequired()
-            .HasColumnType("varchar(200)");
+            .HasColumnType("decimal(18,2)");
 
-        cBuilder.Property(c => c.Email)
+        cBuilder.Property(c => c.Etanol)
             .IsRequired()
-            .HasColumnType("varchar(200)");
+            .HasColumnType("decimal(18,2)");
 
-        cBuilder.Property(c => c.Telefone)
+        cBuilder.Property(c => c.GNV)
             .IsRequired()
-            .HasColumnType("varchar(200)");
-
-        cBuilder.Property(c => c.Documento)
-            .IsRequired()
-            .HasColumnType("varchar(200)");
-
-        cBuilder.Property(c => c.RG)
-            .IsRequired()
-            .HasColumnType("varchar(200)");
-
-        cBuilder.Property(c => c.CNH)
-            .IsRequired()
-            .HasColumnType("varchar(200)");
-
-        cBuilder.Property(c => c.Estado)
-            .IsRequired()
-            .HasColumnType("varchar(200)");
-
-        cBuilder.Property(c => c.Cidade)
-            .IsRequired()
-            .HasColumnType("varchar(200)");
-
-        cBuilder.Property(c => c.Bairro)
-            .IsRequired()
-            .HasColumnType("varchar(200)");
-
-        cBuilder.Property(c => c.Rua)
-            .IsRequired()
-            .HasColumnType("varchar(200)");
-
-        cBuilder.Property(c => c.Numero)
-            .IsRequired()
-            .HasColumnType("int");
-
-        cBuilder.Property(c => c.PessoaFisica)
-            .IsRequired()
-            .HasColumnType("bit");
+            .HasColumnType("decimal(18,2)");
 
 
         /*        cBuilder.Property(s => s.UsuarioId)

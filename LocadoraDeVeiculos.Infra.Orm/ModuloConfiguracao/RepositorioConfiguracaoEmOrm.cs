@@ -1,16 +1,28 @@
-﻿using LocadoraDeVeiculos.Dominio.ModuloCliente;
+﻿using LocadoraDeVeiculos.Dominio.ModuloConfiguracao;
+using LocadoraDeVeiculos.Dominio.ModuloConfiguracaoe;
 using LocadoraDeVeiculos.Infra.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
-namespace LocadoraDeVeiculos.Infra.Orm.ModuloCliente;
-
-public class RepositorioClienteEmOrm : RepositorioBaseEmOrm<Cliente>, IRepositorioCliente
+namespace LocadoraDeVeiculos.Infra.Orm.ModuloConfiguracao;
+public class RepositorioConfiguracaoEmOrm(LocadoraDeVeiculosDbContext _dbContext) : IRepositorioConfiguracao
 {
-    public RepositorioClienteEmOrm(LocadoraDeVeiculosDbContext dbContext) : base(dbContext) { }
+    public void Inserir(Configuracao entidade)
+    {
+        ObterRegistros().Add(entidade);
 
-    protected override DbSet<Cliente> ObterRegistros() 
-        => _dbContext.Clientes;
+        _dbContext.SaveChanges();
+    }
 
-    public List<Cliente> Filtrar(Func<Cliente, bool> predicate)
+    public void Editar(Configuracao entidade)
+    {
+        ObterRegistros().Update(entidade);
+
+        _dbContext.SaveChanges();
+    }
+
+    protected DbSet<Configuracao> ObterRegistros() 
+        => _dbContext.Configuracoes;
+
+    public List<Configuracao> Filtrar(Func<Configuracao, bool> predicate)
         => ObterRegistros()
             .Where(predicate)
             .ToList();
