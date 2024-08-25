@@ -30,4 +30,9 @@ public abstract class EntidadeBase
         if (campoTestado < DateTime.Now)
             erros.Add($"{mostraCampo}");
     }
+    protected void VerificaDataInferior(ref List<string> erros, DateTime campoTestado, DateTime campoTestado2, string mostraCampo)
+    {
+        if (campoTestado < campoTestado2)
+            erros.Add($"{mostraCampo}");
+    }
 }
