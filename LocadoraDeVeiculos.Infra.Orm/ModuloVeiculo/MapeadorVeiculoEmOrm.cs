@@ -51,7 +51,8 @@ public class MapeadorVeiculoEmOrm : IEntityTypeConfiguration<Veiculo>
         vBuilder.HasOne(v => v.GrupoDeAutomoveis)
             .WithMany()
             .HasForeignKey("Grupo_Id")
-            .IsRequired();
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
 
         /*        vBuilder.Property(s => s.UsuarioId)
                     .IsRequired()

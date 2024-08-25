@@ -6,11 +6,18 @@
 }
 
 <div class="col">
-    <div class="row gap-3 my-3 my-xl-5">
+    <div class="row gap-3 my-3 my-xl-4">
         <form class="col-lg-6 d-grid" asp-action="Editar">
+            <div class="d-flex align-items-center">
+                <label class="control-label fw-bold me-4">Serviço de Seguro?</label>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="seguro">
+                </div>
+            </div>
+
             <div>
-                <label class="control-label fw-bold mb-1">Nome</label>
-                <input class="form-control mb-1" asp-for="Nome" />
+                <label class="control-label fw-bold mb-1 mt-4">Nome</label>
+                <input class="form-control mb-1" asp-for="Nome" id="nome" />
                 <span class="text-danger fs-6" asp-validation-for="Nome"></span>
             </div>
 
@@ -24,24 +31,24 @@
 
             <div class="d-flex justify-content-center gap-5" style="border: 1px solid #ced4da; border-radius: .25rem; padding: .375rem;">
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" asp-for="PrecoFixo" value="true">
+                    <input class="form-check-input" type="radio" asp-for="PrecoFixo" value="true" id="fixo">
                     <label class="form-check-label">Cobrança fixa</label>
                 </div>
 
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" asp-for="PrecoFixo" value="false">
+                    <input class="form-check-input" type="radio" asp-for="PrecoFixo" value="false" id="diario">
                     <label class="form-check-label">Cobrança diária</label>
                 </div>
             </div>
             <span class="text-danger fs-6" asp-validation-for="PrecoFixo"></span>
 
             <div class="d-flex justify-content-center my-5 gap-3">
-                <button class="btn btn-secondary px-5 style=" width: 160px"">
+                <button class="btn btn-secondary px-5" style="width: 170px">
                     <i class="bi bi-floppy-fill me-1"></i>
                     Gravar
                 </button>
 
-                <a class="btn btn-outline-secondary px-5" style="width: 160px" href="/Taxa/listar">
+                <a class="btn btn-outline-secondary px-5" style="width: 170px" href="/Taxa/listar">
                     <i class="bi bi-arrow-return-left me-1"></i>
                     Voltar
                 </a>
@@ -49,3 +56,41 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            function handleCheckboxState(isChecked) {
+                if (isChecked) {
+                    $('#fixo').prop('disabled', true);
+                    $('#diario').prop('checked', true);
+                    $('#seguro').prop('checked', true);
+                } else {
+                    $('#fixo').prop('disabled', false);
+                    $('#diario').prop('checked', false);
+                    $('#seguro').prop('checked', false);
+                }
+            }
+
+            $('#nome').keyup(function () {
+                const startsWithSeguro = $(this).val().toLowerCase().startsWith('seguro');
+                handleCheckboxState(startsWithSeguro);
+            });
+
+            $('#seguro').change(function () {
+                if (this.checked) {
+                    $('#nome').val('Seguro');
+                    handleCheckboxState(true);
+                } else {
+                    $('#fixo').prop('disabled', false);
+                    $('#diario').prop('checked', false);
+                    $('#nome').val('');
+                }
+            });
+
+            const nomeInicial = $('#nome').val().toLowerCase();
+            handleCheckboxState(nomeInicial.startsWith('seguro'));
+        });
+    </script>
+}

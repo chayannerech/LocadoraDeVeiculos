@@ -20,7 +20,8 @@
                                     data-email="@cliente.Email"
                                     data-telefone="@cliente.Telefone"
                                     data-cnh="@cliente.CNH"
-                                    data-cpf="@cliente.Documento">
+                                    data-cpf="@cliente.Documento"
+                                    data-pessoafisica="@cliente.PessoaFisica">
                                 @cliente.Nome
                             </option>
                         }
@@ -28,9 +29,11 @@
                     <span class="text-danger fs-6" asp-validation-for="ClienteId"></span>
                 </div>
 
-                <div class="form-check ms-3 mb-1 mt-2">
-                    <input class="form-check-input" type="checkbox" asp-for="Check" value="true" id="check">
-                    <label class="form-check-label" for="check">O cliente é o condutor</label>
+                <div class="d-flex align-items-center mt-2 ms-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" asp-for="Check" value="true" id="check" disabled>
+                        <label class="form-check-label" for="check">O cliente é o condutor?</label>
+                    </div>
                 </div>
 
                 <div>
@@ -95,59 +98,58 @@
             $('#cpf').mask('000.000.000-00');
             $('#cnh').mask('00000000000');
 
-            $('#clienteSelect').change(function () {
-                if (this.selected) {
-                    $('#nome').val(this.data('nome'));
-                    $('#nome').prop('disabled', true);
-                    $('#email').val(this.data('email'));
-                    $('#email').prop('disabled', true);
-                    $('#cnh').val(this.data('cnh'));
-                    $('#cnh').prop('disabled', true);
-                    $('#telefone').val(this.data('telefone'));
-                    $('#telefone').prop('disabled', true);
-                    $('#cpf').val(this.data('cpf'));
-                    $('#cpf').prop('disabled', true);
-                } else {
+            const fields = ['#nome', '#email', '#telefone', '#cpf', '#cnh'];
+
+            function clearFields() {
+                fields.forEach(function (field) {
+                    $(field).val('').prop('disabled', false);
+                });
+            }
+
+            function updateFieldsWithClientData() {
+                const clienteSelecionado = $('#clienteSelect option:selected');
+                $('#nome').val(clienteSelecionado.data('nome'));
+                $('#email').val(clienteSelecionado.data('email'));
+                $('#telefone').val(clienteSelecionado.data('telefone'));
+                $('#cpf').val(clienteSelecionado.data('cpf'));
+                $('#cnh').val(clienteSelecionado.data('cnh'));
+            }
+
+            function toggleCheckbox() {
+                const clienteSelecionado = $('#clienteSelect option:selected');
+                const isPessoaFisica = clienteSelecionado.data('pessoafisica') === true || clienteSelecionado.data('pessoafisica') === "True";
+
+                if (isPessoaFisica) {
                     $('#check').prop('disabled', false);
-                    $('#check').prop('checked', false);
-                    $('#nome').val('');
-                    $('#nome').prop('disabled', false);
-                    $('#email').val('');
-                    $('#email').prop('disabled', false);
-                    $('#cnh').val('');
-                    $('#cnh').prop('disabled', false);
-                    $('#telefone').val('');
-                    $('#telefone').prop('disabled', false);
-                    $('#cpf').val('');
-                    $('#cpf').prop('disabled', false);
+                } else {
+                    $('#check').prop('disabled', true).prop('checked', false);
+                    clearFields();
                 }
+            }
+
+            toggleCheckbox();
+
+            $('#clienteSelect').change(function () {
+                clearFields();
+                toggleCheckbox();
             });
 
             $('#check').change(function () {
                 if (this.checked) {
-                    const clienteSelecionado = $('#clienteSelect option:selected');
-                    $('#nome').val(clienteSelecionado.data('nome'));
-                    $('#nome').prop('disabled', true);
-                    $('#email').val(clienteSelecionado.data('email'));
-                    $('#email').prop('disabled', true);
-                    $('#cnh').val(clienteSelecionado.data('cnh'));
-                    $('#cnh').prop('disabled', true);
-                    $('#telefone').val(clienteSelecionado.data('telefone'));
-                    $('#telefone').prop('disabled', true);
-                    $('#cpf').val(clienteSelecionado.data('cpf'));
-                    $('#cpf').prop('disabled', true);
+                    updateFieldsWithClientData();
                 } else {
-                    $('#nome').val('');
-                    $('#nome').prop('disabled', false);
-                    $('#email').val('');
-                    $('#email').prop('disabled', false);
-                    $('#cnh').val('');
-                    $('#cnh').prop('disabled', false);
-                    $('#telefone').val('');
-                    $('#telefone').prop('disabled', false);
-                    $('#cpf').val('');
-                    $('#cpf').prop('disabled', false);
+                    clearFields();
                 }
+            });
+
+            fields.forEach(function (field) {
+                $(field).on('input', function () {
+                    if ($('#check').is(':checked')) {
+                        clearFields();
+                        $(this).val($(this).val()).prop('disabled', false);
+                        $('#check').prop('checked', false);
+                    }
+                });
             });
         });
     </script>

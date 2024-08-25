@@ -155,7 +155,7 @@ public class TaxaController(TaxaService servicoTaxa, IMapper mapeador) : WebCont
     {
         var registrosExistentes = servicoTaxa.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
 
-        registroAtual = registroAtual is null ? new() : registroAtual;
+        registroAtual = registroAtual is null ? new() { Nome = "" } : registroAtual;
 
         if (registrosExistentes.Exists(r =>
             r.Nome.Validation() == novoRegistro.Nome.Validation() &&

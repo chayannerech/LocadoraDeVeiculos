@@ -14,8 +14,8 @@ public class Aluguel() : EntidadeBase
     public Veiculo Veiculo { get; set; }
     public DateTime DataSaida { get; set; }
     public DateTime DataRetorno { get; set; }
-    public bool Seguro { get; set; }
-    public string SeguroPara {  get; set; }
+    public bool SeguroCondutor { get; set; }
+    public bool SeguroTerceiro {  get; set; }
 
     public List<string> Validar()
     {
@@ -26,10 +26,16 @@ public class Aluguel() : EntidadeBase
         VerificaNulo(ref erros, PlanoDeCobranca, "PlanoDeCobranca");
         VerificaNulo(ref erros, Veiculo, "Veiculo");
         VerificaDataInferior(ref erros, DataSaida, "O veículo deve ser retirado hoje ou após o dia de hoje");
-        VerificaDataInferior(ref erros, DataRetorno, DataSaida, "O veículo deve ser devolvido após a data de retirada");
-        
-        if (Seguro) VerificaNulo(ref erros, SeguroPara, "SeguroPara");
+        VerificaDataInferior(ref erros, DataRetorno, DataSaida, "O veículo deve ser devolvido após a data de retirada");        
+        VerificaSeguro(ref erros, SeguroCondutor, SeguroTerceiro);
 
         return erros;
     }
+
+    protected void VerificaSeguro(ref List<string> erros, bool seguroCondutor, bool seguroTerceiro)
+    {
+        if (seguroCondutor && seguroTerceiro)
+            erros.Add($"O seguro cobre cliente/condutor 'ou' terceiros");
+    }
+
 }

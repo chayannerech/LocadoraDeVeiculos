@@ -27,7 +27,8 @@ public class MapeadorCondutorEmOrm : IEntityTypeConfiguration<Condutor>
         cBuilder.HasOne(v => v.Cliente)
             .WithMany()
             .HasForeignKey("Cliente_Id")
-            .IsRequired();
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
 
         cBuilder.Property(c => c.CPF)
             .IsRequired()

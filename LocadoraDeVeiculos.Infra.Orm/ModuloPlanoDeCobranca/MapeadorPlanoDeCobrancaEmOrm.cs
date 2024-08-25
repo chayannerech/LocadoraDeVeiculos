@@ -12,6 +12,12 @@ public class MapeadorPlanoDeCobrancaEmOrm : IEntityTypeConfiguration<PlanoDeCobr
             .IsRequired()
             .ValueGeneratedOnAdd();
 
+        pBuilder.HasOne(p => p.GrupoDeAutomoveis)
+            .WithMany()
+            .HasForeignKey("Grupo_Id")
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
+
         pBuilder.Property(p => p.PrecoDiaria)
             .IsRequired()
             .HasColumnType("decimal(18,2)");

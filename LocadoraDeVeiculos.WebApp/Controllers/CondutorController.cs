@@ -163,7 +163,7 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
             return null;
         }
 
-        inserirCondutorVm.Clientes = resultadoClientes.Value.FindAll(c => c.PessoaFisica);
+        inserirCondutorVm.Clientes = resultadoClientes.Value;
 
         return inserirCondutorVm;
     }
