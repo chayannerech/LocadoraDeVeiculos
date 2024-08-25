@@ -8,6 +8,8 @@ public class Cliente() : EntidadeBase
     public string Telefone { get; set; }
     public bool PessoaFisica { get; set; }
     public string Documento { get; set; }
+    public string RG { get; set; }
+    public string CNH { get; set; }
     public string Estado { get; set; }
     public string Cidade { get; set; }
     public string Bairro { get; set; }

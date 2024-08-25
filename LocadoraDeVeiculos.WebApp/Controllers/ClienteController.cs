@@ -36,7 +36,15 @@ public class ClienteController(ClienteService servicoCliente, IMapper mapeador) 
     public IActionResult Inserir(InserirClienteViewModel inserirRegistroVm)
     {
         if (!ModelState.IsValid)
-            return View(inserirRegistroVm);
+        {
+            if(inserirRegistroVm.Documento is not null)
+            {
+                inserirRegistroVm.CNH = "";
+                inserirRegistroVm.RG = "";
+            }
+            else
+                return View(inserirRegistroVm);
+        }
 
         var novoRegistro = mapeador.Map<Cliente>(inserirRegistroVm);
 

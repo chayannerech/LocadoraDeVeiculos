@@ -23,10 +23,21 @@ public class InserirClienteViewModel
     public bool? PessoaFisica { get; set; }
 
 
-    [Required(ErrorMessage = "O documento é obrigatório.")]
+    [Required(ErrorMessage = "O documento é obrigatório")]
     [RegularExpression(@"^\d{3}\.\d{3}\.\d{3}\-\d{2}$|^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$",
         ErrorMessage = "O documento deve estar em formato válido")]
     public string Documento { get; set; }
+
+
+    [Required(ErrorMessage = "O RG é obrigatório")]
+    [RegularExpression(@"^\d{1}\.\d{3}\.\d{3}$",
+    ErrorMessage = "O RG deve estar em formato válido")]
+    public string RG { get; set; }
+
+
+    [Required(ErrorMessage = "A CNH é obrigatória")]
+    [Length(11, 11, ErrorMessage = "A CNH deve estar em formato válido")]
+    public string CNH { get; set; }
 
 
     [Required(ErrorMessage = "O estado é obrigatório")]
@@ -75,6 +86,8 @@ public class DetalhesClienteViewModel
     public string Telefone { get; set; }
     public bool PessoaFisica { get; set; }
     public string Documento { get; set; }
+    public string RG { get; set; }
+    public string CNH { get; set; }
     public string Estado { get; set; }
     public string Cidade { get; set; }
     public string Bairro { get; set; }

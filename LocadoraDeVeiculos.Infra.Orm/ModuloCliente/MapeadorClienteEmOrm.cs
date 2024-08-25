@@ -12,6 +12,10 @@ public class MapeadorClienteEmOrm : IEntityTypeConfiguration<Cliente>
             .IsRequired()
             .ValueGeneratedOnAdd();
 
+        cBuilder.Property(c => c.Nome)
+            .IsRequired()
+            .HasColumnType("varchar(200)");
+
         cBuilder.Property(c => c.Email)
             .IsRequired()
             .HasColumnType("varchar(200)");
@@ -21,6 +25,14 @@ public class MapeadorClienteEmOrm : IEntityTypeConfiguration<Cliente>
             .HasColumnType("varchar(200)");
 
         cBuilder.Property(c => c.Documento)
+            .IsRequired()
+            .HasColumnType("varchar(200)");
+
+        cBuilder.Property(c => c.RG)
+            .IsRequired()
+            .HasColumnType("varchar(200)");
+
+        cBuilder.Property(c => c.CNH)
             .IsRequired()
             .HasColumnType("varchar(200)");
 

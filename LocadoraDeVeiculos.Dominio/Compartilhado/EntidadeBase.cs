@@ -25,9 +25,9 @@ public abstract class EntidadeBase
         if (campoTestado is null)
             erros.Add($"\nO campo \"{mostraCampo}\" é obrigatório. Tente novamente ");
     }
-    protected void VerificaNulo(ref List<string> erros, Enum campoTestado, string mostraCampo)
+    protected void VerificaDataInferior(ref List<string> erros, DateTime campoTestado, string mostraCampo)
     {
-        if (campoTestado is null)
-            erros.Add($"\nO campo \"{mostraCampo}\" é obrigatório. Tente novamente ");
+        if (campoTestado < DateTime.Now)
+            erros.Add($"{mostraCampo}");
     }
 }

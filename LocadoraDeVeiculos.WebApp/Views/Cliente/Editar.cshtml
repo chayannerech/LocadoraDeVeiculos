@@ -3,7 +3,7 @@
 @model InserirClienteViewModel
 
 @{
-    ViewBag.Title = "Editar cliente";
+    ViewBag.Title = "Editar Cliente";
 }
 
 <div class="col">
@@ -45,17 +45,31 @@
             <span class="text-danger fs-6" asp-validation-for="PessoaFisica"></span>
 
             <div class="d-flex flex-row gap-3 mt-3">
-                <div class="flex-fill">
+                <div class="flex-fill" id="cpf">
                     <label class="control-label fw-bold mb-1">CPF</label>
-                    <input class="form-control mb-1" asp-for="Documento" id="cpf" disabled />
+                    <input class="form-control mb-1" id="CPF" asp-for="Documento" />
                 </div>
 
-                <div class="flex-fill">
+                <div class="flex-fill" id="cnpj">
                     <label class="control-label fw-bold mb-1">CNPJ</label>
-                    <input class="form-control mb-1" asp-for="Documento" id="cnpj" disabled />
+                    <input class="form-control mb-1" id="CNPJ" asp-for="Documento" />
                 </div>
             </div>
             <span class="text-danger fs-6" asp-validation-for="Documento"></span>
+
+            <div class="d-flex flex-row gap-3 mt-3" id="rgEcnh">
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">RG</label>
+                    <input class="form-control mb-1" asp-for="RG" id="rg" />
+                    <span class="text-danger fs-6" asp-validation-for="RG"></span>
+                </div>
+
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">CNH</label>
+                    <input class="form-control mb-1" asp-for="CNH" id="cnh" />
+                    <span class="text-danger fs-6" asp-validation-for="CNH"></span>
+                </div>
+            </div>
 
             <div class="d-flex flex-row gap-3 mt-3">
                 <div class="flex-fill w-25">
@@ -116,25 +130,34 @@
     <script>
         $(document).ready(function () {
             $('#telefone').mask('(00)00000-0000');
-            $('#cpf').mask('000.000.000-00');
-            $('#cnpj').mask('00.000.000/0000-00');
+            $('#CPF').mask('000.000.000-00');
+            $('#CNPJ').mask('00.000.000/0000-00');
+            $('#rg').mask('0.000.000');
+            $('#cnh').mask('00000000000');
 
             function toggleDocumento() {
                 if ($('#radioPessoaFisica').is(':checked')) {
-                    $('#cpf').prop('disabled', false);
-                    $('#cnpj').prop('disabled', true);
-                    $('#cpf').prop('name', 'Documento');
-                    $('#cnpj').prop('name', 'unused');
-                    $('#cnpj').val('');
+                    $('#cpf').removeClass('d-none');
+                    $('#cnpj').addClass('d-none');
+                    $('#rgEcnh').removeClass('d-none');
+                    $('#CPF').prop('name', 'Documento');
+                    $('#CNPJ').prop('name', 'unused');
+                    $('#CNPJ').val('');
+                    $('#rg').val('');
+                    $('#cnh').val('');
                 } else if ($('#radioPessoaJuridica').is(':checked')) {
-                    $('#cpf').prop('disabled', true);
-                    $('#cnpj').prop('disabled', false);
-                    $('#cpf').prop('name', 'unused');
-                    $('#cnpj').prop('name', 'Documento');
-                    $('#cpf').val('');
+                    $('#cpf').addClass('d-none');
+                    $('#cnpj').removeClass('d-none');
+                    $('#rgEcnh').addClass('d-none');
+                    $('#CPF').prop('name', 'unused');
+                    $('#CNPJ').prop('name', 'Documento');
+                    $('#rh').prop('name', 'unused');
+                    $('#cnh').prop('name', 'unused');
+                    $('#CPF').val('');
                 } else {
-                    $('#cpf').prop('disabled', true);
-                    $('#cnpj').prop('disabled', true);
+                    $('#cpf').addClass('d-none');
+                    $('#cnpj').addClass('d-none');
+                    $('#rgEcnh').addClass('d-none');
                     $('#cpf').prop('name', 'unused');
                     $('#cnpj').prop('name', 'unused');
                 }
