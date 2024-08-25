@@ -31,7 +31,11 @@ public class MapeadorCondutorEmOrm : IEntityTypeConfiguration<Condutor>
 
         cBuilder.Property(c => c.CPF)
             .IsRequired()
-            .HasColumnType("varchar(200)");
+            .HasColumnType("varchar(15)");
+
+        cBuilder.Property(c => c.CNH)
+            .IsRequired()
+            .HasColumnType("varchar(15)");
 
         cBuilder.Property(c => c.ValidadeCNH)
             .IsRequired()

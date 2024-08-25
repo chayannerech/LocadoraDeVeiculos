@@ -37,6 +37,16 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
     [HttpPost]
     public IActionResult Inserir(InserirCondutorViewModel inserirRegistroVm)
     {
+        if (inserirRegistroVm.ClienteId != 0)
+        {
+            var clienteSelecionado = servicoClientes.SelecionarPorId(inserirRegistroVm.ClienteId).Value;
+            inserirRegistroVm.Nome = clienteSelecionado.Nome;
+            inserirRegistroVm.Email = clienteSelecionado.Email;
+            inserirRegistroVm.Telefone = clienteSelecionado.Telefone;
+            inserirRegistroVm.CPF = clienteSelecionado.Documento;
+            inserirRegistroVm.CNH = clienteSelecionado.CNH;
+        }
+
         if (!ModelState.IsValid)
             return View(CarregarInformacoes(inserirRegistroVm));
 
@@ -148,10 +158,7 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
             return null;
         }
 
-        var clientes = resultadoClientes.Value;
-
-        inserirCondutorVm.Clientes = clientes.Select(g =>
-            new SelectListItem(g.Nome, g.Id.ToString()));
+        inserirCondutorVm.Clientes = resultadoClientes.Value.FindAll(c => c.PessoaFisica);
 
         return inserirCondutorVm;
     }
@@ -165,10 +172,7 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
             return null;
         }
 
-        var clientes = resultadoClientes.Value;
-
-        editarCondutorVm.Clientes = clientes.Select(g =>
-            new SelectListItem(g.Nome, g.Id.ToString()));
+        editarCondutorVm.Clientes = resultadoClientes.Value;
 
         return editarCondutorVm;
     }

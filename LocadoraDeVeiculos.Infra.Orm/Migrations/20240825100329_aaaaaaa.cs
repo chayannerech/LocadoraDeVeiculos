@@ -220,7 +220,8 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     Nome = table.Column<string>(type: "varchar(200)", nullable: false),
                     Email = table.Column<string>(type: "varchar(200)", nullable: false),
                     Telefone = table.Column<string>(type: "varchar(200)", nullable: false),
-                    CPF = table.Column<string>(type: "varchar(200)", nullable: false),
+                    CPF = table.Column<string>(type: "varchar(15)", nullable: false),
+                    CNH = table.Column<string>(type: "varchar(15)", nullable: false),
                     ValidadeCNH = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>

@@ -9,6 +9,7 @@ public class Condutor() : EntidadeBase
     public string Email { get; set; }
     public string Telefone { get; set; }
     public string CPF { get; set; }
+    public string CNH { get; set; }
     public DateTime ValidadeCNH { get; set; }
 
     public List<string> Validar()

@@ -10,7 +10,7 @@ public class InserirCondutorViewModel
     [Range(1, int.MaxValue, ErrorMessage = "O cliente é obrigatório")]
     public int ClienteId { get; set; }
 
-    public IEnumerable<SelectListItem>? Clientes { get; set; }
+    public List<Cliente>? Clientes { get; set; }
 
 
     [Required(ErrorMessage = "O nome é obrigatório")]
@@ -33,8 +33,16 @@ public class InserirCondutorViewModel
     public string CPF { get; set; }
 
 
+    [Required(ErrorMessage = "A CNH é obrigatória")]
+    [Length(11, 11, ErrorMessage = "A CNH deve estar em formato válido")]
+    public string CNH { get; set; }
+
+
     [Required(ErrorMessage = "A data é obrigatória")]
+    [DataMenorQueHoje(ErrorMessage = "A CNH está vencida")]
     public DateTime ValidadeCNH { get; set; }
+
+    public bool Check { get; set; }
 }
 
 public class EditarCondutorViewModel : InserirCondutorViewModel
@@ -63,4 +71,20 @@ public class DetalhesCondutorViewModel
     public string Telefone { get; set; }
     public string CPF { get; set; }
     public DateTime ValidadeCNH { get; set; }
+}
+
+public class DataMenorQueHojeAttribute : ValidationAttribute
+{
+    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    {
+        if (value is DateTime data)
+        {
+            if (data > DateTime.Today)
+                return ValidationResult.Success;
+            else
+                return new ValidationResult(ErrorMessage ?? "A data deve ser menor que a data atual");
+        }
+
+        return new ValidationResult("Data inválida.");
+    }
 }

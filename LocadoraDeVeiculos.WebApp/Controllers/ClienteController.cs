@@ -37,7 +37,7 @@ public class ClienteController(ClienteService servicoCliente, IMapper mapeador) 
     {
         if (!ModelState.IsValid)
         {
-            if(inserirRegistroVm.Documento is not null)
+            if(inserirRegistroVm.PessoaFisica is false)
             {
                 inserirRegistroVm.CNH = "";
                 inserirRegistroVm.RG = "";
@@ -168,6 +168,14 @@ public class ClienteController(ClienteService servicoCliente, IMapper mapeador) 
         if (registrosExistentes.Exists(r => 
             r.Documento == novoRegistro.Documento &&
             r.Documento != registroAtual.Documento))
+        {
+            ApresentarMensagemRegistroExistente();
+            return true;
+        }
+
+        if (novoRegistro.PessoaFisica && registrosExistentes.Exists(r =>
+            (r.RG == novoRegistro.RG && r.RG != registroAtual.RG) ||
+            (r.CNH == novoRegistro.RG && r.CNH != registroAtual.RG)))
         {
             ApresentarMensagemRegistroExistente();
             return true;

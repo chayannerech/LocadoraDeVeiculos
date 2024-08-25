@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 {
     [DbContext(typeof(LocadoraDeVeiculosDbContext))]
-    [Migration("20240825062957_aaaaaaa")]
+    [Migration("20240825100329_aaaaaaa")]
     partial class aaaaaaa
     {
         /// <inheritdoc />
@@ -92,9 +92,13 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CNH")
+                        .IsRequired()
+                        .HasColumnType("varchar(15)");
+
                     b.Property<string>("CPF")
                         .IsRequired()
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("varchar(15)");
 
                     b.Property<int>("Cliente_Id")
                         .HasColumnType("int");
