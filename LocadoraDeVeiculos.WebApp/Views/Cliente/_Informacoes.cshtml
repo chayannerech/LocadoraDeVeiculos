@@ -5,6 +5,7 @@
 @{
     var tipoCliente = Model.PessoaFisica ? "Pessoa física" : "Pessoa jurídica";
     var pessoaFisica = Model.PessoaFisica ? "" : "d-none";
+    var pessoaJuridica = Model.PessoaFisica ? "d-none" : "";
 }
 
 <div class="container my-4">
@@ -25,14 +26,14 @@
                     <hr class="mt-1 mb-3" />
                 </div>
                 <dt class="col-sm-5 @pessoaFisica">CPF:</dt>
-                <dt class="col-sm-5" @pessoaFisica>CNPJ:</dt>
+                <dt class="col-sm-5 @pessoaJuridica">CNPJ:</dt>
                 <dd class="col-sm-7">@Model.Documento</dd>
 
-                <dt class="col-sm-5" @pessoaFisica>RG:</dt>
-                <dd class="col-sm-7" @pessoaFisica>@Model.RG</dd>
+                <dt class="col-sm-5 @pessoaFisica">RG:</dt>
+                <dd class="col-sm-7 @pessoaFisica">@Model.RG</dd>
 
-                <dt class="col-sm-5" @pessoaFisica>CNH:</dt>
-                <dd class="col-sm-7" @pessoaFisica>@Model.CNH</dd>
+                <dt class="col-sm-5 @pessoaFisica">CNH:</dt>
+                <dd class="col-sm-7 @pessoaFisica">@Model.CNH</dd>
 
                 <div class="col-12">
                     <h5 class="text-secondary mt-4">Endereço</h5>

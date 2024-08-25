@@ -80,7 +80,15 @@ public class ClienteController(ClienteService servicoCliente, IMapper mapeador) 
     public IActionResult Editar(EditarClienteViewModel editarRegistroVm)
     {
         if (!ModelState.IsValid)
-            return View(editarRegistroVm);
+        {
+            if (editarRegistroVm.Documento is not null)
+            {
+                editarRegistroVm.CNH = "";
+                editarRegistroVm.RG = "";
+            }
+            else
+                return View(editarRegistroVm);
+        }
 
         var registro = mapeador.Map<Cliente>(editarRegistroVm);
         var registroAtual = servicoCliente.SelecionarPorId(editarRegistroVm.Id).Value;

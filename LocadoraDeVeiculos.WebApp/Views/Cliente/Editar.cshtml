@@ -1,6 +1,6 @@
 ﻿@using LocadoraDeVeiculos.Dominio.ModuloCliente
 @using LocadoraDeVeiculos.WebApp.Models
-@model InserirClienteViewModel
+@model EditarClienteViewModel
 
 @{
     ViewBag.Title = "Editar Cliente";
@@ -143,17 +143,17 @@
                     $('#CPF').prop('name', 'Documento');
                     $('#CNPJ').prop('name', 'unused');
                     $('#CNPJ').val('');
-                    $('#rg').val('');
-                    $('#cnh').val('');
                 } else if ($('#radioPessoaJuridica').is(':checked')) {
                     $('#cpf').addClass('d-none');
                     $('#cnpj').removeClass('d-none');
                     $('#rgEcnh').addClass('d-none');
                     $('#CPF').prop('name', 'unused');
                     $('#CNPJ').prop('name', 'Documento');
-                    $('#rh').prop('name', 'unused');
+                    $('#rg').prop('name', 'unused');
                     $('#cnh').prop('name', 'unused');
                     $('#CPF').val('');
+                    $('#rg').val('');
+                    $('#cnh').val('');
                 } else {
                     $('#cpf').addClass('d-none');
                     $('#cnpj').addClass('d-none');
