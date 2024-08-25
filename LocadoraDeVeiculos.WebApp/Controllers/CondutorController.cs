@@ -37,23 +37,28 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
     [HttpPost]
     public IActionResult Inserir(InserirCondutorViewModel inserirRegistroVm)
     {   
-        if (inserirRegistroVm.ClienteId != 0)
-        {
-            var clienteSelecionado = servicoClientes.SelecionarPorId(inserirRegistroVm.ClienteId).Value;
-            inserirRegistroVm.Nome = clienteSelecionado.Nome;
-            inserirRegistroVm.Email = clienteSelecionado.Email;
-            inserirRegistroVm.Telefone = clienteSelecionado.Telefone;
-            inserirRegistroVm.CPF = clienteSelecionado.Documento;
-            inserirRegistroVm.CNH = clienteSelecionado.CNH;
-        }
-
         if (!ModelState.IsValid)
-            return View(CarregarInformacoes(inserirRegistroVm));
+        {
+            if (inserirRegistroVm.ClienteId != 0)
+            {
+                var clienteSelecionado = servicoClientes.SelecionarPorId(inserirRegistroVm.ClienteId).Value;
+                inserirRegistroVm.Nome = clienteSelecionado.Nome;
+                inserirRegistroVm.Email = clienteSelecionado.Email;
+                inserirRegistroVm.Telefone = clienteSelecionado.Telefone;
+                inserirRegistroVm.CPF = clienteSelecionado.Documento;
+                inserirRegistroVm.CNH = clienteSelecionado.CNH;
+            }
+            else
+                return View(CarregarInformacoes(inserirRegistroVm));
 
+            if (inserirRegistroVm.ValidadeCNH < DateTime.Now)
+                return View(CarregarInformacoes(inserirRegistroVm));
+        }
+            
         var novoRegistro = mapeador.Map<Condutor>(inserirRegistroVm);
 
         if (ValidacaoDeRegistroRepetido(servicoPlanos, inserirRegistroVm, null))
-            return View(inserirRegistroVm);
+            return View(CarregarInformacoes(inserirRegistroVm));
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
@@ -191,9 +196,11 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
 
         registroAtual = registroAtual is null ? new() : registroAtual;
 
-        if (registrosExistentes.Exists(r =>
+        if (registrosExistentes.Exists(r => (
             r.CPF == novoRegistro.CPF &&
-            r.CPF != registroAtual.CPF))
+            r.CPF != registroAtual.CPF) || (
+            r.CNH == novoRegistro.CNH &&
+            r.CNH != registroAtual.CNH)))
         {
             ApresentarMensagemRegistroExistente();
             return true;

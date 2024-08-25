@@ -1,93 +1,154 @@
 ﻿@using LocadoraDeVeiculos.WebApp.Models
-@model EditarPlanoDeCobrancaViewModel
+@model EditarCondutorViewModel
 
 @{
-    ViewBag.Title = "Editar plano de cobrança";
-    List<string> categorias = Model.Categorias;
+    ViewBag.Title = "Editar Condutor";
 }
-
-<style>
-    .nav-link {
-        color: #999;
-    }
-</style>
 
 <div class="col">
     <div class="row gap-3 my-3 my-xl-5">
         <form asp-action="Editar">
             <div class="col-lg-6 d-grid mb-4">
-                <label class="control-label fw-bold mb-1">Grupo de Automóveis</label>
-                <select class="form-select mb-1" asp-for="GrupoId" asp-items="Model.Grupos">
-                    <option value="" selected disabled></option>
-                </select>
-                <span class="text-danger fs-6" asp-validation-for="GrupoId"></span>
-            </div>
-
-            <div class="col-lg-6 d-grid gap-3">
-                <div class="my-3 my-xl-2">
-                    <label class="control-label fw-bold mb-1">Configuração de planos</label>      
-                    <ul class="nav nav-tabs mb-3" role="tablist">
-                        @for (int i = 0; i < categorias.Count; i++)
+                <div>
+                    <label class="control-label fw-bold mb-1">Cliente</label>
+                    <select class="form-select" asp-for="ClienteId" id="clienteSelect">
+                        <option value="" selected disabled></option>
+                        @foreach (var cliente in Model.Clientes)
                         {
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link @(i == 0 ? "active" : "")" id="@categorias[i]-tab" data-bs-toggle="tab" data-bs-target="#@categorias[i]" type="button" role="tab" aria-controls="@categorias[i]" aria-selected="true">@categorias[i]</button>
-                            </li>
+                            <option value="@cliente.Id"
+                                    data-nome="@cliente.Nome"
+                                    data-email="@cliente.Email"
+                                    data-telefone="@cliente.Telefone"
+                                    data-cnh="@cliente.CNH"
+                                    data-cpf="@cliente.Documento">
+                                @cliente.Nome
+                            </option>
                         }
-                    </ul>
-                    <div class="tab-content px-3">
-                        <div class="tab-pane fade show active" id="Diário" role="tabpanel" aria-labelledby="Diário-tab">
-                            <div>
-                                <label class="control-label fw-bold mb-1 mt-2">Preço da diária</label>
-                                <input type="number" class="form-control mb-1" asp-for="PrecoDiaria" />
-                                <span class="text-danger fs-6" asp-validation-for="PrecoDiaria"></span>
-                            </div>
-                            <div>
-                                <label class="control-label fw-bold mb-1 mt-2">Preço por quilômetro</label>
-                                <input type="number" class="form-control mb-1" asp-for="PrecoKm" />
-                                <span class="text-danger fs-6" asp-validation-for="PrecoKm"></span>
-                            </div>
-                        </div>
+                    </select>
+                    <span class="text-danger fs-6" asp-validation-for="ClienteId"></span>
+                </div>
 
-                        <div class="tab-pane fade" id="Controlado" role="tabpanel" aria-labelledby="Controlado-tab">
-                            <div>
-                                <label class="control-label fw-bold mb-1 mt-2">Quilometragem disponível</label>
-                                <input type="number" class="form-control mb-1" asp-for="KmDisponivel" />
-                                <span class="text-danger fs-6" asp-validation-for="KmDisponivel"></span>
-                            </div>
-                            <div>
-                                <label class="control-label fw-bold mb-1 mt-2">Preço da diária</label>
-                                <input type="number" class="form-control mb-1" asp-for="PrecoDiariaControlada" />
-                                <span class="text-danger fs-6" asp-validation-for="PrecoDiariaControlada"></span>
-                            </div>
-                            <div>
-                                <label class="control-label fw-bold mb-1 mt-2">Preço por quilômetro extrapolado</label>
-                                <input type="number" class="form-control mb-1" asp-for="PrecoExtrapolado" />
-                                <span class="text-danger fs-6" asp-validation-for="PrecoExtrapolado"></span>
-                            </div>
-                        </div>
+                <div class="form-check ms-3 mb-1 mt-2">
+                    <input class="form-check-input" type="checkbox" asp-for="Check" value="true" id="check">
+                    <label class="form-check-label" for="check">O cliente é o condutor</label>
+                </div>
 
-                        <div class="tab-pane fade" id="Livre" role="tabpanel" aria-labelledby="Livre-tab">
-                            <div>
-                                <label class="control-label fw-bold mb-1 mt-2">Preço</label>
-                                <input type="number" class="form-control mb-1" asp-for="PrecoLivre" />
-                                <span class="text-danger fs-6" asp-validation-for="PrecoLivre"></span>
-                            </div>
-                        </div>
+                <div>
+                    <label class="control-label fw-bold mb-1 mt-4">Nome</label>
+                    <input class="form-control mb-1" asp-for="Nome" id="nome" />
+                    <span class="text-danger fs-6" asp-validation-for="Nome"></span>
+                </div>
 
-                        <div class="d-flex justify-content-center gap-3 mt-5 mb-5">
-                            <button class="btn btn-secondary px-5" style="width: 160px">
-                                <i class="bi bi-floppy-fill me-1"></i>
-                                Gravar
-                            </button>
+                <div>
+                    <label class="control-label fw-bold mb-1 mt-3">Email</label>
+                    <input type="email" class="form-control mb-1" asp-for="Email" id="email" />
+                    <span class="text-danger fs-6" asp-validation-for="Email"></span>
+                </div>
 
-                            <a class="btn btn-outline-secondary px-5" style="width: 160px" href="/PlanoDeCobranca/listar">
-                                <i class="bi bi-arrow-return-left me-1"></i>
-                                Voltar
-                            </a>
-                        </div>
+                <div class="d-flex flex-row gap-3 mt-3">
+                    <div class="flex-fill">
+                        <label class="control-label fw-bold mb-1">Telefone</label>
+                        <input class="form-control mb-1" asp-for="Telefone" id="telefone" />
+                        <span class="text-danger fs-6" asp-validation-for="Telefone"></span>
                     </div>
+
+                    <div class="flex-fill">
+                        <label class="control-label fw-bold mb-1" asp-for="CPF">CPF</label>
+                        <input class="form-control mb-1" id="cpf" asp-for="CPF" />
+                    </div>
+                </div>
+
+                <div class="d-flex flex-row gap-3 mb-5 mt-3">
+                    <div class="flex-fill">
+                        <label class="control-label fw-bold mb-1">CNH</label>
+                        <input type="number" class="form-control mb-1" asp-for="CNH" id="cnh" />
+                        <span class="text-danger fs-6" asp-validation-for="CNH"></span>
+                    </div>
+
+                    <div class="flex-fill">
+                        <label class="control-label fw-bold mb-1">Validade</label>
+                        <input type="date" class="form-control mb-1" asp-for="ValidadeCNH" />
+                        <span class="text-danger fs-6" asp-validation-for="ValidadeCNH"></span>
+                    </div>
+                </div>
+
+                <div class="row justify-content-center mb-5 gap-3">
+                    <button class="btn btn-secondary px-5" style="width: 170px">
+                        <i class="bi bi-floppy-fill me-1"></i>
+                        Gravar
+                    </button>
+
+                    <a class="btn btn-outline-secondary px-5" style="width: 170px" href="/Cliente/listar">
+                        <i class="bi bi-arrow-return-left me-1"></i>
+                        Voltar
+                    </a>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#telefone').mask('(00)00000-0000');
+            $('#cpf').mask('000.000.000-00');
+            $('#cnh').mask('00000000000');
+
+            $('#clienteSelect').change(function () {
+                if (this.selected) {
+                    $('#nome').val(this.data('nome'));
+                    $('#nome').prop('disabled', true);
+                    $('#email').val(this.data('email'));
+                    $('#email').prop('disabled', true);
+                    $('#cnh').val(this.data('cnh'));
+                    $('#cnh').prop('disabled', true);
+                    $('#telefone').val(this.data('telefone'));
+                    $('#telefone').prop('disabled', true);
+                    $('#cpf').val(this.data('cpf'));
+                    $('#cpf').prop('disabled', true);
+                } else {
+                    $('#check').prop('disabled', false);
+                    $('#check').prop('checked', false);
+                    $('#nome').val('');
+                    $('#nome').prop('disabled', false);
+                    $('#email').val('');
+                    $('#email').prop('disabled', false);
+                    $('#cnh').val('');
+                    $('#cnh').prop('disabled', false);
+                    $('#telefone').val('');
+                    $('#telefone').prop('disabled', false);
+                    $('#cpf').val('');
+                    $('#cpf').prop('disabled', false);
+                }
+            });
+
+            $('#check').change(function () {
+                if (this.checked) {
+                    const clienteSelecionado = $('#clienteSelect option:selected');
+                    $('#nome').val(clienteSelecionado.data('nome'));
+                    $('#nome').prop('disabled', true);
+                    $('#email').val(clienteSelecionado.data('email'));
+                    $('#email').prop('disabled', true);
+                    $('#cnh').val(clienteSelecionado.data('cnh'));
+                    $('#cnh').prop('disabled', true);
+                    $('#telefone').val(clienteSelecionado.data('telefone'));
+                    $('#telefone').prop('disabled', true);
+                    $('#cpf').val(clienteSelecionado.data('cpf'));
+                    $('#cpf').prop('disabled', true);
+                } else {
+                    $('#nome').val('');
+                    $('#nome').prop('disabled', false);
+                    $('#email').val('');
+                    $('#email').prop('disabled', false);
+                    $('#cnh').val('');
+                    $('#cnh').prop('disabled', false);
+                    $('#telefone').val('');
+                    $('#telefone').prop('disabled', false);
+                    $('#cpf').val('');
+                    $('#cpf').prop('disabled', false);
+                }
+            });
+        });
+    </script>
+}

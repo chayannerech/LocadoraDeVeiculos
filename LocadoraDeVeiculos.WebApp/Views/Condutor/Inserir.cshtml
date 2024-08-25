@@ -45,7 +45,7 @@
                     <span class="text-danger fs-6" asp-validation-for="Email"></span>
                 </div>
 
-                <div class="d-flex flex-row gap-3 mt-2 mb-5">
+                <div class="d-flex flex-row gap-3 mt-3">
                     <div class="flex-fill">
                         <label class="control-label fw-bold mb-1">Telefone</label>
                         <input class="form-control mb-1" asp-for="Telefone" id="telefone" />
@@ -58,15 +58,15 @@
                     </div>
                 </div>
 
-                <div class="d-flex flex-row gap-3 mt-2 mb-5">
+                <div class="d-flex flex-row gap-3 mb-5 mt-3">
                     <div class="flex-fill">
-                        <label class="control-label fw-bold mb-1 mt-3">CNH</label>
+                        <label class="control-label fw-bold mb-1">CNH</label>
                         <input type="number" class="form-control mb-1" asp-for="CNH" id="cnh" />
                         <span class="text-danger fs-6" asp-validation-for="CNH"></span>
                     </div>
 
                     <div class="flex-fill">
-                        <label class="control-label fw-bold mb-1 mt-3">Validade</label>
+                        <label class="control-label fw-bold mb-1">Validade</label>
                         <input type="date" class="form-control mb-1" asp-for="ValidadeCNH" />
                         <span class="text-danger fs-6" asp-validation-for="ValidadeCNH"></span>
                     </div>
@@ -108,6 +108,7 @@
                     $('#cpf').val(this.data('cpf'));
                     $('#cpf').prop('disabled', true);
                 } else {
+                    $('#check').prop('disabled', false);
                     $('#check').prop('checked', false);
                     $('#nome').val('');
                     $('#nome').prop('disabled', false);
