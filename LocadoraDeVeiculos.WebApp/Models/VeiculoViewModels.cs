@@ -44,6 +44,7 @@ public class PropriedadesVeiculosViewModel
 
     public IEnumerable<SelectListItem>? Grupos { get; set; }
 
+
     [Required(ErrorMessage = "A foto do veículo é obrigatória")]
     public IFormFile Foto { get; set; }
     public byte[] ImagemEmBytes
