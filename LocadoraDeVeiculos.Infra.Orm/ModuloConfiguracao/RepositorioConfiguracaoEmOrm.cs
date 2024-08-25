@@ -28,5 +28,5 @@ public class RepositorioConfiguracaoEmOrm(LocadoraDeVeiculosDbContext _dbContext
             .ToList();
 
     public virtual Configuracao? Selecionar()
-        => ObterRegistros().ToList()?[0];
+        => ObterRegistros().ToList().Count == 0 ? new() : ObterRegistros().ToList()[0];
 }

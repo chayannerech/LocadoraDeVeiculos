@@ -1,0 +1,49 @@
+﻿@using LocadoraDeVeiculos.Dominio.ModuloConfiguracao
+@using LocadoraDeVeiculos.WebApp.Models
+@model InserirConfiguracaoViewModel
+
+@{
+    ViewBag.Title = "Configurar preços";
+}
+
+<div class="col">
+    <div class="row gap-3 my-3 my-xl-4">
+        <form class="col-lg-6 d-grid" asp-action="Inserir">
+            <div>
+                <label class="control-label fw-bold mb-1">Gasolina</label>
+                <input type="number" class="form-control mb-1" asp-for="Gasolina" id="gasolina" />
+                <span class="text-danger fs-6" asp-validation-for="Gasolina"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mt-3 mb-1">Gás Natural (GNV)</label>
+                <input type="number" class="form-control mb-1" asp-for="GNV" id="gnv" />
+                <span class="text-danger fs-6" asp-validation-for="GNV"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mt-3 mb-1">Diesel</label>
+                <input type="number" class="form-control mb-1" asp-for="Diesel" id="diesel" />
+                <span class="text-danger fs-6" asp-validation-for="Diesel"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mt-3 mb-1">Etanol</label>
+                <input type="number" class="form-control mb-1" asp-for="Etanol" id="etanol" />
+                <span class="text-danger fs-6" asp-validation-for="Etanol"></span>
+            </div>
+
+            <div class="row justify-content-center my-5 gap-3">
+                <button class="btn btn-secondary px-5" style="width: 170px">
+                    <i class="bi bi-floppy-fill me-1"></i>
+                    Gravar
+                </button>
+
+                <a class="btn btn-outline-secondary px-5" style="width: 170px" href="/Configuracao/listar">
+                    <i class="bi bi-arrow-return-left me-1"></i>
+                    Voltar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

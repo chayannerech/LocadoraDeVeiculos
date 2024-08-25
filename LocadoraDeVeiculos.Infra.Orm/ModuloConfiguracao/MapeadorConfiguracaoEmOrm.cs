@@ -8,6 +8,10 @@ public class MapeadorConfiguracaoEmOrm : IEntityTypeConfiguration<Configuracao>
     {
         cBuilder.ToTable("TBConfiguracao");
 
+        cBuilder.Property(c => c.Id)
+            .IsRequired()
+            .ValueGeneratedOnAdd();
+
         cBuilder.Property(c => c.Gasolina)
             .IsRequired()
             .HasColumnType("decimal(18,2)");

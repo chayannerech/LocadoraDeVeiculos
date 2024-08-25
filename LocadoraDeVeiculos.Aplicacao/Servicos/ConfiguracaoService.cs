@@ -25,4 +25,6 @@ public class ConfiguracaoService(IRepositorioConfiguracao repositorioConfiguraca
 
         return Result.Ok(registro);
     }
+    public Configuracao Selecionar()
+        => repositorioConfiguracao.Selecionar();
 }
