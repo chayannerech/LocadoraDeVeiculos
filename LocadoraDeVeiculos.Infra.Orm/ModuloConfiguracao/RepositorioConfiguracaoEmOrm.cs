@@ -26,4 +26,7 @@ public class RepositorioConfiguracaoEmOrm(LocadoraDeVeiculosDbContext _dbContext
         => ObterRegistros()
             .Where(predicate)
             .ToList();
+
+    public virtual Configuracao? Selecionar()
+        => ObterRegistros().ToList()?[0];
 }
