@@ -1,5 +1,4 @@
-﻿using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 namespace LocadoraDeVeiculos.WebApp.Models;
 
 public class InserirTaxaViewModel

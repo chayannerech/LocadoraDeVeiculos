@@ -7,10 +7,10 @@ using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Win32;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveisService servicoGrupos, IMapper mapeador) : WebControllerBase
 {
-    private readonly IMapper mapeador = mapeador;
     public IActionResult Listar()
     {
         var resultado =
@@ -37,31 +37,22 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
 
     public IActionResult Inserir() => View(CarregarInformacoes(new InserirVeiculosViewModel()));
     [HttpPost]
-    public IActionResult Inserir(InserirVeiculosViewModel inserirVeiculosVm)
+    public IActionResult Inserir(InserirVeiculosViewModel inserirRegistroVm)
     {
         if (!ModelState.IsValid)
-            return View(CarregarInformacoes(inserirVeiculosVm));
+            return View(CarregarInformacoes(inserirRegistroVm));
 
-        var novoRegistro = mapeador.Map<Veiculo>(inserirVeiculosVm);
+        var novoRegistro = mapeador.Map<Veiculo>(inserirRegistroVm);
 
-        var registrosExistentes = servicoVeiculos.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
-
-        if (registrosExistentes.Exists(r => r.Placa == novoRegistro.Placa))
-        {
-            ApresentarMensagemRegistroExistente();
-            return View(CarregarInformacoes(inserirVeiculosVm));
-        }
+        if (ValidacaoDeRegistroRepetido(servicoVeiculos, novoRegistro, null))
+            return View(inserirRegistroVm);
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
-        var resultado = servicoVeiculos.Inserir(novoRegistro, inserirVeiculosVm.GrupoId);
+        var resultado = servicoVeiculos.Inserir(novoRegistro, inserirRegistroVm.GrupoId);
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado.ToResult());
-
+        if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
-        }
 
         ApresentarMensagemSucesso($"O registro \"{novoRegistro}\" foi inserido com sucesso!");
 
@@ -73,12 +64,8 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
     {
         var resultado = servicoVeiculos.SelecionarPorId(id);
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado.ToResult());
-
+        if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
-        }
 
         var veiculo = resultado.Value;
 
@@ -89,37 +76,29 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
         return View(CarregarInformacoes(editarVeiculoVm));
     }
     [HttpPost]
-    public IActionResult Editar(EditarVeiculosViewModel editarVeiculosVm)
+    public IActionResult Editar(EditarVeiculosViewModel editarRegistroVm)
     {
         if (!ModelState.IsValid)
         {
-            if (editarVeiculosVm.Foto != null)
+            if (editarRegistroVm.Foto != null)
             {
-                editarVeiculosVm.ImagemEmBytes = ConverterImagemParaArrayDeBytes(editarVeiculosVm.Foto);
-                editarVeiculosVm.TipoDaImagem = editarVeiculosVm.Foto.ContentType;
+                editarRegistroVm.ImagemEmBytes = ConverterImagemParaArrayDeBytes(editarRegistroVm.Foto);
+                editarRegistroVm.TipoDaImagem = editarRegistroVm.Foto.ContentType;
             }
-            else return View(editarVeiculosVm); 
+            else return View(editarRegistroVm); 
         }
 
-        var registro = mapeador.Map<Veiculo>(editarVeiculosVm);
+        var registro = mapeador.Map<Veiculo>(editarRegistroVm);
 
-        var registroAtual = servicoVeiculos.SelecionarPorId(editarVeiculosVm.Id).Value;
-        var registrosExistentes = servicoVeiculos.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
+        var registroAtual = servicoVeiculos.SelecionarPorId(editarRegistroVm.Id).Value;
 
-        if (registrosExistentes.Exists(r => r.Placa == registro.Placa && r.Placa != registroAtual.Placa))
-        {
-            ApresentarMensagemRegistroExistente();
-            return View(CarregarInformacoes(editarVeiculosVm));
-        }
+        if (ValidacaoDeRegistroRepetido(servicoVeiculos, registro, registroAtual))
+            return View(editarRegistroVm);
 
-        var resultado = servicoVeiculos.Editar(registro, editarVeiculosVm.GrupoId);
+        var resultado = servicoVeiculos.Editar(registro, editarRegistroVm.GrupoId);
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado.ToResult());
-
+        if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
-        }
 
         ApresentarMensagemSucesso($"O registro \"{registro}\" foi editado com sucesso!");
 
@@ -131,12 +110,8 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
     {
         var resultado = servicoVeiculos.SelecionarPorId(id);
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado.ToResult());
-
+        if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
-        }
 
         var registro = resultado.Value;
 
@@ -149,12 +124,8 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
     {
         var resultado = servicoVeiculos.Excluir(detalhesVeiculosViewModel.Id);
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado);
-
+        if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
-        }
 
         ApresentarMensagemSucesso($"O registro \"{detalhesVeiculosViewModel.Placa}\" foi excluído com sucesso!");
 
@@ -166,11 +137,8 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
     {
         var resultado = servicoVeiculos.SelecionarPorId(id);
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado.ToResult());
+        if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
-        }
 
         var registro = resultado.Value;
 
@@ -218,7 +186,6 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
 
         return editarVeiculosVm;
     }
-
     private AgrupamentoVeiculosPorGrupoViewModel MapearAgrupamentoVeiculos(IGrouping<string, Veiculo> grp)
         => new()
         {
@@ -235,6 +202,30 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
         using var memoryStream = new MemoryStream();
         imagem.CopyTo(memoryStream);
         return memoryStream.ToArray();
+    }
+    protected bool ValidacaoDeFalha(Result<Veiculo> resultado)
+    {
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
+            return true;
+        }
+        return false;
+    }
+    private bool ValidacaoDeRegistroRepetido(VeiculoService servicoVeiculo, Veiculo novoRegistro, Veiculo registroAtual)
+    {
+        var registrosExistentes = servicoVeiculo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
+
+        registroAtual = registroAtual is null ? new() : registroAtual;
+
+        if (registrosExistentes.Exists(r =>
+            r.Placa == novoRegistro.Placa &&
+            r.Placa != registroAtual.Placa))
+        {
+            ApresentarMensagemRegistroExistente();
+            return true;
+        }
+        return false;
     }
     #endregion
 }

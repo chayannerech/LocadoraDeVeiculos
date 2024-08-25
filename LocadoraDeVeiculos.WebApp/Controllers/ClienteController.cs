@@ -1,19 +1,17 @@
 ﻿using AutoMapper;
 using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
-using LocadoraDeVeiculos.Dominio.Compartilhado.Extensions;
-using LocadoraDeVeiculos.Dominio.ModuloTaxa;
+using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Win32;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
-public class TaxaController(TaxaService servicoTaxa, IMapper mapeador) : WebControllerBase
+public class ClienteController(ClienteService servicoCliente, IMapper mapeador) : WebControllerBase
 {
     public IActionResult Listar()
     {
-        var resultado = servicoTaxa.SelecionarTodos(UsuarioId.GetValueOrDefault());
+        var resultado = servicoCliente.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
         if (resultado.IsFailed)
         {
@@ -26,29 +24,28 @@ public class TaxaController(TaxaService servicoTaxa, IMapper mapeador) : WebCont
         if (registros.Count == 0)
             ApresentarMensagemSemRegistros();
 
-        var listarTaxaVm = mapeador.Map<IEnumerable<ListarTaxaViewModel>>(registros);
+        var listarClienteVm = mapeador.Map<IEnumerable<ListarClienteViewModel>>(registros);
 
         ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 
-        return View(listarTaxaVm);
+        return View(listarClienteVm);
     }
-
 
     public IActionResult Inserir() => View();
     [HttpPost]
-    public IActionResult Inserir(InserirTaxaViewModel inserirRegistroVm)
+    public IActionResult Inserir(InserirClienteViewModel inserirRegistroVm)
     {
         if (!ModelState.IsValid)
             return View(inserirRegistroVm);
 
-        var novoRegistro = mapeador.Map<Taxa>(inserirRegistroVm);
+        var novoRegistro = mapeador.Map<Cliente>(inserirRegistroVm);
 
-        if (ValidacaoDeRegistroRepetido(servicoTaxa, novoRegistro, null))
+        if (ValidacaoDeRegistroRepetido(servicoCliente, novoRegistro, null))
             return View(inserirRegistroVm);
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
-        var resultado = servicoTaxa.Inserir(novoRegistro);
+        var resultado = servicoCliente.Inserir(novoRegistro);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
@@ -58,33 +55,32 @@ public class TaxaController(TaxaService servicoTaxa, IMapper mapeador) : WebCont
         return RedirectToAction(nameof(Listar));
     }
 
-
     public IActionResult Editar(int id)
     {
-        var resultado = servicoTaxa.SelecionarPorId(id);
+        var resultado = servicoCliente.SelecionarPorId(id);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registro = resultado.Value;
 
-        var editarTaxaVm = mapeador.Map<EditarTaxaViewModel>(registro);
+        var editarClienteVm = mapeador.Map<EditarClienteViewModel>(registro);
 
-        return View(editarTaxaVm);
+        return View(editarClienteVm);
     }    
     [HttpPost]
-    public IActionResult Editar(EditarTaxaViewModel editarRegistroVm)
+    public IActionResult Editar(EditarClienteViewModel editarRegistroVm)
     {
         if (!ModelState.IsValid)
             return View(editarRegistroVm);
 
-        var registro = mapeador.Map<Taxa>(editarRegistroVm);
-        var registroAtual = servicoTaxa.SelecionarPorId(editarRegistroVm.Id).Value;
+        var registro = mapeador.Map<Cliente>(editarRegistroVm);
+        var registroAtual = servicoCliente.SelecionarPorId(editarRegistroVm.Id).Value;
 
-        if (ValidacaoDeRegistroRepetido(servicoTaxa, registro, registroAtual))
+        if (ValidacaoDeRegistroRepetido(servicoCliente, registro, registroAtual))
             return View(editarRegistroVm);
 
-        var resultado = servicoTaxa.Editar(registro);
+        var resultado = servicoCliente.Editar(registro);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
@@ -97,22 +93,22 @@ public class TaxaController(TaxaService servicoTaxa, IMapper mapeador) : WebCont
 
     public IActionResult Excluir(int id)
     {
-        var resultado = servicoTaxa.SelecionarPorId(id);
+        var resultado = servicoCliente.SelecionarPorId(id);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registro = resultado.Value;
 
-        var detalhesTaxaViewModel = mapeador.Map<DetalhesTaxaViewModel>(registro);
+        var detalhesClienteViewModel = mapeador.Map<DetalhesClienteViewModel>(registro);
 
-        return View(detalhesTaxaViewModel);
+        return View(detalhesClienteViewModel);
     }
     [HttpPost]
-    public IActionResult Excluir(DetalhesTaxaViewModel detalhesTaxaViewModel)
+    public IActionResult Excluir(DetalhesClienteViewModel detalhesClienteViewModel)
     {
-        var nome = servicoTaxa.SelecionarPorId(detalhesTaxaViewModel.Id).Value.Nome;
-        var resultado = servicoTaxa.Excluir(detalhesTaxaViewModel.Id);
+        var nome = servicoCliente.SelecionarPorId(detalhesClienteViewModel.Id).Value.Nome;
+        var resultado = servicoCliente.Excluir(detalhesClienteViewModel.Id);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
@@ -125,24 +121,20 @@ public class TaxaController(TaxaService servicoTaxa, IMapper mapeador) : WebCont
 
     public IActionResult Detalhes(int id)
     {
-        var resultado = servicoTaxa.SelecionarPorId(id);
+        var resultado = servicoCliente.SelecionarPorId(id);
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado.ToResult());
-
+        if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
-        }
 
         var registro = resultado.Value;
 
-        var detalhesTaxaViewModel = mapeador.Map<DetalhesTaxaViewModel>(registro);
+        var detalhesClienteViewModel = mapeador.Map<DetalhesClienteViewModel>(registro);
 
-        return View(detalhesTaxaViewModel);
+        return View(detalhesClienteViewModel);
     }
 
     #region
-    protected bool ValidacaoDeFalha(Result<Taxa> resultado)
+    protected bool ValidacaoDeFalha(Result<Cliente> resultado)
     {
         if (resultado.IsFailed)
         {
@@ -151,15 +143,15 @@ public class TaxaController(TaxaService servicoTaxa, IMapper mapeador) : WebCont
         }
         return false;
     }
-    private bool ValidacaoDeRegistroRepetido(TaxaService servicoTaxa, Taxa novoRegistro, Taxa registroAtual)
+    private bool ValidacaoDeRegistroRepetido(ClienteService servicoCliente, Cliente novoRegistro, Cliente registroAtual)
     {
-        var registrosExistentes = servicoTaxa.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
+        var registrosExistentes = servicoCliente.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
 
         registroAtual = registroAtual is null ? new() : registroAtual;
 
-        if (registrosExistentes.Exists(r =>
-            r.Nome.Validation() == novoRegistro.Nome.Validation() &&
-            r.Nome.Validation() != registroAtual.Nome.Validation()))
+        if (registrosExistentes.Exists(r => 
+            r.Documento == novoRegistro.Documento &&
+            r.Documento != registroAtual.Documento))
         {
             ApresentarMensagemRegistroExistente();
             return true;

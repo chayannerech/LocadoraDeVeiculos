@@ -1,0 +1,150 @@
+﻿@using LocadoraDeVeiculos.Dominio.ModuloCliente
+@using LocadoraDeVeiculos.WebApp.Models
+@model InserirClienteViewModel
+
+@{
+    ViewBag.Title = "Inserir novo cliente";
+}
+
+<div class="col">
+    <div class="row gap-3 my-3 my-xl-5">
+        <form class="col-lg-6 d-grid" asp-action="Inserir">
+            <div>
+                <label class="control-label fw-bold mb-1">Nome</label>
+                <input class="form-control mb-1" asp-for="Nome" />
+                <span class="text-danger fs-6" asp-validation-for="Nome"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mb-1 mt-3">Email</label>
+                <input type="email" class="form-control mb-1" asp-for="Email" />
+                <span class="text-danger fs-6" asp-validation-for="Email"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mb-1 mt-3">Telefone</label>
+                <input class="form-control mb-1" asp-for="Telefone" id="telefone" />
+                <span class="text-danger fs-6" asp-validation-for="Telefone"></span>
+            </div>
+
+            <div class="d-flex align-items-center mt-4">
+                <label class="control-label fw-bold mb-0 w-25">Tipo de Cliente</label>
+
+                <div class="w-75 gap-4" style="border: 1px solid #ced4da; border-radius: .25rem; padding: .375rem;">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="PessoaFisica" value="true" id="radioPessoaFisica">
+                        <label class="form-check-label" for="radioPessoaFisica">Pessoa física</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="PessoaFisica" value="false" id="radioPessoaJuridica">
+                        <label class="form-check-label" for="radioPessoaJuridica">Pessoa jurídica</label>
+                    </div>
+                </div>
+            </div>
+            <span class="text-danger fs-6" asp-validation-for="PessoaFisica"></span>
+
+            <div class="d-flex flex-row gap-3 mt-3">
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">CPF</label>
+                    <input class="form-control mb-1" asp-for="Documento" id="cpf" disabled />
+                </div>
+
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">CNPJ</label>
+                    <input class="form-control mb-1" asp-for="Documento" id="cnpj" disabled />
+                </div>
+            </div>
+            <span class="text-danger fs-6" asp-validation-for="Documento"></span>
+
+            <div class="d-flex flex-row gap-3 mt-3">
+                <div class="flex-fill w-25">
+                    <label class="control-label fw-bold mb-1">Estado</label>
+                    <select class="form-select mb-1" asp-for="Estado">
+                        <option value="" selected disabled></option>
+                        @foreach (var estado in Enum.GetNames(typeof(EstadosEnum)))
+                        {
+                            <option value="@estado">@estado</option>
+                        }
+                    </select>
+                    <span class="text-danger fs-6" asp-validation-for="Estado"></span>
+                </div>
+
+                <div class="flex-fill w-75">
+                    <label class="control-label fw-bold mb-1">Cidade</label>
+                    <input class="form-control mb-1" asp-for="Cidade" />
+                    <span class="text-danger fs-6" asp-validation-for="Cidade"></span>
+                </div>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mb-1 mt-3">Bairro</label>
+                <input class="form-control mb-1" asp-for="Bairro" />
+                <span class="text-danger fs-6" asp-validation-for="Bairro"></span>
+            </div>
+
+            <div class="d-flex flex-row gap-3 mt-3">
+                <div class="flex-fill w-75">
+                    <label class="control-label fw-bold mb-1">Rua</label>
+                    <input class="form-control mb-1 w" asp-for="Rua" />
+                    <span class="text-danger fs-6" asp-validation-for="Rua"></span>
+                </div>
+
+                <div class="flex-fill w-25">
+                    <label class="control-label fw-bold mb-1">Número</label>
+                    <input type="number" class="form-control mb-1" asp-for="Numero" />
+                    <span class="text-danger fs-6" asp-validation-for="Numero"></span>
+                </div>
+            </div>
+
+            <div class="row justify-content-center my-5 gap-3">
+                <button class="btn btn-secondary px-5" style="width: 170px">
+                    <i class="bi bi-floppy-fill me-1"></i>
+                    Gravar
+                </button>
+
+                <a class="btn btn-outline-secondary px-5" style="width: 170px" href="/Cliente/listar">
+                    <i class="bi bi-arrow-return-left me-1"></i>
+                    Voltar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#telefone').mask('(00)00000-0000');
+            $('#cpf').mask('000.000.000-00');
+            $('#cnpj').mask('00.000.000/0000-00');
+
+            function toggleDocumento() {
+                if ($('#radioPessoaFisica').is(':checked')) {
+                    $('#cpf').prop('disabled', false);
+                    $('#cnpj').prop('disabled', true);
+                    $('#cpf').prop('name', 'Documento');
+                    $('#cnpj').prop('name', 'unused');
+                    $('#cnpj').val('');
+                } else if ($('#radioPessoaJuridica').is(':checked')) {
+                    $('#cpf').prop('disabled', true);
+                    $('#cnpj').prop('disabled', false);
+                    $('#cpf').prop('name', 'unused');
+                    $('#cnpj').prop('name', 'Documento');
+                    $('#cpf').val('');
+                } else {
+                    $('#cpf').prop('disabled', true);
+                    $('#cnpj').prop('disabled', true);
+                    $('#cpf').prop('name', 'unused');
+                    $('#cnpj').prop('name', 'unused');
+                }
+            }
+
+            toggleDocumento();
+
+            $('#radioPessoaFisica, #radioPessoaJuridica').change(function () {
+                toggleDocumento();
+            });
+        });
+    </script>
+}

@@ -2,7 +2,6 @@
 using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
-using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
@@ -11,7 +10,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDePlanoDeCobranca.WebApp.Controllers;
 public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, GrupoDeAutomoveisService servicoGrupos, IMapper mapeador) : WebControllerBase
 {
-    private readonly IMapper mapeador = mapeador;
     public IActionResult Listar()
     {
         var resultado =
@@ -45,23 +43,15 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
 
         var novoRegistro = mapeador.Map<PlanoDeCobranca>(inserirRegistroVm);
 
-        var registrosExistentes = servicoPlanos.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
-
-        if (registrosExistentes.Exists(r => r.GrupoDeAutomoveis.Id == inserirRegistroVm.GrupoId))
-        {
-            ApresentarMensagemRegistroExistente();
-            return View(CarregarInformacoes(inserirRegistroVm));
-        }
+        if (ValidacaoDeRegistroRepetido(servicoPlanos, inserirRegistroVm, null))
+            return View(inserirRegistroVm);
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
         var resultado = servicoPlanos.Inserir(novoRegistro, inserirRegistroVm.GrupoId);
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado.ToResult());
+        if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
-        }
 
         ApresentarMensagemSucesso($"O registro \"{novoRegistro}\" foi inserido com sucesso!");
 
@@ -73,11 +63,8 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
     {
         var resultado = servicoPlanos.SelecionarPorId(id);
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado.ToResult());
+        if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
-        }
 
         var registro = resultado.Value;
 
@@ -94,23 +81,15 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
             return View(editarRegistroVm);
 
         var registro = mapeador.Map<PlanoDeCobranca>(editarRegistroVm);
-
         var registroAtual = servicoPlanos.SelecionarPorId(editarRegistroVm.Id).Value;
-        var registrosExistentes = servicoPlanos.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
 
-        if (registrosExistentes.Exists(r => r.GrupoDeAutomoveis.Id == editarRegistroVm.GrupoId && r.GrupoDeAutomoveis.Id != registroAtual.GrupoDeAutomoveis.Id))
-        {
-            ApresentarMensagemRegistroExistente();
-            return View(CarregarInformacoes(editarRegistroVm));
-        }
+        if (ValidacaoDeRegistroRepetido(servicoPlanos, editarRegistroVm, registroAtual))
+            return View(editarRegistroVm);
 
         var resultado = servicoPlanos.Editar(registro, editarRegistroVm.GrupoId);
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado.ToResult());
+        if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
-        }
 
         ApresentarMensagemSucesso($"O registro \"{registro}\" foi editado com sucesso!");
 
@@ -122,12 +101,8 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
     {
         var resultado = servicoPlanos.SelecionarPorId(id);
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado.ToResult());
-
+        if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
-        }
 
         var registro = resultado.Value;
 
@@ -140,12 +115,8 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
     {
         var resultado = servicoPlanos.Excluir(detalhesPlanoDeCobrancaViewModel.Id);
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado);
-
+        if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
-        }
 
         ApresentarMensagemSucesso($"O registro \"Plano para o grupo: {detalhesPlanoDeCobrancaViewModel.GrupoNome}\" foi excluído com sucesso!");
 
@@ -157,12 +128,8 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
     {
         var resultado = servicoPlanos.SelecionarPorId(id);
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado.ToResult());
-
+        if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
-        }
 
         var registro = resultado.Value;
 
@@ -207,6 +174,30 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
             new SelectListItem(g.Nome, g.Id.ToString()));
 
         return editarPlanoDeCobrancaVm;
+    }
+    protected bool ValidacaoDeFalha(Result<PlanoDeCobranca> resultado)
+    {
+        if (resultado.IsFailed)
+        {
+            ApresentarMensagemFalha(resultado.ToResult());
+            return true;
+        }
+        return false;
+    }
+    private bool ValidacaoDeRegistroRepetido(PlanoDeCobrancaService servicoPlanoDeCobranca, InserirPlanoDeCobrancaViewModel novoRegistro, PlanoDeCobranca registroAtual)
+    {
+        var registrosExistentes = servicoPlanoDeCobranca.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
+
+        registroAtual = registroAtual is null ? new() : registroAtual;
+
+        if (registrosExistentes.Exists(r =>
+            r.GrupoDeAutomoveis.Id == novoRegistro.GrupoId &&
+            r.GrupoDeAutomoveis.Id != registroAtual.GrupoDeAutomoveis.Id))
+        {
+            ApresentarMensagemRegistroExistente();
+            return true;
+        }
+        return false;
     }
     #endregion
 }
