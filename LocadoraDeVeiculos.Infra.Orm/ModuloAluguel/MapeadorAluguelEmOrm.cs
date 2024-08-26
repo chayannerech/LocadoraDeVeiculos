@@ -30,6 +30,10 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
+        aBuilder.Property(a => a.CategoriaPlano)
+            .HasConversion<string>()
+            .IsRequired();
+
         aBuilder.HasOne(v => v.GrupoDeAutomoveis)
             .WithMany()
             .HasForeignKey("Grupo_Id")
@@ -46,8 +50,11 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
             .IsRequired()
             .HasColumnType("datetime2");
 
-        aBuilder.Property(c => c.DataRetorno)
+        aBuilder.Property(c => c.DataRetornoPrevista)
             .IsRequired()
+            .HasColumnType("datetime2");
+
+        aBuilder.Property(c => c.DataRetornoReal)
             .HasColumnType("datetime2");
 
         aBuilder.Property(c => c.SeguroCondutor)
@@ -57,6 +64,10 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
         aBuilder.Property(c => c.SeguroTerceiro)
             .IsRequired()
             .HasColumnType("bit");
+
+        aBuilder.Property(a => a.ValorTotal)
+            .IsRequired()
+            .HasColumnType("decimal(18,2)");
 
         /*        aBuilder.Property(s => s.UsuarioId)
                     .IsRequired()

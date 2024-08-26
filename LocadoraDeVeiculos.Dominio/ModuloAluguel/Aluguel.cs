@@ -12,10 +12,14 @@ public class Aluguel() : EntidadeBase
     public PlanoDeCobranca PlanoDeCobranca { get; set; }
     public GrupoDeAutomoveis GrupoDeAutomoveis { get; set; }
     public Veiculo Veiculo { get; set; }
+    public CategoriaDePlanoEnum CategoriaPlano { get; set; }
     public DateTime DataSaida { get; set; }
-    public DateTime DataRetorno { get; set; }
+    public DateTime DataRetornoPrevista { get; set; }
+    public DateTime DataRetornoReal { get; set; }
     public bool SeguroCondutor { get; set; }
     public bool SeguroTerceiro {  get; set; }
+    public decimal ValorTotal { get; set; }
+
 
     public List<string> Validar()
     {
@@ -26,7 +30,7 @@ public class Aluguel() : EntidadeBase
         VerificaNulo(ref erros, PlanoDeCobranca, "PlanoDeCobranca");
         VerificaNulo(ref erros, Veiculo, "Veiculo");
         VerificaDataInferior(ref erros, DataSaida, "O veículo deve ser retirado hoje ou após o dia de hoje");
-        VerificaDataInferior(ref erros, DataRetorno, DataSaida, "O veículo deve ser devolvido após a data de retirada");        
+        VerificaDataInferior(ref erros, DataRetornoPrevista, DataSaida, "O veículo deve ser devolvido após a data de retirada");        
         VerificaSeguro(ref erros, SeguroCondutor, SeguroTerceiro);
 
         return erros;

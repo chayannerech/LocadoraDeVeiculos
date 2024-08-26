@@ -1,5 +1,4 @@
-﻿using LocadoraDeVeiculos.Dominio.ModuloCliente;
-using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
+﻿using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
@@ -48,6 +47,7 @@ public class InserirPlanoDeCobrancaViewModel
     public decimal PrecoLivre { get; set; } = 0;
 
     public IEnumerable<SelectListItem>? Grupos { get; set; }
+    public List<string>? Categorias { get; set; }
 }
 
 public class EditarPlanoDeCobrancaViewModel : InserirPlanoDeCobrancaViewModel

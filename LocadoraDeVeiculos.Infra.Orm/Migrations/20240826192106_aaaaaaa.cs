@@ -315,10 +315,13 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     Plano_Id = table.Column<int>(type: "int", nullable: false),
                     Grupo_Id = table.Column<int>(type: "int", nullable: false),
                     Veiculo_Id = table.Column<int>(type: "int", nullable: false),
+                    CategoriaPlano = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DataSaida = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DataRetorno = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataRetornoPrevista = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataRetornoReal = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SeguroCondutor = table.Column<bool>(type: "bit", nullable: false),
-                    SeguroTerceiro = table.Column<bool>(type: "bit", nullable: false)
+                    SeguroTerceiro = table.Column<bool>(type: "bit", nullable: false),
+                    ValorTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {

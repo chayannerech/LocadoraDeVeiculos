@@ -74,12 +74,8 @@
             <div class="d-flex flex-row gap-3 mt-3">
                 <div class="flex-fill w-25">
                     <label class="control-label fw-bold mb-1">Estado</label>
-                    <select class="form-select mb-1" asp-for="Estado">
-                        <option value="" selected disabled></option>
-                        @foreach (var estado in Enum.GetNames(typeof(EstadosEnum)))
-                        {
-                            <option value="@estado">@estado</option>
-                        }
+                    <select class="form-select mb-1" asp-for="Estado" asp-items="Model.Estados">
+                        <option value="" selected disabled>Estado</option>
                     </select>
                     <span class="text-danger fs-6" asp-validation-for="Estado"></span>
                 </div>
@@ -143,17 +139,15 @@
                     $('#CPF').prop('name', 'Documento');
                     $('#CNPJ').prop('name', 'unused');
                     $('#CNPJ').val('');
-                    $('#rg').val('');
-                    $('#cnh').val('');
                 } else if ($('#radioPessoaJuridica').is(':checked')) {
                     $('#cpf').addClass('d-none');
                     $('#cnpj').removeClass('d-none');
                     $('#rgEcnh').addClass('d-none');
                     $('#CPF').prop('name', 'unused');
                     $('#CNPJ').prop('name', 'Documento');
-                    $('#rh').prop('name', 'unused');
-                    $('#cnh').prop('name', 'unused');
                     $('#CPF').val('');
+                    $('#rg').val('');
+                    $('#cnh').val('');
                 } else {
                     $('#cpf').addClass('d-none');
                     $('#cnpj').addClass('d-none');

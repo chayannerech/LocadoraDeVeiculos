@@ -30,13 +30,20 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CategoriaPlano")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Cliente_Id")
                         .HasColumnType("int");
 
                     b.Property<int>("Condutor_Id")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DataRetorno")
+                    b.Property<DateTime>("DataRetornoPrevista")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DataRetornoReal")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DataSaida")
@@ -53,6 +60,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 
                     b.Property<bool>("SeguroTerceiro")
                         .HasColumnType("bit");
+
+                    b.Property<decimal>("ValorTotal")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Veiculo_Id")
                         .HasColumnType("int");

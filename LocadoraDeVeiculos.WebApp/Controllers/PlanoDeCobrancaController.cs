@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
+using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
@@ -106,19 +107,19 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
 
         var registro = resultado.Value;
 
-        var detalhesPlanoDeCobrancaViewModel = mapeador.Map<DetalhesPlanoDeCobrancaViewModel>(registro);
+        var detalhesRegistroVm = mapeador.Map<DetalhesPlanoDeCobrancaViewModel>(registro);
 
-        return View(detalhesPlanoDeCobrancaViewModel);
+        return View(detalhesRegistroVm);
     }
     [HttpPost]
-    public IActionResult Excluir(DetalhesPlanoDeCobrancaViewModel detalhesPlanoDeCobrancaViewModel)
+    public IActionResult Excluir(DetalhesPlanoDeCobrancaViewModel detalhesRegistroVm)
     {
-        var resultado = servicoPlanos.Excluir(detalhesPlanoDeCobrancaViewModel.Id);
+        var resultado = servicoPlanos.Excluir(detalhesRegistroVm.Id);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"Plano para o grupo: {detalhesPlanoDeCobrancaViewModel.GrupoNome}\" foi excluído com sucesso!");
+        ApresentarMensagemSucesso($"O registro \"Plano para o grupo: {detalhesRegistroVm.GrupoNome}\" foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
@@ -133,47 +134,49 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
 
         var registro = resultado.Value;
 
-        var detalhesPlanoDeCobrancaViewModel = mapeador.Map<DetalhesPlanoDeCobrancaViewModel>(registro);
+        var detalhesRegistroVm = mapeador.Map<DetalhesPlanoDeCobrancaViewModel>(registro);
 
-        return View(detalhesPlanoDeCobrancaViewModel);
+        return View(detalhesRegistroVm);
     }
 
     #region Auxiliares
-    private InserirPlanoDeCobrancaViewModel? CarregarInformacoes(InserirPlanoDeCobrancaViewModel inserirPlanoDeCobrancaVm)
+    private InserirPlanoDeCobrancaViewModel? CarregarInformacoes(InserirPlanoDeCobrancaViewModel inserirRegistroVm)
     {
         var resultadoGrupos = servicoGrupos.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
         if (resultadoGrupos.IsFailed)
         {
             ApresentarMensagemFalha(Result.Fail("Falha ao encontrar dados necessários!"));
-
             return null;
         }
 
         var grupos = resultadoGrupos.Value;
 
-        inserirPlanoDeCobrancaVm.Grupos = grupos.Select(g =>
+        inserirRegistroVm.Grupos = grupos.Select(g =>
             new SelectListItem(g.Nome, g.Id.ToString()));
 
-        return inserirPlanoDeCobrancaVm;
+        inserirRegistroVm.Categorias = new(Enum.GetNames(typeof(CategoriaDePlanoEnum)));
+
+        return inserirRegistroVm;
     }
-    private EditarPlanoDeCobrancaViewModel? CarregarInformacoes(EditarPlanoDeCobrancaViewModel editarPlanoDeCobrancaVm)
+    private EditarPlanoDeCobrancaViewModel? CarregarInformacoes(EditarPlanoDeCobrancaViewModel editarRegistroVm)
     {
         var resultadoGrupos = servicoGrupos.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
         if (resultadoGrupos.IsFailed)
         {
             ApresentarMensagemFalha(Result.Fail("Falha ao encontrar dados necessários!"));
-
             return null;
         }
 
         var grupos = resultadoGrupos.Value;
 
-        editarPlanoDeCobrancaVm.Grupos = grupos.Select(g =>
+        editarRegistroVm.Grupos = grupos.Select(g =>
             new SelectListItem(g.Nome, g.Id.ToString()));
 
-        return editarPlanoDeCobrancaVm;
+        editarRegistroVm.Categorias = new(Enum.GetNames(typeof(CategoriaDePlanoEnum)));
+
+        return editarRegistroVm;
     }
     protected bool ValidacaoDeFalha(Result<PlanoDeCobranca> resultado)
     {

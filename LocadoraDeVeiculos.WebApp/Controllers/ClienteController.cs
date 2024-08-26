@@ -6,6 +6,7 @@ using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 public class ClienteController(ClienteService servicoCliente, IMapper mapeador) : WebControllerBase
 {
@@ -31,7 +32,7 @@ public class ClienteController(ClienteService servicoCliente, IMapper mapeador) 
         return View(listarClienteVm);
     }
 
-    public IActionResult Inserir() => View();
+    public IActionResult Inserir() => View(CarregarInformacoes(new InserirClienteViewModel()));
     [HttpPost]
     public IActionResult Inserir(InserirClienteViewModel inserirRegistroVm)
     {
@@ -43,13 +44,13 @@ public class ClienteController(ClienteService servicoCliente, IMapper mapeador) 
                 inserirRegistroVm.RG = "";
             }
             else
-                return View(inserirRegistroVm);
+                return View(CarregarInformacoes(inserirRegistroVm));
         }
 
         var novoRegistro = mapeador.Map<Cliente>(inserirRegistroVm);
 
         if (ValidacaoDeRegistroRepetido(servicoCliente, novoRegistro, null))
-            return View(inserirRegistroVm);
+            return View(CarregarInformacoes(inserirRegistroVm));
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
@@ -72,9 +73,9 @@ public class ClienteController(ClienteService servicoCliente, IMapper mapeador) 
 
         var registro = resultado.Value;
 
-        var editarClienteVm = mapeador.Map<EditarClienteViewModel>(registro);
+        var editarRegistroVm = mapeador.Map<EditarClienteViewModel>(registro);
 
-        return View(editarClienteVm);
+        return View(CarregarInformacoes(editarRegistroVm));
     }    
     [HttpPost]
     public IActionResult Editar(EditarClienteViewModel editarRegistroVm)
@@ -87,7 +88,7 @@ public class ClienteController(ClienteService servicoCliente, IMapper mapeador) 
                 editarRegistroVm.RG = "";
             }
             else
-                return View(editarRegistroVm);
+                return View(CarregarInformacoes(editarRegistroVm));
         }
 
         var registro = mapeador.Map<Cliente>(editarRegistroVm);
@@ -116,15 +117,15 @@ public class ClienteController(ClienteService servicoCliente, IMapper mapeador) 
 
         var registro = resultado.Value;
 
-        var detalhesClienteViewModel = mapeador.Map<DetalhesClienteViewModel>(registro);
+        var detalhesRegistroVm = mapeador.Map<DetalhesClienteViewModel>(registro);
 
-        return View(detalhesClienteViewModel);
+        return View(detalhesRegistroVm);
     }
     [HttpPost]
-    public IActionResult Excluir(DetalhesClienteViewModel detalhesClienteViewModel)
+    public IActionResult Excluir(DetalhesClienteViewModel detalhesRegistroVm)
     {
-        var nome = servicoCliente.SelecionarPorId(detalhesClienteViewModel.Id).Value.Nome;
-        var resultado = servicoCliente.Excluir(detalhesClienteViewModel.Id);
+        var nome = servicoCliente.SelecionarPorId(detalhesRegistroVm.Id).Value.Nome;
+        var resultado = servicoCliente.Excluir(detalhesRegistroVm.Id);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
@@ -144,12 +145,26 @@ public class ClienteController(ClienteService servicoCliente, IMapper mapeador) 
 
         var registro = resultado.Value;
 
-        var detalhesClienteViewModel = mapeador.Map<DetalhesClienteViewModel>(registro);
+        var detalhesRegistroVm = mapeador.Map<DetalhesClienteViewModel>(registro);
 
-        return View(detalhesClienteViewModel);
+        return View(detalhesRegistroVm);
     }
 
     #region
+    private InserirClienteViewModel? CarregarInformacoes(InserirClienteViewModel inserirRegistroVm)
+    {
+        inserirRegistroVm.Estados = Enum.GetNames(typeof(EstadosEnum)).Select(t =>
+            new SelectListItem(t, t));
+
+        return inserirRegistroVm;
+    }
+    private EditarClienteViewModel? CarregarInformacoes(EditarClienteViewModel editarRegistroVm)
+    {
+        editarRegistroVm.Estados = Enum.GetNames(typeof(EstadosEnum)).Select(t =>
+            new SelectListItem(t, t));
+
+        return editarRegistroVm;
+    }
     protected bool ValidacaoDeFalha(Result<Cliente> resultado)
     {
         if (resultado.IsFailed)
@@ -167,19 +182,15 @@ public class ClienteController(ClienteService servicoCliente, IMapper mapeador) 
 
         if (registrosExistentes.Exists(r => 
             r.Documento == novoRegistro.Documento &&
-            r.Documento != registroAtual.Documento))
+            r.Documento != registroAtual.Documento) ||
+            novoRegistro.PessoaFisica && registrosExistentes.Exists(r =>
+            (r.RG == novoRegistro.RG && r.RG != registroAtual.RG) ||
+            (r.CNH == novoRegistro.CNH && r.CNH != registroAtual.RG)))
         {
             ApresentarMensagemRegistroExistente();
             return true;
         }
 
-        if (novoRegistro.PessoaFisica && registrosExistentes.Exists(r =>
-            (r.RG == novoRegistro.RG && r.RG != registroAtual.RG) ||
-            (r.CNH == novoRegistro.RG && r.CNH != registroAtual.RG)))
-        {
-            ApresentarMensagemRegistroExistente();
-            return true;
-        }
         return false;
     }
     #endregion

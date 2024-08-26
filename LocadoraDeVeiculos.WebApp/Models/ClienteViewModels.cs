@@ -62,6 +62,8 @@ public class InserirClienteViewModel
     [Required(ErrorMessage = "O número é obrigatório")]
     [Range(1, 50000, ErrorMessage = "O número deve ser maior que zero")]
     public int Numero { get; set; }
+
+    public IEnumerable<SelectListItem>? Estados { get; set; }
 }
 
 public class EditarClienteViewModel : InserirClienteViewModel
