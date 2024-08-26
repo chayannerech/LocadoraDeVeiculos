@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
+using LocadoraDeVeiculos.Dominio.ModuloVeiculo;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
@@ -157,7 +158,6 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
         if (resultadoGrupos.IsFailed)
         {
             ApresentarMensagemFalha(Result.Fail("Falha ao encontrar dados necessários!"));
-
             return null;
         }
 
@@ -165,6 +165,9 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
 
         inserirVeiculosVm.Grupos = grupos.Select(g =>
             new SelectListItem(g.Nome, g.Id.ToString()));
+
+        inserirVeiculosVm.TiposDeCombustiveis = Enum.GetNames(typeof(TipoDeCombustivelEnum)).Select(t =>
+            new SelectListItem(t, t));
 
         return inserirVeiculosVm;
     }
@@ -183,6 +186,9 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
 
         editarVeiculosVm.Grupos = grupos.Select(g =>
             new SelectListItem(g.Nome, g.Id.ToString()));
+
+        editarVeiculosVm.TiposDeCombustiveis = Enum.GetNames(typeof(TipoDeCombustivelEnum)).Select(t =>
+            new SelectListItem(t, t));
 
         return editarVeiculosVm;
     }

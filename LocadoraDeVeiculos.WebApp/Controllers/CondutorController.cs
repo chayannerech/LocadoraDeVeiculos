@@ -38,22 +38,7 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
     public IActionResult Inserir(InserirCondutorViewModel inserirRegistroVm)
     {   
         if (!ModelState.IsValid)
-        {
-            if (inserirRegistroVm.ClienteId != 0)
-            {
-                var clienteSelecionado = servicoClientes.SelecionarPorId(inserirRegistroVm.ClienteId).Value;
-                inserirRegistroVm.Nome = clienteSelecionado.Nome;
-                inserirRegistroVm.Email = clienteSelecionado.Email;
-                inserirRegistroVm.Telefone = clienteSelecionado.Telefone;
-                inserirRegistroVm.CPF = clienteSelecionado.Documento;
-                inserirRegistroVm.CNH = clienteSelecionado.CNH;
-            }
-            else
-                return View(CarregarInformacoes(inserirRegistroVm));
-
-            if (inserirRegistroVm.ValidadeCNH < DateTime.Now)
-                return View(CarregarInformacoes(inserirRegistroVm));
-        }
+            return View(CarregarInformacoes(inserirRegistroVm));
             
         var novoRegistro = mapeador.Map<Condutor>(inserirRegistroVm);
 

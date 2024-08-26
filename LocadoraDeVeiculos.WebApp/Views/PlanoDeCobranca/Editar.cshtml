@@ -1,9 +1,10 @@
-﻿@using LocadoraDeVeiculos.WebApp.Models
+﻿@using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca
+@using LocadoraDeVeiculos.WebApp.Models
 @model EditarPlanoDeCobrancaViewModel
 
 @{
     ViewBag.Title = "Editar plano de cobrança";
-    List<string> categorias = Model.Categorias;
+    List<string> categorias = new(Enum.GetNames(typeof(CategoriaDePlanoEnum)));
 }
 
 <style>

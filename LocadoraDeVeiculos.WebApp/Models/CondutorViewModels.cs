@@ -65,7 +65,7 @@ public class DetalhesCondutorViewModel
 {
     public int Id { get; set; }
     public Cliente Cliente { get; set; }
-    public string NomeCliente { get => Cliente.Nome; set { } }
+    public string NomeCliente { get => Cliente is null ? "" : Cliente.Nome; set { } }
     public string Nome { get; set; }
     public string Email { get; set; }
     public string Telefone { get; set; }

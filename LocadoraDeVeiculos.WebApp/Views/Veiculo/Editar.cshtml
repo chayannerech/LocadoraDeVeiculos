@@ -3,7 +3,6 @@
 
 @{
     ViewBag.Title = "Editar veículo";
-    List<string> combustiveis = ["gasolina", "diesel", "etanol", "gás natural (GNV)", "eletricidade"];
 }
 
 <div class="col">
@@ -49,12 +48,8 @@
 
             <div>
                 <label class="control-label fw-bold mb-1 mt-2">Tipo de combustível</label>
-                <select class="form-select mb-1" asp-for="TipoCombustivel">
-                    <option value="" selected disabled></option>
-                    @foreach (var c in combustiveis)
-                    {
-                        <option value="@c">@c</option>
-                    }
+                <select class="form-select mb-1" asp-for="TipoCombustivel" asp-items="Model.TiposDeCombustiveis">
+                    <option value="" selected disabled>Selecione o combustível</option>
                 </select>
                 <span class="text-danger fs-6" asp-validation-for="TipoCombustivel"></span>
             </div>

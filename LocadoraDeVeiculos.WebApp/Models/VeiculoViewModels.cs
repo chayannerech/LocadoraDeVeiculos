@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 namespace LocadoraDeVeiculos.WebApp.Models;
 
-public class PropriedadesVeiculosViewModel
+public class InserirVeiculosViewModel
 {
     [Required(ErrorMessage = "O grupo é obrigatório")]
     [Range(1, int.MaxValue, ErrorMessage = "O grupo é obrigatório")]
@@ -10,7 +10,7 @@ public class PropriedadesVeiculosViewModel
 
 
     [Required(ErrorMessage = "A placa é obrigatória")]
-    [Length(7, 7, ErrorMessage = "A placa deve conter 7 caracteres")]
+    [RegularExpression(@"^[A-Za-z0-9]{7}$", ErrorMessage = "A placa deve conter exatamente 7 caracteres alfanuméricos")]
     public string Placa { get; set; }
 
 
@@ -34,7 +34,7 @@ public class PropriedadesVeiculosViewModel
 
 
     [Required(ErrorMessage = "A capacidade de combustível é obrigatória")]
-    [Range(50, 10000, ErrorMessage = "A capacidade deve estar entre 50l e 10000l")]
+    [Range(30, 120, ErrorMessage = "A capacidade deve estar entre 30 e 120L")]
     public int CapacidadeCombustivel { get; set; }
 
 
@@ -42,7 +42,9 @@ public class PropriedadesVeiculosViewModel
     [Range(1950, 2024, ErrorMessage = "O ano deve estar entre 1950 e 2024")]
     public int Ano { get; set; }
 
+
     public IEnumerable<SelectListItem>? Grupos { get; set; }
+    public IEnumerable<SelectListItem>? TiposDeCombustiveis { get; set; }
 
 
     [Required(ErrorMessage = "A foto do veículo é obrigatória")]
@@ -70,9 +72,7 @@ public class PropriedadesVeiculosViewModel
     }
 }
 
-public class InserirVeiculosViewModel : PropriedadesVeiculosViewModel { }
-
-public class EditarVeiculosViewModel : PropriedadesVeiculosViewModel
+public class EditarVeiculosViewModel : InserirVeiculosViewModel
 {    
     public int Id { get; set; }
     public byte[] ImagemEmBytes { get; set; }
