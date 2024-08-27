@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 {
     /// <inheritdoc />
-    public partial class aaaaaaa : Migration
+    public partial class quaseLa : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -291,7 +291,8 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     Ano = table.Column<int>(type: "int", nullable: false),
                     ImagemEmBytes = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     TipoDaImagem = table.Column<string>(type: "nvarchar(255)", nullable: false),
-                    Grupo_Id = table.Column<int>(type: "int", nullable: false)
+                    Grupo_Id = table.Column<int>(type: "int", nullable: false),
+                    Alugado = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

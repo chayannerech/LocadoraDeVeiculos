@@ -61,9 +61,9 @@ public class InserirAluguelViewModel
 
 
     public IEnumerable<Condutor>? Condutores { get; set; }
-    public IEnumerable<Cliente>? Clientes { get; set; }
+    public IEnumerable<SelectListItem>? Clientes { get; set; }
     public IEnumerable<SelectListItem>? Grupos { get; set; }
-    public IEnumerable<SelectListItem>? Veiculos { get; set; }
+    public IEnumerable<Veiculo>? Veiculos { get; set; }
     public List<string>? Categorias { get; set; }
     public bool Check {  get; set; }
 }

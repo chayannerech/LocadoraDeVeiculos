@@ -6,45 +6,86 @@
     ViewBag.Title = "Alugar um veículo";
 }
 
+<style>
+    .is-invalid {
+        border-color: red;
+    }
+</style>
+
 <div class="col">
-    <div class="row gap-3 my-3 my-xl-5">
+    <div class="row gap-3 my-3 my-xl-4">
         <form class="col-lg-6 d-grid" asp-action="Inserir">
             <div>
                 <label class="control-label fw-bold mb-1">Cliente</label>
-                <select class="form-select" asp-for="ClienteId" id="clienteSelect">
+                <select class="form-select" asp-for="ClienteId" asp-items="Model.Clientes" id="clienteSelect">
                     <option value="" selected disabled>Selecione um cliente</option>
-                    @foreach (var cliente in Model.Clientes)
-                    {
-                        <option value="@cliente.Id"
-                                data-nome="@cliente.Nome"
-                                data-cnh="@cliente.CNH"
-                                data-pessoafisica="@cliente.PessoaFisica">
-                            @cliente.Nome
-                        </option>
-                    }
                 </select>
                 <span class="text-danger fs-6" asp-validation-for="ClienteId"></span>
             </div>
 
-            <div class="d-flex align-items-center mt-2 ms-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" asp-for="Check" value="true" id="check" disabled>
-                    <label class="form-check-label" for="check">O cliente é o condutor?</label>
-                </div>
-            </div>
-
             <div>
                 <label class="control-label fw-bold mb-1 mt-3">Condutor</label>
-                <select class="form-select mb-1" asp-for="CondutorId" id="condutorSelect">
+                <select class="form-select mb-1" asp-for="CondutorId" id="condutorSelect" disabled>
                     <option value="" selected disabled>Selecione um condutor</option>
                     @foreach (var condutor in Model.Condutores!)
                     {
-                        <option value="@condutor.Id" data-clienteid="@condutor.Cliente.Id">
+                        <option value="@condutor.Id"
+                                data-clienteid="@condutor.Cliente.Id"
+                                data-validadecnh="@condutor.ValidadeCNH.ToString("yyyy-MM-dd")">
                             @condutor.Nome
                         </option>
                     }
                 </select>
                 <span class="text-danger fs-6" asp-validation-for="CondutorId"></span>
+                <div id="condutorWarning" class="text-danger fs-6" style="display: none;">
+                    Nenhum condutor associado a este cliente
+                </div>
+                <div id="cnhWarning" class="text-danger fs-6" style="display: none;">
+                    A CNH deste condutor está vencida
+                </div>
+            </div>
+
+            <div class="d-none" id="grupoEveiculo">
+                <div>
+                    <label class="control-label fw-bold mt-3 mb-1">Grupo de Automóveis</label>
+                    <select class="form-select mb-1" asp-for="GrupoId" asp-items="Model.Grupos" id="grupoSelect">
+                        <option value="" selected disabled>Selecione um grupo</option>
+                    </select>
+                    <span class="text-danger fs-6" asp-validation-for="GrupoId"></span>
+                </div>
+
+                <div>
+                    <label class="control-label fw-bold mt-3 mb-1">Veículo</label>
+                    <select class="form-select mb-1" asp-for="VeiculoId" id="veiculoSelect" disabled>
+                        <option value="" selected disabled>Selecione um veículo</option>
+                        @foreach (var veiculo in Model.Veiculos!)
+                        {
+                            <option value="@veiculo.Id"
+                                    data-grupoid="@veiculo.GrupoDeAutomoveis.Id"
+                                    data-alugado="@veiculo.Alugado">
+                                @veiculo.Marca modelo @veiculo.Modelo, Placa @veiculo.Placa
+                            </option>
+                        }
+                    </select>
+                    <span class="text-danger fs-6" asp-validation-for="VeiculoId"></span>
+                    <div id="veiculoWarning" class="text-danger fs-6" style="display: none;">
+                        Este veículo já está alugado
+                    </div>
+                </div>
+
+                <div class="d-flex flex-row gap-3 mt-4 d-none" id="datas">
+                    <div>
+                        <label class="control-label fw-bold mb-1">Data de Retirada</label>
+                        <input type="date" class="form-control mb-1" asp-for="DataSaida" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        <span class="text-danger fs-6" asp-validation-for="DataSaida"></span>
+                    </div>
+
+                    <div class="flex-fill">
+                        <label class="control-label fw-bold mb-1">Data de devolução</label>
+                        <input type="date" class="form-control mb-1" asp-for="DataRetornoPrevista" />
+                        <span class="text-danger fs-6" asp-validation-for="DataRetornoPrevista"></span>
+                    </div>
+                </div>
             </div>
 
             <div class="row justify-content-center my-5 gap-3">
@@ -65,28 +106,99 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#telefone').mask('(00)00000-0000');
-            $('#cpf').mask('000.000.000-00');
-            $('#cnh').mask('00000000000');
-
             function filtrarCondutoresPorCliente(clienteId) {
+                let condutorEncontrado = false;
+
                 $('#condutorSelect option').each(function () {
                     const condutorClienteId = $(this).data('clienteid');
 
                     if (condutorClienteId == clienteId) {
                         $(this).show();
-                        $('#check').prop('disabled', false);
+                        condutorEncontrado = true;
                     } else {
                         $(this).hide();
                     }
                 });
 
+                if (condutorEncontrado) {
+                    $('#condutorSelect').removeClass('is-invalid').prop('disabled', false);
+                    $('#condutorWarning').hide();
+                } else {
+                    $('#condutorSelect').addClass('is-invalid').prop('disabled', true);
+                    $('#condutorWarning').show();
+                }
+
                 $('#condutorSelect').val('');
+            }
+
+            function filtrarVeiculosPorGrupo(grupoId) {
+                let veiculoEncontrado = false;
+
+                $('#veiculoSelect option').each(function () {
+                    const veiculoGrupoId = $(this).data('grupoid');
+
+                    if (veiculoGrupoId == grupoId) {
+                        $(this).show();
+                        veiculoEncontrado = true;
+                    } else {
+                        $(this).hide();
+                    }
+                });
+
+                if (veiculoEncontrado) {
+                    $('#veiculoSelect').prop('disabled', false);
+                } else {
+                    $('#veiculoSelect').prop('disabled', true);
+                }
+
+                $('#veiculoSelect').val('');
+            }
+
+            function verificarValidadeCnh() {
+                const condutorSelecionado = $('#condutorSelect option:selected');
+                const validadeCnh = new Date(condutorSelecionado.data('validadecnh'));
+                const dataAtual = new Date();
+
+                if (validadeCnh < dataAtual) {
+                    $('#condutorSelect').addClass('is-invalid');
+                    $('#cnhWarning').show();
+                } else {
+                    $('#condutorSelect').removeClass('is-invalid');
+                    $('#cnhWarning').hide();
+                    $('#grupoEveiculo').removeClass('d-none');
+                }
+            }
+
+            function verificarVeiculoAlugado() {
+                const veiculoSelecionado = $('#veiculoSelect option:selected');
+                const veiculoAlugado = veiculoSelecionado.data('alugado') === true || veiculoSelecionado.data('alugado') === "True";
+
+                if (veiculoAlugado) {
+                    $('#veiculoSelect').addClass('is-invalid');
+                    $('#veiculoWarning').show();
+                } else {
+                    $('#veiculoSelect').removeClass('is-invalid');
+                    $('#veiculoWarning').hide();
+                    $('#datas').removeClass('d-none');
+                }
             }
 
             $('#clienteSelect').change(function () {
                 const clienteIdSelecionado = $(this).val();
                 filtrarCondutoresPorCliente(clienteIdSelecionado);
+            });
+
+            $('#condutorSelect').change(function () {
+                verificarValidadeCnh();
+            });
+
+            $('#grupoSelect').change(function () {
+                const grupoIdSelecionado = $(this).val();
+                filtrarVeiculosPorGrupo(grupoIdSelecionado);
+            });
+
+            $('#veiculoSelect').change(function () {
+                verificarVeiculoAlugado();
             });
 
             const clienteIdInicial = $('#clienteSelect').val();

@@ -13,6 +13,7 @@ public class Veiculo() : EntidadeBase
     public byte[] ImagemEmBytes { get; set; }
     public string TipoDaImagem { get; set; }
     public GrupoDeAutomoveis GrupoDeAutomoveis { get; set; }
+    public bool Alugado { get; set; }
 
     public List<string> Validar()
     {

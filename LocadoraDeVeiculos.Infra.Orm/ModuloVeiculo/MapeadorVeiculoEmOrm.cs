@@ -54,6 +54,10 @@ public class MapeadorVeiculoEmOrm : IEntityTypeConfiguration<Veiculo>
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
+        vBuilder.Property(v => v.Alugado)
+            .IsRequired()
+            .HasColumnType("bit");
+
         /*        vBuilder.Property(s => s.UsuarioId)
                     .IsRequired()
                     .HasColumnType("int")

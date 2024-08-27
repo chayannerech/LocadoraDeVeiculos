@@ -408,6 +408,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Alugado")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Ano")
                         .HasColumnType("int");
 
