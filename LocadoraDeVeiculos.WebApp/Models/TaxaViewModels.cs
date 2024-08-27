@@ -13,6 +13,8 @@ public class InserirTaxaViewModel
 
     [Required(ErrorMessage = "O modo de cobrança é obrigatório")]
     public bool PrecoFixo { get; set; }
+
+    public bool Seguro { get; set; }
 }
 
 public class EditarTaxaViewModel : InserirTaxaViewModel

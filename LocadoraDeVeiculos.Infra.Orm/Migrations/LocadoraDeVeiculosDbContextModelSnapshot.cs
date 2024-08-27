@@ -297,6 +297,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<bool>("PrecoFixo")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("Seguro")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.ToTable("TBTaxa", (string)null);

@@ -113,7 +113,8 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nome = table.Column<string>(type: "varchar(200)", nullable: false),
                     Preco = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PrecoFixo = table.Column<bool>(type: "bit", nullable: false)
+                    PrecoFixo = table.Column<bool>(type: "bit", nullable: false),
+                    Seguro = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

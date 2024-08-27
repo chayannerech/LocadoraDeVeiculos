@@ -2,6 +2,7 @@
 using LocadoraDeVeiculos.Dominio.ModuloCondutor;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
+using LocadoraDeVeiculos.Dominio.ModuloTaxa;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
@@ -44,10 +45,18 @@ public class InserirAluguelViewModel
     public int VeiculoId { get; set; }
 
 
+    [Required]
+    public CategoriaDePlanoEnum CategoriaPlano { get; set; }
+
+
+    [Required(ErrorMessage = "A data de retirada é obrigatória")]
+    [DataType(DataType.Date)]
     [DataMenorQueHoje(ErrorMessage = "O veículo deve ser retirado em uma data superior à de hoje")]
     public DateTime DataSaida { get; set; }
 
 
+    [Required(ErrorMessage = "A data de devolução é obrigatória")]
+    [DataType(DataType.Date)]
     [DataMenorQue(ErrorMessage = "A data de retorno deve ser superior à data de saída")]
     public DateTime DataRetornoPrevista { get; set; }
 
@@ -56,16 +65,13 @@ public class InserirAluguelViewModel
     public bool SeguroTerceiro { get; set; }
 
 
-    [Required]
-    public CategoriaDePlanoEnum CategoriaPlano { get; set; }
-
-
     public IEnumerable<Condutor>? Condutores { get; set; }
     public IEnumerable<SelectListItem>? Clientes { get; set; }
     public IEnumerable<SelectListItem>? Grupos { get; set; }
     public IEnumerable<Veiculo>? Veiculos { get; set; }
-    public List<string>? Categorias { get; set; }
-    public bool Check {  get; set; }
+    public IEnumerable<SelectListItem>? Categorias { get; set; }
+    public IEnumerable<Taxa>? Taxas { get; set; }
+    public IEnumerable<Taxa>? Seguros { get; set; }
 }
 
 public class EditarAluguelViewModel : InserirAluguelViewModel

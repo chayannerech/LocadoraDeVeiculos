@@ -6,6 +6,7 @@ public class Taxa() : EntidadeBase
     public string Nome { get; set; }
     public decimal Preco { get; set; }
     public bool PrecoFixo { get; set; }
+    public bool Seguro { get; set; }
 
     public List<string> Validar()
     {

@@ -20,6 +20,7 @@ public class AluguelController(
         PlanoDeCobrancaService servicoPlano,
         GrupoDeAutomoveisService servicoGrupo,
         VeiculoService servicoVeiculo,
+        TaxaService servicoTaxa,
         IMapper mapeador) : WebControllerBase
 {
     public IActionResult Listar()
@@ -184,8 +185,9 @@ public class AluguelController(
         var resultadoClientes = servicoCliente.SelecionarTodos(UsuarioId.GetValueOrDefault());
         var resultadoGrupos = servicoGrupo.SelecionarTodos(UsuarioId.GetValueOrDefault());
         var resultadoVeiculos = servicoVeiculo.SelecionarTodos(UsuarioId.GetValueOrDefault());
+        var resultadoTaxas = servicoTaxa.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
-        if (resultadoCondutores.IsFailed || resultadoClientes.IsFailed || resultadoGrupos.IsFailed || resultadoVeiculos.IsFailed)
+        if (resultadoCondutores.IsFailed || resultadoClientes.IsFailed || resultadoGrupos.IsFailed || resultadoVeiculos.IsFailed || resultadoTaxas.IsFailed)
         {
             ApresentarMensagemFalha(Result.Fail("Falha ao encontrar dados necessários!"));
             return null;
@@ -195,12 +197,16 @@ public class AluguelController(
         var clientes = resultadoClientes.Value;
         var grupos = resultadoGrupos.Value;
         var veiculos = resultadoVeiculos.Value;
+        var taxas = resultadoTaxas.Value;
+        var seguros = taxas.FindAll(t => t.Seguro);
 
         inserirRegistroVm.Condutores = condutores;
         inserirRegistroVm.Clientes = clientes.Select(c => new SelectListItem(c.Nome, c.Id.ToString()));
         inserirRegistroVm.Grupos = grupos.Select(g => new SelectListItem(g.Nome, g.Id.ToString()));
         inserirRegistroVm.Veiculos = veiculos;
-        inserirRegistroVm.Categorias = new(Enum.GetNames(typeof(CategoriaDePlanoEnum)));
+        inserirRegistroVm.Categorias = Enum.GetNames(typeof(CategoriaDePlanoEnum)).Select(c => new SelectListItem(c, c));
+        inserirRegistroVm.Taxas = taxas;
+        inserirRegistroVm.Seguros = seguros;
 
         return inserirRegistroVm;
     }
@@ -210,8 +216,9 @@ public class AluguelController(
         var resultadoClientes = servicoCliente.SelecionarTodos(UsuarioId.GetValueOrDefault());
         var resultadoGrupos = servicoGrupo.SelecionarTodos(UsuarioId.GetValueOrDefault());
         var resultadoVeiculos = servicoVeiculo.SelecionarTodos(UsuarioId.GetValueOrDefault());
+        var resultadoTaxas = servicoTaxa.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
-        if (resultadoCondutores.IsFailed || resultadoClientes.IsFailed || resultadoGrupos.IsFailed || resultadoVeiculos.IsFailed)
+        if (resultadoCondutores.IsFailed || resultadoClientes.IsFailed || resultadoGrupos.IsFailed || resultadoVeiculos.IsFailed || resultadoTaxas.IsFailed)
         {
             ApresentarMensagemFalha(Result.Fail("Falha ao encontrar dados necessários!"));
             return null;
@@ -221,13 +228,16 @@ public class AluguelController(
         var clientes = resultadoClientes.Value;
         var grupos = resultadoGrupos.Value;
         var veiculos = resultadoVeiculos.Value;
+        var taxas = resultadoTaxas.Value;
+        var seguros = taxas.FindAll(t => t.Seguro);
 
         editarRegistroVm.Condutores = condutores;
         editarRegistroVm.Clientes = clientes.Select(c => new SelectListItem(c.Nome, c.Id.ToString()));
         editarRegistroVm.Grupos = grupos.Select(g => new SelectListItem(g.Nome, g.Id.ToString()));
         editarRegistroVm.Veiculos = veiculos;
-        editarRegistroVm.Categorias = new(Enum.GetNames(typeof(CategoriaDePlanoEnum)));
-
+        editarRegistroVm.Categorias = Enum.GetNames(typeof(CategoriaDePlanoEnum)).Select(c => new SelectListItem(c, c));
+        editarRegistroVm.Taxas = taxas;
+        editarRegistroVm.Seguros = seguros;
         return editarRegistroVm;
     }
     protected bool ValidacaoDeFalha(Result<Aluguel> resultado)
