@@ -1,4 +1,5 @@
 using LocadoraDeVeiculos.Aplicacao.Servicos;
+using LocadoraDeVeiculos.Dominio.ModuloAluguel;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloCondutor;
 using LocadoraDeVeiculos.Dominio.ModuloConfiguracaoe;
@@ -8,6 +9,7 @@ using LocadoraDeVeiculos.Dominio.ModuloTaxa;
 using LocadoraDeVeiculos.Dominio.ModuloUsuario;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.Infra.Orm.Compartilhado;
+using LocadoraDeVeiculos.Infra.Orm.ModuloAluguel;
 using LocadoraDeVeiculos.Infra.Orm.ModuloCliente;
 using LocadoraDeVeiculos.Infra.Orm.ModuloCondutor;
 using LocadoraDeVeiculos.Infra.Orm.ModuloConfiguracao;
@@ -38,6 +40,7 @@ public class Program
         builder.Services.AddScoped<IRepositorioCliente, RepositorioClienteEmOrm>();
         builder.Services.AddScoped<IRepositorioCondutor, RepositorioCondutorEmOrm>();
         builder.Services.AddScoped<IRepositorioConfiguracao, RepositorioConfiguracaoEmOrm>();
+        builder.Services.AddScoped<IRepositorioAluguel, RepositorioAluguelEmOrm>();
 
 
         builder.Services.AddScoped<GrupoDeAutomoveisService>();
@@ -47,6 +50,7 @@ public class Program
         builder.Services.AddScoped<ClienteService>();
         builder.Services.AddScoped<CondutorService>();
         builder.Services.AddScoped<ConfiguracaoService>();
+        builder.Services.AddScoped<AluguelService>();
 
 
         builder.Services.AddAutoMapper( cfg => { cfg.AddMaps(Assembly.GetExecutingAssembly()); });

@@ -8,7 +8,7 @@ using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
-public class ClienteController(ClienteService servicoCliente, IMapper mapeador) : WebControllerBase
+public class ClienteController(ClienteService servicoCliente, CondutorService servicoCondutor, IMapper mapeador) : WebControllerBase
 {
     public IActionResult Listar()
     {
@@ -176,16 +176,46 @@ public class ClienteController(ClienteService servicoCliente, IMapper mapeador) 
     }
     private bool ValidacaoDeRegistroRepetido(ClienteService servicoCliente, Cliente novoRegistro, Cliente registroAtual)
     {
-        var registrosExistentes = servicoCliente.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
+        var cpfsCondutores = servicoCondutor
+            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value
+            .Select(r => r.CPF);
+
+        var cnhCondutores = servicoCondutor
+            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value
+            .Select(r => r.CNH);
+
+        var cpfsClientes = servicoCliente
+            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.FindAll(c => c.PessoaFisica)
+            .Select(c => c.Documento);
+
+        var cnpjExistente = servicoCliente
+            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.FindAll(c => !c.PessoaFisica)
+            .Select(c => c.Documento);
+
+        var cnhClientes = servicoCliente
+            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.FindAll(c => c.PessoaFisica)
+            .Select(c => c.CNH);
+
+        var rgExistentes = servicoCliente
+            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.FindAll(c => c.PessoaFisica)
+            .Select(c => c.RG);
+
+        IEnumerable<string> cpfsExistentes = cpfsCondutores.Concat(cpfsClientes);
+        IEnumerable<string> cnhExistentes = cnhCondutores.Concat(cnhClientes);
 
         registroAtual = registroAtual is null ? new() : registroAtual;
 
-        if (registrosExistentes.Exists(r => 
-            r.Documento == novoRegistro.Documento &&
-            r.Documento != registroAtual.Documento) ||
-            novoRegistro.PessoaFisica && registrosExistentes.Exists(r =>
-            (r.RG == novoRegistro.RG && r.RG != registroAtual.RG) ||
-            (r.CNH == novoRegistro.CNH && r.CNH != registroAtual.RG)))
+        if (novoRegistro.PessoaFisica)
+        {
+            if ((cpfsExistentes.Any(c => c == novoRegistro.Documento) && !cpfsExistentes.Any(c => c == registroAtual.Documento)) ||
+                (cnhExistentes.Any(c => c == novoRegistro.CNH) && !cnhExistentes.Any(c => c == registroAtual.CNH)) ||
+                (rgExistentes.Any(c => c == novoRegistro.RG) && !rgExistentes.Any(c => c == registroAtual.RG)))
+            {
+                ApresentarMensagemRegistroExistente();
+                return true;
+            }
+        }
+        else if (cnpjExistente.Any(c => c == novoRegistro.Documento) && !cnpjExistente.Any(c => c == registroAtual.Documento))
         {
             ApresentarMensagemRegistroExistente();
             return true;

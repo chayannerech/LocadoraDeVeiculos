@@ -1,0 +1,52 @@
+﻿@using LocadoraDeVeiculos.WebApp.Models
+@model IEnumerable<ListarAluguelViewModel>
+
+@{
+    ViewBag.Title = "Aluguéis";
+}
+
+<div class="col">
+    <a class="btn btn-outline-secondary px-4 mt-2" href="/Aluguel/inserir">
+        <i class="bi bi-plus-circle"></i>
+        Inserir novo registro
+    </a>
+
+    <div class="row gap-2 my-3 my-xl-5">
+        @foreach (var AluguelVm in Model)
+        {
+            <div class="card col-lg-4 col-xl-3">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                    <h6 class="m-0">Id: @AluguelVm.Id</h6>
+
+                    <div class="text-end d-flex align-items-center gap-2">
+                        <a
+                            title="Detalhes"
+                            class="text-secondary fs-6"
+                            href="/Aluguel/detalhes/@AluguelVm.Id">
+                            <i class="bi bi-search"></i>
+                        </a>
+                        <a
+                            title="Editar"
+                            class="text-secondary fs-6"
+                            href="/Aluguel/editar/@AluguelVm.Id">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+                        <a
+                            title="Excluir"
+                            class="text-danger fs-6" href="/Aluguel/excluir/@AluguelVm.Id">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body d-grid gap-1">
+                    <h5 class="card-title">Condutor: @AluguelVm.CondutorNome</h5>
+                    <p class="card-subtitle">Veículo Placa @AluguelVm.VeiculoPlaca</p>
+                    <p class="card-subtitle">Plano @AluguelVm.CategoriaPlano</p>
+                    <p class="card-subtitle">Data de saída: @AluguelVm.DataSaida.ToString("dd/MM")</p>
+                    <p class="card-subtitle">Data de devolução prevista: @AluguelVm.DataRetornoPrevista.ToString("dd/MM")</p>
+                    <p class="card-subtitle">Data de devolução efetuada: @AluguelVm.DataRetornoReal.ToString("dd/MM")</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -177,15 +177,35 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
     }
     private bool ValidacaoDeRegistroRepetido(CondutorService servicoCondutor, InserirCondutorViewModel novoRegistro, Condutor registroAtual)
     {
-        var registrosExistentes = servicoCondutor.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
+        var cpfsCondutores = servicoCondutor
+            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value
+            .Select(r => r.CPF);
+
+        var cnhCondutores = servicoCondutor
+            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value
+            .Select(r => r.CNH);
+
+        var cpfsClientes = servicoClientes
+            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.FindAll(c => c.PessoaFisica)
+            .Select(c => c.Documento);
+
+        var cnhClientes = servicoClientes
+            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.FindAll(c => c.PessoaFisica)
+            .Select(c => c.CNH);
+
+        IEnumerable<string> cpfsExistentes = cpfsCondutores;
+        IEnumerable<string> cnhExistentes = cnhCondutores;
+
+        if (!novoRegistro.Check)
+        {
+            cpfsExistentes = cpfsExistentes.Concat(cpfsClientes);
+            cnhExistentes = cnhCondutores.Concat(cnhClientes);
+        }
 
         registroAtual = registroAtual is null ? new() : registroAtual;
 
-        if (registrosExistentes.Exists(r => (
-            r.CPF == novoRegistro.CPF &&
-            r.CPF != registroAtual.CPF) || (
-            r.CNH == novoRegistro.CNH &&
-            r.CNH != registroAtual.CNH)))
+        if ((cpfsExistentes.Any(c => c.Equals(novoRegistro.CPF)) && !cpfsExistentes.Any(c => c.Equals(registroAtual.CPF))) ||
+            (cnhExistentes.Any(c => c.Equals(novoRegistro.CNH)) && !cnhExistentes.Any(c => c.Equals(registroAtual.CNH))))
         {
             ApresentarMensagemRegistroExistente();
             return true;

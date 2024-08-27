@@ -34,8 +34,16 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ClienteNome")
+                        .IsRequired()
+                        .HasColumnType("varchar(200)");
+
                     b.Property<int>("Cliente_Id")
                         .HasColumnType("int");
+
+                    b.Property<string>("CondutorNome")
+                        .IsRequired()
+                        .HasColumnType("varchar(200)");
 
                     b.Property<int>("Condutor_Id")
                         .HasColumnType("int");
@@ -48,6 +56,13 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 
                     b.Property<DateTime>("DataSaida")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("Devolvido")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("GrupoNome")
+                        .IsRequired()
+                        .HasColumnType("varchar(200)");
 
                     b.Property<int>("Grupo_Id")
                         .HasColumnType("int");
@@ -63,6 +78,10 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 
                     b.Property<decimal>("ValorTotal")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("VeiculoPlaca")
+                        .IsRequired()
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("Veiculo_Id")
                         .HasColumnType("int");
@@ -541,31 +560,31 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.HasOne("LocadoraDeVeiculos.Dominio.ModuloCliente.Cliente", "Cliente")
                         .WithMany()
                         .HasForeignKey("Cliente_Id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LocadoraDeVeiculos.Dominio.ModuloCondutor.Condutor", "Condutor")
                         .WithMany()
                         .HasForeignKey("Condutor_Id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis.GrupoDeAutomoveis", "GrupoDeAutomoveis")
                         .WithMany()
                         .HasForeignKey("Grupo_Id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca.PlanoDeCobranca", "PlanoDeCobranca")
                         .WithMany()
                         .HasForeignKey("Plano_Id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LocadoraDeVeiculos.Dominio.ModuloVeiculos.Veiculo", "Veiculo")
                         .WithMany()
                         .HasForeignKey("Veiculo_Id")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Cliente");

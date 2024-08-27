@@ -16,19 +16,27 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
             .WithMany()
             .HasForeignKey("Condutor_Id")
             .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.NoAction);
+
+        aBuilder.Property(a => a.CondutorNome)
+            .IsRequired()
+            .HasColumnType("varchar(200)");
 
         aBuilder.HasOne(v => v.Cliente)
             .WithMany()
             .HasForeignKey("Cliente_Id")
             .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.NoAction);
+
+        aBuilder.Property(a => a.ClienteNome)
+            .IsRequired()
+            .HasColumnType("varchar(200)");
 
         aBuilder.HasOne(v => v.PlanoDeCobranca)
             .WithMany()
             .HasForeignKey("Plano_Id")
             .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.NoAction);
 
         aBuilder.Property(a => a.CategoriaPlano)
             .HasConversion<string>()
@@ -38,13 +46,21 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
             .WithMany()
             .HasForeignKey("Grupo_Id")
             .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.NoAction);
+
+        aBuilder.Property(a => a.GrupoNome)
+            .IsRequired()
+            .HasColumnType("varchar(200)");
 
         aBuilder.HasOne(v => v.Veiculo)
             .WithMany()
             .HasForeignKey("Veiculo_Id")
             .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.NoAction);
+
+        aBuilder.Property(a => a.VeiculoPlaca)
+            .IsRequired()
+            .HasColumnType("varchar(10)");
 
         aBuilder.Property(c => c.DataSaida)
             .IsRequired()

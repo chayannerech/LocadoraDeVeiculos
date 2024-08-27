@@ -10,11 +10,11 @@
 
 @foreach (var agrupamento in Model)
 {
-    <div class="row gap-3 my-1 my-xl-2">
-        <h2 class="display-5 fw-semibold">@agrupamento.Grupo</h2>
+    <div class="row gap-1 my-3 my-xl-5">
+        <h4 class="fw-semibold text-secondary">@agrupamento.Grupo</h4>
         <hr />
 
-        <div class="row gap-4">
+        <div class="row gap-4 mt-2">
             @foreach (var VeiculosVm in agrupamento.Veiculos)
             {
                 <div class="card col-md-6 col-lg-5 col-xl-4 shadow-sm rounded-3">

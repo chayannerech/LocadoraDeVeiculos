@@ -311,17 +311,22 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Condutor_Id = table.Column<int>(type: "int", nullable: false),
+                    CondutorNome = table.Column<string>(type: "varchar(200)", nullable: false),
                     Cliente_Id = table.Column<int>(type: "int", nullable: false),
+                    ClienteNome = table.Column<string>(type: "varchar(200)", nullable: false),
                     Plano_Id = table.Column<int>(type: "int", nullable: false),
-                    Grupo_Id = table.Column<int>(type: "int", nullable: false),
-                    Veiculo_Id = table.Column<int>(type: "int", nullable: false),
                     CategoriaPlano = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Grupo_Id = table.Column<int>(type: "int", nullable: false),
+                    GrupoNome = table.Column<string>(type: "varchar(200)", nullable: false),
+                    Veiculo_Id = table.Column<int>(type: "int", nullable: false),
+                    VeiculoPlaca = table.Column<string>(type: "varchar(10)", nullable: false),
                     DataSaida = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataRetornoPrevista = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataRetornoReal = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SeguroCondutor = table.Column<bool>(type: "bit", nullable: false),
                     SeguroTerceiro = table.Column<bool>(type: "bit", nullable: false),
-                    ValorTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    ValorTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Devolvido = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -330,32 +335,27 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         name: "FK_TBAluguel_TBCliente_Cliente_Id",
                         column: x => x.Cliente_Id,
                         principalTable: "TBCliente",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_TBAluguel_TBCondutor_Condutor_Id",
                         column: x => x.Condutor_Id,
                         principalTable: "TBCondutor",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_TBAluguel_TBGrupoDeAutomoveis_Grupo_Id",
                         column: x => x.Grupo_Id,
                         principalTable: "TBGrupoDeAutomoveis",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_TBAluguel_TBPlanoDeCobranca_Plano_Id",
                         column: x => x.Plano_Id,
                         principalTable: "TBPlanoDeCobranca",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_TBAluguel_TBVeiculos_Veiculo_Id",
                         column: x => x.Veiculo_Id,
                         principalTable: "TBVeiculos",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(

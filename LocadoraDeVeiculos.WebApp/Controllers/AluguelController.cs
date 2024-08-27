@@ -196,8 +196,8 @@ public class AluguelController(
         var grupos = resultadoGrupos.Value;
         var veiculos = resultadoVeiculos.Value;
 
-        inserirRegistroVm.Condutores = condutores.Select(g => new SelectListItem(g.Nome, g.Id.ToString()));
-        inserirRegistroVm.Clientes = clientes.Select(g => new SelectListItem(g.Nome, g.Id.ToString()));
+        inserirRegistroVm.Condutores = condutores;
+        inserirRegistroVm.Clientes = clientes;
         inserirRegistroVm.Grupos = grupos.Select(g => new SelectListItem(g.Nome, g.Id.ToString()));
         inserirRegistroVm.Veiculos = veiculos.Select(g => new SelectListItem(g.Placa, g.Id.ToString()));
         inserirRegistroVm.Categorias = new(Enum.GetNames(typeof(CategoriaDePlanoEnum)));
@@ -222,8 +222,8 @@ public class AluguelController(
         var grupos = resultadoGrupos.Value;
         var veiculos = resultadoVeiculos.Value;
 
-        editarRegistroVm.Condutores = condutores.Select(g => new SelectListItem(g.Nome, g.Id.ToString()));
-        editarRegistroVm.Clientes = clientes.Select(g => new SelectListItem(g.Nome, g.Id.ToString()));
+        editarRegistroVm.Condutores = condutores;
+        editarRegistroVm.Clientes = clientes;
         editarRegistroVm.Grupos = grupos.Select(g => new SelectListItem(g.Nome, g.Id.ToString()));
         editarRegistroVm.Veiculos = veiculos.Select(g => new SelectListItem(g.Placa, g.Id.ToString()));
         editarRegistroVm.Categorias = new(Enum.GetNames(typeof(CategoriaDePlanoEnum)));

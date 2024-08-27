@@ -8,17 +8,22 @@ namespace LocadoraDeVeiculos.Dominio.ModuloAluguel;
 public class Aluguel() : EntidadeBase
 {
     public Condutor Condutor { get; set; }
+    public string CondutorNome { get => Condutor is not null ? Condutor.Nome : ""; set { } }
     public Cliente Cliente { get; set; }
+    public string ClienteNome { get => Cliente is not null ? Cliente.Nome : ""; set { } }
     public PlanoDeCobranca PlanoDeCobranca { get; set; }
-    public GrupoDeAutomoveis GrupoDeAutomoveis { get; set; }
-    public Veiculo Veiculo { get; set; }
     public CategoriaDePlanoEnum CategoriaPlano { get; set; }
+    public GrupoDeAutomoveis GrupoDeAutomoveis { get; set; }
+    public string GrupoNome { get => GrupoDeAutomoveis is not null ? GrupoDeAutomoveis.Nome : ""; set { } }
+    public Veiculo Veiculo { get; set; }
+    public string VeiculoPlaca { get => Veiculo is not null ? Veiculo.Placa : ""; set { } }
     public DateTime DataSaida { get; set; }
     public DateTime DataRetornoPrevista { get; set; }
     public DateTime DataRetornoReal { get; set; }
     public bool SeguroCondutor { get; set; }
     public bool SeguroTerceiro {  get; set; }
     public decimal ValorTotal { get; set; }
+    public bool Devolvido { get; set; }
 
 
     public List<string> Validar()
@@ -39,7 +44,6 @@ public class Aluguel() : EntidadeBase
     protected void VerificaSeguro(ref List<string> erros, bool seguroCondutor, bool seguroTerceiro)
     {
         if (seguroCondutor && seguroTerceiro)
-            erros.Add($"O seguro cobre cliente/condutor 'ou' terceiros");
+            erros.Add($"Deve-se informar à quem o seguro se aplica");
     }
-
 }

@@ -60,11 +60,12 @@ public class InserirAluguelViewModel
     public CategoriaDePlanoEnum CategoriaPlano { get; set; }
 
 
-    public IEnumerable<SelectListItem>? Condutores { get; set; }
-    public IEnumerable<SelectListItem>? Clientes { get; set; }
+    public IEnumerable<Condutor>? Condutores { get; set; }
+    public IEnumerable<Cliente>? Clientes { get; set; }
     public IEnumerable<SelectListItem>? Grupos { get; set; }
     public IEnumerable<SelectListItem>? Veiculos { get; set; }
     public List<string>? Categorias { get; set; }
+    public bool Check {  get; set; }
 }
 
 public class EditarAluguelViewModel : InserirAluguelViewModel
@@ -75,10 +76,10 @@ public class EditarAluguelViewModel : InserirAluguelViewModel
 public class DetalhesAluguelViewModel
 {
     public int Id { get; set; }
-    public Condutor Condutor { get; set; }
-    public Cliente Cliente { get; set; }
-    public GrupoDeAutomoveis GrupoDeAutomoveis { get; set; }
-    public Veiculo Veiculo { get; set; }
+    public string CondutorNome { get; set; }
+    public string ClienteNome { get; set; }
+    public string GrupoNome { get; set; }
+    public string VeiculoPlaca { get; set; }
     public CategoriaDePlanoEnum CategoriaPlano { get; set; }
     public DateTime DataSaida { get; set; }
     public DateTime DataRetornoPrevista { get; set; }
@@ -86,11 +87,6 @@ public class DetalhesAluguelViewModel
     public bool SeguroCondutor { get; set; }
     public bool SeguroTerceiro { get; set; }
     public decimal ValorTotal { get; set; }
-
-    public string CondutorNome { get => Condutor is not null ? Condutor.Nome : ""; set { } }
-    public string ClienteNome { get => Cliente is not null ? Cliente.Nome : ""; set { } }
-    public string GrupoNome { get => GrupoDeAutomoveis is not null ? GrupoDeAutomoveis.Nome : ""; set { } }
-    public string VeiculoPlaca { get => Veiculo is not null ? Veiculo.Placa : ""; set { } }
 }
 
 public class DataMenorQueAttribute : ValidationAttribute
