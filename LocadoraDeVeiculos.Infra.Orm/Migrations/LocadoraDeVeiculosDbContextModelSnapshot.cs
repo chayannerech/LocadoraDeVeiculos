@@ -238,6 +238,15 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(200)");
 
+                    b.Property<decimal>("PrecoDiaria")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PrecoDiariaControlada")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PrecoLivre")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("Id");
 
                     b.ToTable("TBGrupoDeAutomoveis", (string)null);

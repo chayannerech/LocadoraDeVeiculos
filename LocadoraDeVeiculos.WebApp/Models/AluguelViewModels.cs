@@ -72,6 +72,7 @@ public class InserirAluguelViewModel
     public IEnumerable<SelectListItem>? Categorias { get; set; }
     public IEnumerable<Taxa>? Taxas { get; set; }
     public IEnumerable<Taxa>? Seguros { get; set; }
+    public IEnumerable<PlanoDeCobranca>? PlanosDeCobranca { get; set; }
 }
 
 public class EditarAluguelViewModel : InserirAluguelViewModel

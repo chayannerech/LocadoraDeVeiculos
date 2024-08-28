@@ -98,7 +98,10 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "varchar(200)", nullable: false)
+                    Nome = table.Column<string>(type: "varchar(200)", nullable: false),
+                    PrecoDiaria = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PrecoDiariaControlada = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PrecoLivre = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {

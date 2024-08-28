@@ -6,6 +6,9 @@ namespace LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 public class GrupoDeAutomoveis() : EntidadeBase
 {
     public string Nome { get; set; }
+    public decimal PrecoDiaria { get; set; }
+    public decimal PrecoDiariaControlada {  get; set; }
+    public decimal PrecoLivre { get; set; }
 
     public List<string> Validar()
     {
@@ -17,4 +20,3 @@ public class GrupoDeAutomoveis() : EntidadeBase
 
     public override string ToString() => Nome.ToTitleCase();
 }
-

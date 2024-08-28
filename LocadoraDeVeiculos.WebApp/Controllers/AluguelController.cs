@@ -197,8 +197,8 @@ public class AluguelController(
         var clientes = resultadoClientes.Value;
         var grupos = resultadoGrupos.Value;
         var veiculos = resultadoVeiculos.Value;
-        var taxas = resultadoTaxas.Value;
-        var seguros = taxas.FindAll(t => t.Seguro);
+        var taxas = resultadoTaxas.Value.FindAll(t => !t.Seguro);
+        var seguros = resultadoTaxas.Value.FindAll(t => t.Seguro);
 
         inserirRegistroVm.Condutores = condutores;
         inserirRegistroVm.Clientes = clientes.Select(c => new SelectListItem(c.Nome, c.Id.ToString()));

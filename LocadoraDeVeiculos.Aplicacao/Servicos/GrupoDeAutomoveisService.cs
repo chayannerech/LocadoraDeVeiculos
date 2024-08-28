@@ -1,5 +1,7 @@
 ﻿using FluentResults;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
+using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
+
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioGrupoDeAutomoveis)
 {
@@ -57,5 +59,16 @@ public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioG
             .Filtrar(f => f.Id != 0);
 
         return Result.Ok(registros);
+    }
+
+    public void AdicionarValores(PlanoDeCobranca novoRegistro)
+    {
+        var grupoSelecionado = novoRegistro.GrupoDeAutomoveis;
+
+        grupoSelecionado.PrecoDiaria = novoRegistro.PrecoDiaria;
+        grupoSelecionado.PrecoDiariaControlada = novoRegistro.PrecoDiariaControlada;
+        grupoSelecionado.PrecoLivre = novoRegistro.PrecoLivre;
+
+        repositorioGrupoDeAutomoveis.Editar(grupoSelecionado);
     }
 }

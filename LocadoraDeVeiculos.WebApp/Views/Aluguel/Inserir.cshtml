@@ -15,14 +15,16 @@
 <div class="col">
     <div class="row gap-3 my-3 my-xl-4">
         <form class="col-lg-6 d-grid" asp-action="Inserir">
+            <!-- Cliente -->
             <div>
                 <label class="control-label fw-bold mb-1">Cliente</label>
                 <select class="form-select" asp-for="ClienteId" asp-items="Model.Clientes" id="clienteSelect">
                     <option value="" selected disabled>Selecione um cliente</option>
                 </select>
                 <span class="text-danger fs-6" asp-validation-for="ClienteId"></span>
-            </div> <!--Cliente-->
+            </div>
 
+            <!-- Condutor -->
             <div>
                 <label class="control-label fw-bold mb-1 mt-3">Condutor</label>
                 <select class="form-select mb-1" asp-for="CondutorId" id="condutorSelect" disabled>
@@ -43,8 +45,9 @@
                 <div id="cnhWarning" class="text-danger fs-6" style="display: none;">
                     A CNH deste condutor está vencida
                 </div>
-            </div> <!--Condutor-->
+            </div>
 
+            <!-- Grupo de Automóveis e Veículo -->
             <div class="d-none" id="grupoEveiculo">
                 <div>
                     <label class="control-label fw-bold mt-3 mb-1">Grupo de Automóveis</label>
@@ -52,7 +55,7 @@
                         <option value="" selected disabled>Selecione um grupo</option>
                     </select>
                     <span class="text-danger fs-6" asp-validation-for="GrupoId"></span>
-                </div> <!--Grupo-->
+                </div>
 
                 <div>
                     <label class="control-label fw-bold mt-3 mb-1">Veículo</label>
@@ -74,9 +77,10 @@
                     <div id="veiculoWarning" class="text-danger fs-6" style="display: none;">
                         Nenhum veículo associado a este grupo
                     </div>
-                </div> <!--Veículo-->
+                </div>
             </div>
 
+            <!-- Data de Retirada e Data de Devolução -->
             <div class="d-flex flex-row gap-3 mt-4 d-none" id="datas">
                 <div class="flex-fill">
                     <label class="control-label fw-bold mb-1">Data de Retirada</label>
@@ -85,7 +89,7 @@
                     <div id="saidaWarning" class="text-danger fs-6" style="display: none;">
                         O veículo deve ser retirado em uma data superior à hoje
                     </div>
-                </div> <!--Saida-->
+                </div>
 
                 <div class="flex-fill">
                     <label class="control-label fw-bold mb-1">Data de devolução</label>
@@ -94,14 +98,20 @@
                     <div id="retornoWarning" class="text-danger fs-6" style="display: none;">
                         A data de devolução deve ser superior à data de retirada
                     </div>
-                </div> <!--Retorno-->
+                </div>
             </div>
 
+            <!-- Valor de Entrada, Dias de Aluguel e Plano de Aluguel -->
             <div class="d-flex flex-row gap-3 mt-4 d-none" id="entradaEplano">
                 <div class="flex-fill">
                     <label class="control-label fw-bold mb-1">Valor de Entrada</label>
-                    <input class="form-control mb-1" value="R$ 1000,00" disabled/>
-                </div> <!--Entrada-->
+                    <input class="form-control mb-1" value="R$ 1000,00" disabled />
+                </div>
+
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">Dias de aluguel</label>
+                    <input class="form-control mb-1" id="dias" disabled />
+                </div>
 
                 <div class="flex-fill">
                     <label class="control-label fw-bold mb-1">Plano de aluguel</label>
@@ -109,20 +119,21 @@
                         <option value="" selected disabled>Plano</option>
                     </select>
                     <span class="text-danger fs-6" asp-validation-for="CategoriaPlano"></span>
-                </div> <!--Plano-->
+                </div>
             </div>
 
+            <!-- Seguro -->
             <div class="d-none" id="seguro">
                 <label class="control-label fw-bold mt-3 mb-1">Seguro <span class="fw-normal text-secondary">(opcional)</span></label>
                 <div class="d-flex gap-3">
-                    <div class ="flex-fill">
+                    <div class="flex-fill">
                         <select class="form-select mb-1" id="seguroSelect">
                             <option value="" selected disabled>Selecione um seguro</option>
                             @foreach (var seguro in Model.Seguros!)
                             {
                                 <option value="@seguro.Id"
                                         data-valor="@seguro.Preco">
-                                    @seguro.Nome
+                                    @seguro.Nome (@seguro.Preco - Valor diário)
                                 </option>
                             }
                         </select>
@@ -139,16 +150,36 @@
                             <label class="form-check-label">Terceiro</label>
                         </div>
                     </div>
-                </div> <!--Seguro-->
+                </div>
             </div>
 
+            <!-- Taxas e Serviços -->
             <div>
                 <label class="control-label fw-bold mb-1 mt-3">Taxas e Serviços</label>
                 <div class="gap-4" style="border: 1px solid #ced4da; border-radius: .25rem; padding: .375rem;">
-                    <p>Oi</p>
+                    @foreach (var taxa in Model.Taxas!)
+                    {
+                        var cobranca = taxa.PrecoFixo ? "Valor fixo" : "Valor diário";
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="TaxasSelecionadas" value="@taxa.Id" id="taxa_@taxa.Id">
+                            <label class="form-check-label" for="taxa_@taxa.Id">
+                                @taxa.Nome (@taxa.Preco R$ - @cobranca)
+                            </label>
+                        </div>
+                    }
                 </div>
-            </div> <!--Taxas-->
+            </div>
 
+
+            <!-- Valor total -->
+            <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
+                <label class="control-label fw-bold mb-0">Valor total</label>
+                <div class="flex-fill" style="max-width: 150px;">
+                    <input class="form-control mb-0" id="total" disabled />
+                </div>
+            </div>
+
+            <!-- Gravar -->
             <div class="row justify-content-center my-5 gap-3">
                 <button class="btn btn-secondary px-5" style="width: 170px">
                     <i class="bi bi-floppy-fill me-1"></i>
@@ -159,7 +190,7 @@
                     <i class="bi bi-arrow-return-left me-1"></i>
                     Voltar
                 </a>
-            </div> <!--Gravar-->
+            </div>
         </form>
     </div>
 </div>
@@ -251,6 +282,8 @@
                 const dataSaida = new Date(saidaSelecionada);
                 const dataAtual = new Date();
 
+                dataAtual.setDate(dataAtual.getDate() - 1);
+
                 dataAtual.setHours(0, 0, 0, 0);
                 dataSaida.setHours(0, 0, 0, 0);
 
@@ -274,21 +307,28 @@
                     $('#retorno').addClass('is-invalid');
                     $('#retornoWarning').show();
                     $('#entradaEplano').addClass('d-none');
-                    $('#seguro').removeClass('d-none');
                 } else {
                     $('#retorno').removeClass('is-invalid');
                     $('#retornoWarning').hide();
                     $('#entradaEplano').removeClass('d-none');
-                    filtrarSeguros();
+                    calcularDiasAluguel(dataSaida, dataRetorno);
                 }
             }
 
-            function filtrarSeguros() {
-                $('#seguroSelect option').each(function () {
-                    if ($('#seguroSelect option').val()) {
-                        $('#seguro').removeClass('d-none');
-                    }
-                });
+            function calcularDiasAluguel(dataSaida, dataRetorno) {
+                const timeDiff = Math.abs(dataRetorno.getTime() - dataSaida.getTime());
+                const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                $('#dias').val(diffDays);
+            }
+
+            function verificarExibicaoSeguro() {
+                const segurosDisponiveis = $('#seguroSelect option').length > 1;
+
+                if (segurosDisponiveis) {
+                    $('#seguro').removeClass('d-none');
+                } else {
+                    $('#seguro').addClass('d-none');
+                }
             }
 
             $('#clienteSelect').change(function () {
@@ -315,12 +355,15 @@
 
             $('#retorno').change(function () {
                 verificarDataRetorno();
+                verificarExibicaoSeguro();
             });
 
             const clienteIdInicial = $('#clienteSelect').val();
             if (clienteIdInicial) {
                 filtrarCondutoresPorCliente(clienteIdInicial);
             }
+
+            verificarExibicaoSeguro();
         });
     </script>
 }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 {
     [DbContext(typeof(LocadoraDeVeiculosDbContext))]
-    [Migration("20240827204012_quaseLa")]
+    [Migration("20240828000615_quaseLa")]
     partial class quaseLa
     {
         /// <inheritdoc />
@@ -240,6 +240,15 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("varchar(200)");
+
+                    b.Property<decimal>("PrecoDiaria")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PrecoDiariaControlada")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("PrecoLivre")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

@@ -17,6 +17,15 @@ public class MapeadorGrupoDeAutomoveisEmOrm : IEntityTypeConfiguration<GrupoDeAu
             .IsRequired()
             .HasColumnType("varchar(200)");
 
+        gBuilder.Property(p => p.PrecoDiaria)
+            .HasColumnType("decimal(18,2)");
+
+        gBuilder.Property(p => p.PrecoDiariaControlada)
+            .HasColumnType("decimal(18,2)");
+
+        gBuilder.Property(p => p.PrecoLivre)
+            .HasColumnType("decimal(18,2)");
+
 
         /*        gBuilder.Property(s => s.UsuarioId)
                     .IsRequired()

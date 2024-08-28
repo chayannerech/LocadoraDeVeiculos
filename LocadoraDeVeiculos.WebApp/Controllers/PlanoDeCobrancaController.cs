@@ -54,6 +54,8 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
+        servicoGrupos.AdicionarValores(novoRegistro);
+
         ApresentarMensagemSucesso($"O registro \"{novoRegistro}\" foi inserido com sucesso!");
 
         return RedirectToAction(nameof(Listar));
@@ -91,6 +93,8 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
+
+        servicoGrupos.AdicionarValores(servicoPlanos.SelecionarPorId(registro.Id).Value);
 
         ApresentarMensagemSucesso($"O registro \"{registro}\" foi editado com sucesso!");
 
