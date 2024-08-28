@@ -46,7 +46,7 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
         var novoRegistro = mapeador.Map<Veiculo>(inserirRegistroVm);
 
         if (ValidacaoDeRegistroRepetido(servicoVeiculos, novoRegistro, null))
-            return View(inserirRegistroVm);
+            return View(CarregarInformacoes(inserirRegistroVm));
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
@@ -70,11 +70,11 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
 
         var veiculo = resultado.Value;
 
-        var editarVeiculoVm = mapeador.Map<EditarVeiculosViewModel>(veiculo);
+        var editarRegistroVm = mapeador.Map<EditarVeiculosViewModel>(veiculo);
 
-        editarVeiculoVm.GrupoId = veiculo.GrupoDeAutomoveis.Id;
+        editarRegistroVm.GrupoId = veiculo.GrupoDeAutomoveis.Id;
 
-        return View(CarregarInformacoes(editarVeiculoVm));
+        return View(CarregarInformacoes(editarRegistroVm));
     }
     [HttpPost]
     public IActionResult Editar(EditarVeiculosViewModel editarRegistroVm)
@@ -86,7 +86,7 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
                 editarRegistroVm.ImagemEmBytes = ConverterImagemParaArrayDeBytes(editarRegistroVm.Foto);
                 editarRegistroVm.TipoDaImagem = editarRegistroVm.Foto.ContentType;
             }
-            else return View(editarRegistroVm); 
+            else return View(CarregarInformacoes(editarRegistroVm)); 
         }
 
         var registro = mapeador.Map<Veiculo>(editarRegistroVm);
@@ -94,7 +94,7 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
         var registroAtual = servicoVeiculos.SelecionarPorId(editarRegistroVm.Id).Value;
 
         if (ValidacaoDeRegistroRepetido(servicoVeiculos, registro, registroAtual))
-            return View(editarRegistroVm);
+            return View(CarregarInformacoes(editarRegistroVm));
 
         var resultado = servicoVeiculos.Editar(registro, editarRegistroVm.GrupoId);
 
