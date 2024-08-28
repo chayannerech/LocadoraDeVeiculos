@@ -114,7 +114,7 @@
             <div class="d-flex flex-row gap-3 mt-4 d-none" id="entradaEplano">
                 <div class="flex-fill">
                     <label class="control-label fw-bold mb-1">Valor de Entrada</label>
-                    <input class="form-control mb-1" value="R$ 1000,00" disabled />
+                    <input class="form-control mb-1" value="R$ 1000,00" disabled/>
                 </div>
 
                 <div class="flex-fill">
@@ -145,27 +145,30 @@
 
                         if (taxa.Seguro)
                         {
-                            <div class="d-flex gap-3 mt-2 mb-2">
+                            <div class="d-flex gap-3 mt-2 mb-2 align-items-center">
                                 <div class="form-check me-5">
-                                    <input class="form-check-input" type="checkbox" name="TaxasSelecionadas" value="@taxa.Id" id="taxa_@taxa.Id">
+                                    <input class="form-check-input taxa-checkbox" type="checkbox" name="TaxasSelecionadas" value="@taxa.Id" id="taxa_@taxa.Id" data-preco="@taxa.Preco" data-precofixo="@taxa.PrecoFixo.ToString().ToLower()">
                                     <label class="form-check-label" for="taxa_@taxa.Id">
                                         @taxa.Nome (@taxa.Preco R$ - @cobranca)
                                     </label>
                                 </div>
 
-                                <div class="d-flex align-items-center gap-2">
-                                    <label class="control-label ms-3 me-2 text-secondary">Cliente</label>
+                                <div class="d-flex align-items-center gap-2 form-switch-container">
+                                    <label class="control-label ms-3 me-2">Cliente</label>
                                     <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="seguro_terceiro_@taxa.Id" disabled>
+                                        <input class="form-check-input form-switch-input" type="checkbox" name="SeguroCliente_@taxa.Id" id="seguro_cliente_@taxa.Id" disabled required>
                                     </div>
-                                    <label class="control-label text-secondary">Terceiro</label>
+                                    <label class="control-label">Terceiro</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input form-switch-input" type="checkbox" name="SeguroTerceiro_@taxa.Id" id="seguro_terceiro_@taxa.Id" disabled required>
+                                    </div>
                                 </div>
                             </div>
                         }
                         else
                         {
                             <div class="form-check mt-2 mb-2">
-                                <input class="form-check-input" type="checkbox" name="TaxasSelecionadas" value="@taxa.Id" id="taxa_@taxa.Id">
+                                <input class="form-check-input taxa-checkbox" type="checkbox" name="TaxasSelecionadas" value="@taxa.Id" id="taxa_@taxa.Id" data-preco="@taxa.Preco" data-precofixo="@taxa.PrecoFixo.ToString().ToLower()">
                                 <label class="form-check-label" for="taxa_@taxa.Id">
                                     @taxa.Nome (@taxa.Preco R$ - @cobranca)
                                 </label>
@@ -176,7 +179,7 @@
             </div>
 
             <!-- Valor total -->
-            <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
+            <div class=" d-flex justify-content-end align-items-center gap-3 mt-5" id="mostraTotal">
                 <label class="control-label fw-bold mb-0">Valor total</label>
                 <div class="flex-fill" style="max-width: 150px;">
                     <input class="form-control mb-0" id="total" disabled />
@@ -327,39 +330,6 @@
                 $('#dias').val(diffDays);
             }
 
-            $('#clienteSelect').change(function () {
-                const clienteIdSelecionado = $(this).val();
-                filtrarCondutoresPorCliente(clienteIdSelecionado);
-            });
-
-            $('#condutorSelect').change(function () {
-                verificarValidadeCnh();
-            });
-
-            $('#grupoSelect').change(function () {
-                const grupoIdSelecionado = $(this).val();
-                filtrarVeiculosPorGrupo(grupoIdSelecionado);
-            });
-
-            $('#veiculoSelect').change(function () {
-                verificarVeiculoAlugado();
-            });
-
-            $('#saida').change(function () {
-                verificarDataSaida();
-            });
-
-            $('#retorno').change(function () {
-                verificarDataRetorno();
-            });
-
-            const clienteIdInicial = $('#clienteSelect').val();
-            if (clienteIdInicial) {
-                filtrarCondutoresPorCliente(clienteIdInicial);
-            }
-        });
-
-        $(document).ready(function () {
             function calcularDias() {
                 const dataSaida = new Date($('#saida').val());
                 const dataRetorno = new Date($('#retorno').val());
@@ -399,23 +369,34 @@
                 const planoSelecionado = $('#planoSelect').val();
                 const grupoSelecionado = $('#grupoSelect option:selected');
 
-                let valorTotal = 0;
+                let valorTotal = 1000;
 
                 if (planoSelecionado === "diario") {
                     const precoDiaria = parseFloat(grupoSelecionado.data('preco-diaria')) || 0;
-                    valorTotal = dias * precoDiaria;
+                    valorTotal = valorTotal + (dias * precoDiaria);
                 } else if (planoSelecionado === "controlado") {
                     const precoDiariaControlada = parseFloat(grupoSelecionado.data('preco-diaria-controlada')) || 0;
-                    valorTotal = dias * precoDiariaControlada;
+                    valorTotal = valorTotal + (dias * precoDiariaControlada);
                 } else if (planoSelecionado === "livre") {
                     const precoLivre = parseFloat(grupoSelecionado.data('preco-livre')) || 0;
-                    valorTotal = precoLivre;
+                    valorTotal = valorTotal + precoLivre;
                 }
+
+                $('.taxa-checkbox:checked').each(function () {
+                    const preco = parseFloat($(this).data('preco')) || 0;
+                    const precoFixo = $(this).data('precofixo') === true;
+
+                    if (precoFixo) {
+                        valorTotal += preco;
+                    } else {
+                        valorTotal += preco * dias;
+                    }
+                });
 
                 $('#total').val(valorTotal.toFixed(2));
             }
 
-            $('#planoSelect, #grupoSelect').change(function () {
+            $('#planoSelect, #grupoSelect, .taxa-checkbox').change(function () {
                 atualizarValorPlano();
                 calcularValorTotal();
             });
@@ -423,6 +404,108 @@
             $('#saida, #retorno').change(function () {
                 calcularValorTotal();
             });
+
+            $('#clienteSelect').change(function () {
+                const clienteIdSelecionado = $(this).val();
+                filtrarCondutoresPorCliente(clienteIdSelecionado);
+            });
+
+            $('#condutorSelect').change(function () {
+                verificarValidadeCnh();
+            });
+
+            $('#grupoSelect').change(function () {
+                const grupoIdSelecionado = $(this).val();
+                filtrarVeiculosPorGrupo(grupoIdSelecionado);
+            });
+
+            $('#veiculoSelect').change(function () {
+                verificarVeiculoAlugado();
+            });
+
+            $('#saida').change(function () {
+                verificarDataSaida();
+            });
+
+            $('#retorno').change(function () {
+                verificarDataRetorno();
+            });
+
+            $('#planoSelect').change(function () {
+                $('#mostraTotal').removeClass('d-none');
+            });
+
+            $('.taxa-checkbox').change(function () {
+                const isChecked = $(this).is(':checked');
+                const taxaId = $(this).attr('id').split('_')[1];
+                const formSwitchInputs = $(`#seguro_cliente_${taxaId}, #seguro_terceiro_${taxaId}`);
+
+                if (isChecked) {
+                    formSwitchInputs.prop('disabled', false).attr('required', true);
+                } else {
+                    formSwitchInputs.prop('disabled', true).prop('checked', false).removeAttr('required');
+                }
+            });
+
+            $('.taxa-checkbox').each(function () {
+                const isChecked = $(this).is(':checked');
+                const taxaId = $(this).attr('id').split('_')[1];
+                const formSwitchInputs = $(`#seguro_cliente_${taxaId}, #seguro_terceiro_${taxaId}`);
+
+                if (isChecked) {
+                    formSwitchInputs.prop('disabled', false).attr('required', true);
+                } else {
+                    formSwitchInputs.prop('disabled', true).removeAttr('required');
+                }
+            });
+
+            $('.form-switch-input').change(function () {
+                const currentSwitch = $(this);
+                const taxaId = currentSwitch.attr('id').split('_')[2];
+                const otherSwitchId = currentSwitch.attr('id').includes('cliente')
+                    ? `#seguro_terceiro_${taxaId}`
+                    : `#seguro_cliente_${taxaId}`;
+
+                if (currentSwitch.is(':checked')) {
+                    $(otherSwitchId).prop('checked', false);
+                }
+            });
+
+            const clienteIdInicial = $('#clienteSelect').val();
+            const condutorIdInicial = $('#condutorSelect').val();
+            const grupoIdInicial = $('#grupoSelect').val();
+            const veiculoIdInicial = $('#veiculoSelect').val();
+            const planoInicial = $('#planoSelect').val();
+
+            if (clienteIdInicial) {
+                if (condutorIdInicial) {
+                    $('#condutorSelect').prop('disabled', false);
+                    verificarValidadeCnh();
+
+                    if (grupoIdInicial) {
+                        if (veiculoIdInicial) {
+                            $('#veiculoSelect').prop('disabled', false);
+                            verificarVeiculoAlugado()
+                        }
+                        else {
+                            filtrarVeiculosPorGrupo(grupoIdInicial);
+                        }
+                    }
+                    else {
+                        filtrarVeiculosPorGrupo(grupoIdInicial);
+                    }
+
+                }
+                else {
+                    filtrarCondutoresPorCliente(clienteIdInicial);
+                }
+            }
+
+            if (planoInicial) {
+                $('#mostraTotal').removeClass('d-none');
+            }
+
+            calcularValorTotal();
         });
     </script>
 }

@@ -45,7 +45,7 @@ public class InserirAluguelViewModel
     public int VeiculoId { get; set; }
 
 
-    [Required]
+    [Required(ErrorMessage = "O plano é obrigatório")]
     public CategoriaDePlanoEnum CategoriaPlano { get; set; }
 
 
