@@ -61,13 +61,24 @@ public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioG
         return Result.Ok(registros);
     }
 
-    public void AdicionarValores(PlanoDeCobranca novoRegistro)
+    public void AdicionarValores(PlanoDeCobranca plano)
     {
-        var grupoSelecionado = novoRegistro.GrupoDeAutomoveis;
+        var grupoSelecionado = plano.GrupoDeAutomoveis;
 
-        grupoSelecionado.PrecoDiaria = novoRegistro.PrecoDiaria;
-        grupoSelecionado.PrecoDiariaControlada = novoRegistro.PrecoDiariaControlada;
-        grupoSelecionado.PrecoLivre = novoRegistro.PrecoLivre;
+        grupoSelecionado.PrecoDiaria = plano.PrecoDiaria;
+        grupoSelecionado.PrecoDiariaControlada = plano.PrecoDiariaControlada;
+        grupoSelecionado.PrecoLivre = plano.PrecoLivre;
+
+        repositorioGrupoDeAutomoveis.Editar(grupoSelecionado);
+    }
+
+    public void ExcluirValores(PlanoDeCobranca plano)
+    {
+        var grupoSelecionado = plano.GrupoDeAutomoveis;
+
+        grupoSelecionado.PrecoDiaria = 0;
+        grupoSelecionado.PrecoDiariaControlada = 0;
+        grupoSelecionado.PrecoLivre = 0;
 
         repositorioGrupoDeAutomoveis.Editar(grupoSelecionado);
     }

@@ -8,6 +8,8 @@ public class ListarPlanoDeCobrancaViewModel
 {
     public int Id { get; set; }
     public CategoriaDePlanoEnum Categoria { get; set; }
+    public GrupoDeAutomoveis GrupoDeAutomoveis { get; set; }
+    public string GrupoNome { get => GrupoDeAutomoveis is null ? "" : GrupoDeAutomoveis.Nome; set { } }
     public decimal PrecoDiaria { get; set; } = 0;
     public decimal PrecoKm { get; set; } = 0;
     public int KmDisponivel { get; set; } = 0;

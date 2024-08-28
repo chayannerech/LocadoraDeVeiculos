@@ -197,12 +197,12 @@ public class AluguelController(
         var clientes = resultadoClientes.Value;
         var grupos = resultadoGrupos.Value;
         var veiculos = resultadoVeiculos.Value;
-        var taxas = resultadoTaxas.Value.FindAll(t => !t.Seguro);
+        var taxas = resultadoTaxas.Value;
         var seguros = resultadoTaxas.Value.FindAll(t => t.Seguro);
 
         inserirRegistroVm.Condutores = condutores;
         inserirRegistroVm.Clientes = clientes.Select(c => new SelectListItem(c.Nome, c.Id.ToString()));
-        inserirRegistroVm.Grupos = grupos.Select(g => new SelectListItem(g.Nome, g.Id.ToString()));
+        inserirRegistroVm.Grupos = grupos;
         inserirRegistroVm.Veiculos = veiculos;
         inserirRegistroVm.Categorias = Enum.GetNames(typeof(CategoriaDePlanoEnum)).Select(c => new SelectListItem(c, c));
         inserirRegistroVm.Taxas = taxas;
@@ -229,11 +229,11 @@ public class AluguelController(
         var grupos = resultadoGrupos.Value;
         var veiculos = resultadoVeiculos.Value;
         var taxas = resultadoTaxas.Value;
-        var seguros = taxas.FindAll(t => t.Seguro);
+        var seguros = resultadoTaxas.Value.FindAll(t => t.Seguro);
 
         editarRegistroVm.Condutores = condutores;
         editarRegistroVm.Clientes = clientes.Select(c => new SelectListItem(c.Nome, c.Id.ToString()));
-        editarRegistroVm.Grupos = grupos.Select(g => new SelectListItem(g.Nome, g.Id.ToString()));
+        editarRegistroVm.Grupos = grupos;
         editarRegistroVm.Veiculos = veiculos;
         editarRegistroVm.Categorias = Enum.GetNames(typeof(CategoriaDePlanoEnum)).Select(c => new SelectListItem(c, c));
         editarRegistroVm.Taxas = taxas;

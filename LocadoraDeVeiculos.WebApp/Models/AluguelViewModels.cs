@@ -67,12 +67,11 @@ public class InserirAluguelViewModel
 
     public IEnumerable<Condutor>? Condutores { get; set; }
     public IEnumerable<SelectListItem>? Clientes { get; set; }
-    public IEnumerable<SelectListItem>? Grupos { get; set; }
+    public IEnumerable<GrupoDeAutomoveis>? Grupos { get; set; }
     public IEnumerable<Veiculo>? Veiculos { get; set; }
     public IEnumerable<SelectListItem>? Categorias { get; set; }
     public IEnumerable<Taxa>? Taxas { get; set; }
     public IEnumerable<Taxa>? Seguros { get; set; }
-    public IEnumerable<PlanoDeCobranca>? PlanosDeCobranca { get; set; }
 }
 
 public class EditarAluguelViewModel : InserirAluguelViewModel

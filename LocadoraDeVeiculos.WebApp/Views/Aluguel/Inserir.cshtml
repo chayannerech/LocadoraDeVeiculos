@@ -51,8 +51,17 @@
             <div class="d-none" id="grupoEveiculo">
                 <div>
                     <label class="control-label fw-bold mt-3 mb-1">Grupo de Automóveis</label>
-                    <select class="form-select mb-1" asp-for="GrupoId" asp-items="Model.Grupos" id="grupoSelect">
+                    <select class="form-select mb-1" asp-for="GrupoId" id="grupoSelect">
                         <option value="" selected disabled>Selecione um grupo</option>
+                        @foreach (var grupo in Model.Grupos!)
+                        {
+                            <option value="@grupo.Id"
+                                    data-preco-diaria="@grupo.PrecoDiaria"
+                                    data-preco-diaria-controlada="@grupo.PrecoDiariaControlada"
+                                    data-preco-livre="@grupo.PrecoLivre">
+                                @grupo.Nome
+                            </option>
+                        }
                     </select>
                     <span class="text-danger fs-6" asp-validation-for="GrupoId"></span>
                 </div>
@@ -115,41 +124,14 @@
 
                 <div class="flex-fill">
                     <label class="control-label fw-bold mb-1">Plano de aluguel</label>
-                    <select class="form-select mb-1" asp-for="CategoriaPlano" asp-items="Model.Categorias">
+                    <select class="form-select mb-1" asp-for="CategoriaPlano" id="planoSelect">
                         <option value="" selected disabled>Plano</option>
+                        <option value="diario">Diário</option>
+                        <option value="controlado">Controlado</option>
+                        <option value="livre">Livre</option>
                     </select>
                     <span class="text-danger fs-6" asp-validation-for="CategoriaPlano"></span>
-                </div>
-            </div>
-
-            <!-- Seguro -->
-            <div class="d-none" id="seguro">
-                <label class="control-label fw-bold mt-3 mb-1">Seguro <span class="fw-normal text-secondary">(opcional)</span></label>
-                <div class="d-flex gap-3">
-                    <div class="flex-fill">
-                        <select class="form-select mb-1" id="seguroSelect">
-                            <option value="" selected disabled>Selecione um seguro</option>
-                            @foreach (var seguro in Model.Seguros!)
-                            {
-                                <option value="@seguro.Id"
-                                        data-valor="@seguro.Preco">
-                                    @seguro.Nome (@seguro.Preco - Valor diário)
-                                </option>
-                            }
-                        </select>
-                    </div>
-
-                    <div class="mt-2">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="true" id="fixo">
-                            <label class="form-check-label">Cliente</label>
-                        </div>
-
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" value="false" id="diario">
-                            <label class="form-check-label">Terceiro</label>
-                        </div>
-                    </div>
+                    <small id="valorPlano" class="text-muted"></small>
                 </div>
             </div>
 
@@ -160,16 +142,38 @@
                     @foreach (var taxa in Model.Taxas!)
                     {
                         var cobranca = taxa.PrecoFixo ? "Valor fixo" : "Valor diário";
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="TaxasSelecionadas" value="@taxa.Id" id="taxa_@taxa.Id">
-                            <label class="form-check-label" for="taxa_@taxa.Id">
-                                @taxa.Nome (@taxa.Preco R$ - @cobranca)
-                            </label>
-                        </div>
+
+                        if (taxa.Seguro)
+                        {
+                            <div class="d-flex gap-3 mt-2 mb-2">
+                                <div class="form-check me-5">
+                                    <input class="form-check-input" type="checkbox" name="TaxasSelecionadas" value="@taxa.Id" id="taxa_@taxa.Id">
+                                    <label class="form-check-label" for="taxa_@taxa.Id">
+                                        @taxa.Nome (@taxa.Preco R$ - @cobranca)
+                                    </label>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="control-label ms-3 me-2 text-secondary">Cliente</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="seguro_terceiro_@taxa.Id" disabled>
+                                    </div>
+                                    <label class="control-label text-secondary">Terceiro</label>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-check mt-2 mb-2">
+                                <input class="form-check-input" type="checkbox" name="TaxasSelecionadas" value="@taxa.Id" id="taxa_@taxa.Id">
+                                <label class="form-check-label" for="taxa_@taxa.Id">
+                                    @taxa.Nome (@taxa.Preco R$ - @cobranca)
+                                </label>
+                            </div>
+                        }
                     }
                 </div>
             </div>
-
 
             <!-- Valor total -->
             <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
@@ -307,10 +311,12 @@
                     $('#retorno').addClass('is-invalid');
                     $('#retornoWarning').show();
                     $('#entradaEplano').addClass('d-none');
+                    $('#taxas').addClass('d-none');
                 } else {
                     $('#retorno').removeClass('is-invalid');
                     $('#retornoWarning').hide();
                     $('#entradaEplano').removeClass('d-none');
+                    $('#taxas').removeClass('d-none');
                     calcularDiasAluguel(dataSaida, dataRetorno);
                 }
             }
@@ -319,16 +325,6 @@
                 const timeDiff = Math.abs(dataRetorno.getTime() - dataSaida.getTime());
                 const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
                 $('#dias').val(diffDays);
-            }
-
-            function verificarExibicaoSeguro() {
-                const segurosDisponiveis = $('#seguroSelect option').length > 1;
-
-                if (segurosDisponiveis) {
-                    $('#seguro').removeClass('d-none');
-                } else {
-                    $('#seguro').addClass('d-none');
-                }
             }
 
             $('#clienteSelect').change(function () {
@@ -355,15 +351,78 @@
 
             $('#retorno').change(function () {
                 verificarDataRetorno();
-                verificarExibicaoSeguro();
             });
 
             const clienteIdInicial = $('#clienteSelect').val();
             if (clienteIdInicial) {
                 filtrarCondutoresPorCliente(clienteIdInicial);
             }
+        });
 
-            verificarExibicaoSeguro();
+        $(document).ready(function () {
+            function calcularDias() {
+                const dataSaida = new Date($('#saida').val());
+                const dataRetorno = new Date($('#retorno').val());
+
+                if (dataSaida && dataRetorno && dataRetorno > dataSaida) {
+                    const diffTime = Math.abs(dataRetorno - dataSaida);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    $('#dias').val(diffDays);
+                    return diffDays;
+                } else {
+                    $('#dias').val('');
+                    return 0;
+                }
+            }
+
+            function atualizarValorPlano() {
+                const planoSelecionado = $('#planoSelect').val();
+                const grupoSelecionado = $('#grupoSelect option:selected');
+                let valorPlano = '';
+
+                if (planoSelecionado === "diario") {
+                    const precoDiaria = parseFloat(grupoSelecionado.data('preco-diaria')) || 0;
+                    valorPlano = `Valor: ${precoDiaria.toFixed(2)} R$/dia`;
+                } else if (planoSelecionado === "controlado") {
+                    const precoDiariaControlada = parseFloat(grupoSelecionado.data('preco-diaria-controlada')) || 0;
+                    valorPlano = `Valor: ${precoDiariaControlada.toFixed(2)} R$/dia`;
+                } else if (planoSelecionado === "livre") {
+                    const precoLivre = parseFloat(grupoSelecionado.data('preco-livre')) || 0;
+                    valorPlano = `Valor: ${precoLivre.toFixed(2)} R$`;
+                }
+
+                $('#valorPlano').text(valorPlano);
+            }
+
+            function calcularValorTotal() {
+                const dias = calcularDias();
+                const planoSelecionado = $('#planoSelect').val();
+                const grupoSelecionado = $('#grupoSelect option:selected');
+
+                let valorTotal = 0;
+
+                if (planoSelecionado === "diario") {
+                    const precoDiaria = parseFloat(grupoSelecionado.data('preco-diaria')) || 0;
+                    valorTotal = dias * precoDiaria;
+                } else if (planoSelecionado === "controlado") {
+                    const precoDiariaControlada = parseFloat(grupoSelecionado.data('preco-diaria-controlada')) || 0;
+                    valorTotal = dias * precoDiariaControlada;
+                } else if (planoSelecionado === "livre") {
+                    const precoLivre = parseFloat(grupoSelecionado.data('preco-livre')) || 0;
+                    valorTotal = precoLivre;
+                }
+
+                $('#total').val(valorTotal.toFixed(2));
+            }
+
+            $('#planoSelect, #grupoSelect').change(function () {
+                atualizarValorPlano();
+                calcularValorTotal();
+            });
+
+            $('#saida, #retorno').change(function () {
+                calcularValorTotal();
+            });
         });
     </script>
 }

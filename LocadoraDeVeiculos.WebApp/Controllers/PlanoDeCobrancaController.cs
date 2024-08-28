@@ -45,7 +45,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
         var novoRegistro = mapeador.Map<PlanoDeCobranca>(inserirRegistroVm);
 
         if (ValidacaoDeRegistroRepetido(servicoPlanos, inserirRegistroVm, null))
-            return View(inserirRegistroVm);
+            return View(CarregarInformacoes(inserirRegistroVm));
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
@@ -71,23 +71,23 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
 
         var registro = resultado.Value;
 
-        var editarPlanoVm = mapeador.Map<EditarPlanoDeCobrancaViewModel>(registro);
+        var editarRegistroVm = mapeador.Map<EditarPlanoDeCobrancaViewModel>(registro);
 
-        editarPlanoVm.GrupoId = registro.GrupoDeAutomoveis.Id;
+        editarRegistroVm.GrupoId = registro.GrupoDeAutomoveis.Id;
 
-        return View(CarregarInformacoes(editarPlanoVm));
+        return View(CarregarInformacoes(editarRegistroVm));
     }
     [HttpPost]
     public IActionResult Editar(EditarPlanoDeCobrancaViewModel editarRegistroVm)
     {
         if (!ModelState.IsValid)
-            return View(editarRegistroVm);
+            return View(CarregarInformacoes(editarRegistroVm));
 
         var registro = mapeador.Map<PlanoDeCobranca>(editarRegistroVm);
         var registroAtual = servicoPlanos.SelecionarPorId(editarRegistroVm.Id).Value;
 
         if (ValidacaoDeRegistroRepetido(servicoPlanos, editarRegistroVm, registroAtual))
-            return View(editarRegistroVm);
+            return View(CarregarInformacoes(editarRegistroVm));
 
         var resultado = servicoPlanos.Editar(registro, editarRegistroVm.GrupoId);
 
@@ -118,6 +118,8 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
     [HttpPost]
     public IActionResult Excluir(DetalhesPlanoDeCobrancaViewModel detalhesRegistroVm)
     {
+        servicoGrupos.ExcluirValores(servicoPlanos.SelecionarPorId(detalhesRegistroVm.Id).Value);
+
         var resultado = servicoPlanos.Excluir(detalhesRegistroVm.Id);
 
         if (ValidacaoDeFalha(resultado))
@@ -195,7 +197,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
     {
         var registrosExistentes = servicoPlanoDeCobranca.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
 
-        registroAtual = registroAtual is null ? new() : registroAtual;
+        registroAtual = registroAtual is null ? new() {GrupoDeAutomoveis = new()} : registroAtual;
 
         if (registrosExistentes.Exists(r =>
             r.GrupoDeAutomoveis.Id == novoRegistro.GrupoId &&
