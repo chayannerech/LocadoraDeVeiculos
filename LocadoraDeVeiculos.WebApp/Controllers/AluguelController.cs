@@ -57,7 +57,7 @@ public class AluguelController(
         var novoRegistro = mapeador.Map<Aluguel>(inserirRegistroVm);
 
         if (ValidacaoDeRegistroRepetido(servicoAluguel, inserirRegistroVm, null))
-            return View(inserirRegistroVm);
+            return View(CarregarInformacoes(inserirRegistroVm));
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
@@ -91,13 +91,13 @@ public class AluguelController(
     public IActionResult Editar(EditarAluguelViewModel editarRegistroVm)
     {
         if (!ModelState.IsValid)
-            return View(editarRegistroVm);
+            return View(CarregarInformacoes(editarRegistroVm));
 
         var registro = mapeador.Map<Aluguel>(editarRegistroVm);
         var registroAtual = servicoAluguel.SelecionarPorId(editarRegistroVm.Id).Value;
 
         if (ValidacaoDeRegistroRepetido(servicoAluguel, editarRegistroVm, registroAtual))
-            return View(editarRegistroVm);
+            return View(CarregarInformacoes(editarRegistroVm));
 
         var resultado = servicoAluguel.Editar(registro, editarRegistroVm.CondutorId, editarRegistroVm.ClienteId, editarRegistroVm.GrupoId, editarRegistroVm.VeiculoId);
 

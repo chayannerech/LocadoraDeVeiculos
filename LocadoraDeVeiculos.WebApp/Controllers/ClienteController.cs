@@ -207,15 +207,15 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
 
         if (novoRegistro.PessoaFisica)
         {
-            if ((cpfsExistentes.Any(c => c == novoRegistro.Documento) && !cpfsExistentes.Any(c => c == registroAtual.Documento)) ||
-                (cnhExistentes.Any(c => c == novoRegistro.CNH) && !cnhExistentes.Any(c => c == registroAtual.CNH)) ||
-                (rgExistentes.Any(c => c == novoRegistro.RG) && !rgExistentes.Any(c => c == registroAtual.RG)))
+            if ((cpfsExistentes.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual.Documento) ||
+                (cnhExistentes.Any(c => c == novoRegistro.CNH) && novoRegistro.CNH != registroAtual.CNH) ||
+                (rgExistentes.Any(c => c == novoRegistro.RG) && novoRegistro.RG != registroAtual.RG))
             {
                 ApresentarMensagemRegistroExistente();
                 return true;
             }
         }
-        else if (cnpjExistente.Any(c => c == novoRegistro.Documento) && !cnpjExistente.Any(c => c == registroAtual.Documento))
+        else if (cnpjExistente.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual.Documento)
         {
             ApresentarMensagemRegistroExistente();
             return true;

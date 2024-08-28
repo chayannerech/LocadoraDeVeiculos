@@ -67,23 +67,23 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
 
         var registro = resultado.Value;
 
-        var editarPlanoVm = mapeador.Map<EditarCondutorViewModel>(registro);
+        var editarRegistroVm = mapeador.Map<EditarCondutorViewModel>(registro);
 
-        editarPlanoVm.ClienteId = registro.Cliente.Id;
+        editarRegistroVm.ClienteId = registro.Cliente.Id;
 
-        return View(CarregarInformacoes(editarPlanoVm));
+        return View(CarregarInformacoes(editarRegistroVm));
     }
     [HttpPost]
     public IActionResult Editar(EditarCondutorViewModel editarRegistroVm)
     {
         if (!ModelState.IsValid)
-            return View(editarRegistroVm);
+            return View(CarregarInformacoes(editarRegistroVm));
 
         var registro = mapeador.Map<Condutor>(editarRegistroVm);
         var registroAtual = servicoPlanos.SelecionarPorId(editarRegistroVm.Id).Value;
 
         if (ValidacaoDeRegistroRepetido(servicoPlanos, editarRegistroVm, registroAtual))
-            return View(editarRegistroVm);
+            return View(CarregarInformacoes(editarRegistroVm));
 
         var resultado = servicoPlanos.Editar(registro, editarRegistroVm.ClienteId);
 
@@ -204,8 +204,8 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
 
         registroAtual = registroAtual is null ? new() : registroAtual;
 
-        if ((cpfsExistentes.Any(c => c.Equals(novoRegistro.CPF)) && !cpfsExistentes.Any(c => c.Equals(registroAtual.CPF))) ||
-            (cnhExistentes.Any(c => c.Equals(novoRegistro.CNH)) && !cnhExistentes.Any(c => c.Equals(registroAtual.CNH))))
+        if ((cpfsExistentes.Any(c => c.Equals(novoRegistro.CPF)) && novoRegistro.CPF != registroAtual.CPF) ||
+            (cnhExistentes.Any(c => c.Equals(novoRegistro.CNH)) && novoRegistro.CNH != registroAtual.CNH))
         {
             ApresentarMensagemRegistroExistente();
             return true;
