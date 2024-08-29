@@ -25,6 +25,10 @@ public class RepositorioPlanoDeCobrancaEmOrm : RepositorioBaseEmOrm<PlanoDeCobra
     public List<PlanoDeCobranca> Filtrar(Func<PlanoDeCobranca, bool> predicate)
         => ObterRegistros()
             .Include(s => s.GrupoDeAutomoveis)
+            .AsNoTracking()
             .Where(predicate)
             .ToList();
+
+    public PlanoDeCobranca SelecionarPorGrupoId(int id)
+        => _dbContext.PlanosDeCobranca.FirstOrDefault(x => x.GrupoDeAutomoveis.Id == id)!;
 }

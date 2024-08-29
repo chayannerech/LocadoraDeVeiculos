@@ -1,127 +1,226 @@
-﻿@using LocadoraDeVeiculos.Dominio.ModuloCliente
+﻿@using LocadoraDeVeiculos.Dominio.ModuloAluguel
 @using LocadoraDeVeiculos.WebApp.Models
-@model EditarClienteViewModel
+@model EditarAluguelViewModel
 
 @{
-    ViewBag.Title = "Editar Cliente";
+    ViewBag.Title = "Editar aluguel";
 }
 
+<style>
+    .is-invalid {
+        border-color: red;
+    }
+</style>
+
 <div class="col">
-    <div class="row gap-3 my-3 my-xl-5">
+    <div class="row gap-3 my-3 my-xl-4">
         <form class="col-lg-6 d-grid" asp-action="Editar">
+            <!-- Cliente -->
             <div>
-                <label class="control-label fw-bold mb-1">Nome</label>
-                <input class="form-control mb-1" asp-for="Nome" />
-                <span class="text-danger fs-6" asp-validation-for="Nome"></span>
+                <label class="control-label fw-bold mb-1">Cliente</label>
+                <select class="form-select" asp-for="ClienteId" asp-items="Model.Clientes" id="clienteSelect">
+                    <option value="" selected disabled>Selecione um cliente</option>
+                </select>
+                <span class="text-danger fs-6" asp-validation-for="ClienteId"></span>
             </div>
 
+            <!-- Condutor -->
             <div>
-                <label class="control-label fw-bold mb-1 mt-3">Email</label>
-                <input type="email" class="form-control mb-1" asp-for="Email" />
-                <span class="text-danger fs-6" asp-validation-for="Email"></span>
-            </div>
-
-            <div>
-                <label class="control-label fw-bold mb-1 mt-3">Telefone</label>
-                <input class="form-control mb-1" asp-for="Telefone" id="telefone" />
-                <span class="text-danger fs-6" asp-validation-for="Telefone"></span>
-            </div>
-
-            <div class="d-flex align-items-center mt-4">
-                <label class="control-label fw-bold mb-0 w-25">Tipo de Cliente</label>
-
-                <div class="w-75 gap-4" style="border: 1px solid #ced4da; border-radius: .25rem; padding: .375rem;">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" asp-for="PessoaFisica" value="true" id="radioPessoaFisica">
-                        <label class="form-check-label" for="radioPessoaFisica">Pessoa física</label>
-                    </div>
-
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" asp-for="PessoaFisica" value="false" id="radioPessoaJuridica">
-                        <label class="form-check-label" for="radioPessoaJuridica">Pessoa jurídica</label>
-                    </div>
+                <label class="control-label fw-bold mb-1 mt-3">Condutor</label>
+                <select class="form-select mb-1" asp-for="CondutorId" id="condutorSelect" disabled>
+                    <option value="" selected disabled>Selecione um condutor</option>
+                    @foreach (var condutor in Model.Condutores!)
+                    {
+                        <option value="@condutor.Id"
+                                data-clienteid="@condutor.Cliente.Id"
+                                data-validadecnh="@condutor.ValidadeCNH.ToString("yyyy-MM-dd")">
+                            @condutor.Nome
+                        </option>
+                    }
+                </select>
+                <span class="text-danger fs-6" asp-validation-for="CondutorId"></span>
+                <div id="condutorWarning" class="text-danger fs-6" style="display: none;">
+                    Nenhum condutor associado a este cliente
                 </div>
-            </div>
-            <span class="text-danger fs-6" asp-validation-for="PessoaFisica"></span>
-
-            <div class="d-flex flex-row gap-3 mt-3">
-                <div class="flex-fill" id="cpf">
-                    <label class="control-label fw-bold mb-1">CPF</label>
-                    <input class="form-control mb-1" id="CPF" asp-for="Documento" />
-                </div>
-
-                <div class="flex-fill" id="cnpj">
-                    <label class="control-label fw-bold mb-1">CNPJ</label>
-                    <input class="form-control mb-1" id="CNPJ" asp-for="Documento" />
-                </div>
-            </div>
-            <span class="text-danger fs-6" asp-validation-for="Documento"></span>
-
-            <div class="d-flex flex-row gap-3 mt-3" id="rgEcnh">
-                <div class="flex-fill">
-                    <label class="control-label fw-bold mb-1">RG</label>
-                    <input class="form-control mb-1" asp-for="RG" id="rg" />
-                    <span class="text-danger fs-6" asp-validation-for="RG"></span>
-                </div>
-
-                <div class="flex-fill">
-                    <label class="control-label fw-bold mb-1">CNH</label>
-                    <input class="form-control mb-1" asp-for="CNH" id="cnh" />
-                    <span class="text-danger fs-6" asp-validation-for="CNH"></span>
+                <div id="cnhWarning" class="text-danger fs-6" style="display: none;">
+                    A CNH deste condutor está vencida
                 </div>
             </div>
 
-            <div class="d-flex flex-row gap-3 mt-3">
-                <div class="flex-fill w-25">
-                    <label class="control-label fw-bold mb-1">Estado</label>
-                    <select class="form-select mb-1" asp-for="Estado">
-                        <option value="" selected disabled></option>
-                        @foreach (var estado in Enum.GetNames(typeof(EstadosEnum)))
+            <!-- Grupo de Automóveis e Veículo -->
+            <div class="d-none" id="grupoEveiculo">
+                <div>
+                    <label class="control-label fw-bold mt-3 mb-1">Grupo de Automóveis</label>
+                    <select class="form-select mb-1" asp-for="GrupoId" id="grupoSelect">
+                        <option value="" selected disabled>Selecione um grupo</option>
+                        @foreach (var grupo in Model.Grupos!)
                         {
-                            <option value="@estado">@estado</option>
+                            <option value="@grupo.Id"
+                                    data-preco-diaria="@grupo.PrecoDiaria"
+                                    data-preco-diaria-controlada="@grupo.PrecoDiariaControlada"
+                                    data-preco-livre="@grupo.PrecoLivre">
+                                @grupo.Nome
+                            </option>
                         }
                     </select>
-                    <span class="text-danger fs-6" asp-validation-for="Estado"></span>
+                    <span class="text-danger fs-6" asp-validation-for="GrupoId"></span>
                 </div>
 
-                <div class="flex-fill w-75">
-                    <label class="control-label fw-bold mb-1">Cidade</label>
-                    <input class="form-control mb-1" asp-for="Cidade" />
-                    <span class="text-danger fs-6" asp-validation-for="Cidade"></span>
+                <div class="d-flex align-items-start gap-3 mt-3">
+                    <div class="flex-fill">
+                        <label class="control-label fw-bold mb-1">Veículo</label>
+                        <select class="form-select mb-1" asp-for="VeiculoId" id="veiculoSelect" disabled>
+                            <option value="" selected disabled>Selecione um veículo</option>
+                            @foreach (var veiculo in Model.Veiculos!)
+                            {
+                                var imagemBase64 = Convert.ToBase64String(veiculo.ImagemEmBytes ?? new byte[0]);
+                                var imagemDataUrl = $"data:{veiculo.TipoDaImagem};base64,{imagemBase64}";
+
+                                <option value="@veiculo.Id"
+                                        data-grupoid="@veiculo.GrupoDeAutomoveis.Id"
+                                        data-alugado="@veiculo.Alugado"
+                                        data-imagem="@imagemDataUrl">
+                                    @veiculo.Marca modelo @veiculo.Modelo, Placa @veiculo.Placa
+                                </option>
+                            }
+                        </select>
+                        <span class="text-danger fs-6" asp-validation-for="VeiculoId"></span>
+                        <div id="alugadoWarning" class="text-danger fs-6" style="display: none;">
+                            Este veículo já está alugado
+                        </div>
+                        <div id="veiculoWarning" class="text-danger fs-6" style="display: none;">
+                            Nenhum veículo associado a este grupo
+                        </div>
+                        <div id="planoWarning" class="text-danger fs-6" style="display: none;">
+                            Não existe um plano de aluguel associado a este grupo de automóveis
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0 d-none" id="veiculoImagemContainer">
+                        <img id="veiculoImagem" class="img-fluid" alt="Imagem do veículo selecionado" style="max-width: 150px; max-height: 100px; border: 1px solid #ced4da; border-radius: .25rem;">
+                    </div>
                 </div>
             </div>
 
-            <div>
-                <label class="control-label fw-bold mb-1 mt-3">Bairro</label>
-                <input class="form-control mb-1" asp-for="Bairro" />
-                <span class="text-danger fs-6" asp-validation-for="Bairro"></span>
-            </div>
-
-            <div class="d-flex flex-row gap-3 mt-3">
-                <div class="flex-fill w-75">
-                    <label class="control-label fw-bold mb-1">Rua</label>
-                    <input class="form-control mb-1 w" asp-for="Rua" />
-                    <span class="text-danger fs-6" asp-validation-for="Rua"></span>
+            <!-- Data de Retirada e Data de Devolução -->
+            <div class="d-flex flex-row gap-3 mt-4 d-none" id="datas">
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">Data de Retirada</label>
+                    <input type="date" class="form-control mb-1" asp-for="DataSaida" id="saida" />
+                    <span class="text-danger fs-6" asp-validation-for="DataSaida"></span>
+                    <div id="saidaWarning" class="text-danger fs-6" style="display: none;">
+                        O veículo deve ser retirado em uma data superior à hoje
+                    </div>
                 </div>
 
-                <div class="flex-fill w-25">
-                    <label class="control-label fw-bold mb-1">Número</label>
-                    <input type="number" class="form-control mb-1" asp-for="Numero" />
-                    <span class="text-danger fs-6" asp-validation-for="Numero"></span>
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">Data de devolução</label>
+                    <input type="date" class="form-control mb-1" asp-for="DataRetornoPrevista" id="retorno" disabled />
+                    <span class="text-danger fs-6" asp-validation-for="DataRetornoPrevista"></span>
+                    <div id="retornoWarning" class="text-danger fs-6" style="display: none;">
+                        A data de devolução deve ser superior à data de retirada
+                    </div>
                 </div>
             </div>
 
+            <!-- Valor de Entrada, Dias de Aluguel e Plano de Aluguel -->
+            <div class="d-flex flex-row gap-3 mt-4 d-none" id="entradaEplano">
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">Valor de Entrada</label>
+                    <input class="form-control mb-1" value="R$ 1000,00" disabled />
+                </div>
+
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">Dias de aluguel</label>
+                    <input class="form-control mb-1" id="dias" disabled />
+                </div>
+
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">Plano de aluguel</label>
+                    <select class="form-select mb-1" asp-for="CategoriaPlano" id="planoSelect">
+                        <option value="" selected disabled>Plano</option>
+                        <option value="diário">Diário</option>
+                        <option value="controlado">Controlado</option>
+                        <option value="livre">Livre</option>
+                    </select>
+                    <span class="text-danger fs-6" asp-validation-for="CategoriaPlano"></span>
+                    <small id="valorPlano" class="text-muted"></small>
+                </div>
+            </div>
+
+            <!-- Taxas e Serviços -->
+            <div class="d-none" id="taxas">
+                <label class="control-label fw-bold mb-1 mt-3">Taxas e Serviços</label>
+                <div class="gap-4" style="border: 1px solid #ced4da; border-radius: .25rem; padding: .375rem;">
+                    @if (!Model.Taxas.Any())
+                    {
+                        <div>Ainda não existem taxas associadas</div>
+                    }
+                    else
+                    {
+                        @foreach (var taxa in Model.Taxas!)
+                        {
+                            var cobranca = taxa.PrecoFixo ? "Valor fixo" : "Valor diário";
+
+                            if (taxa.Seguro)
+                            {
+                                <div class="d-flex gap-3 mt-2 mb-2 align-items-center">
+                                    <div class="form-check me-5">
+                                        <input class="form-check-input taxa-checkbox" type="checkbox" name="TaxasSelecionadas" value="@taxa.Id" id="taxa_@taxa.Id" data-preco="@taxa.Preco" data-precofixo="@taxa.PrecoFixo.ToString().ToLower()">
+                                        <label class="form-check-label" for="taxa_@taxa.Id">
+                                            @taxa.Nome (@taxa.Preco R$ - @cobranca)
+                                        </label>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-2 form-switch-container">
+                                        <label class="control-label ms-3 me-2">Cliente</label>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input form-switch-input" type="checkbox" name="SeguroCliente_@taxa.Id" id="seguro_cliente_@taxa.Id" disabled required>
+                                        </div>
+                                        <label class="control-label">Terceiro</label>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input form-switch-input" type="checkbox" name="SeguroTerceiro_@taxa.Id" id="seguro_terceiro_@taxa.Id" disabled required>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-check mt-2 mb-2">
+                                    <input class="form-check-input taxa-checkbox" type="checkbox" name="TaxasSelecionadas" value="@taxa.Id" id="taxa_@taxa.Id" data-preco="@taxa.Preco" data-precofixo="@taxa.PrecoFixo.ToString().ToLower()">
+                                    <label class="form-check-label" for="taxa_@taxa.Id">
+                                        @taxa.Nome (@taxa.Preco R$ - @cobranca)
+                                    </label>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+                <input type="hidden" asp-for="TaxasSelecionadasId" id="taxasSelecionadas"/>
+            <p id="teste"></p>
+            </div>
+
+            <!-- Valor total -->
+            <div class="d-none d-flex justify-content-end align-items-center gap-3 mt-5" id="mostraTotal">
+                <label class="control-label fw-bold mb-0">Valor total</label>
+                <div class="flex-fill" style="max-width: 150px;">
+                    <input class="form-control mb-0" id="total" disabled />
+                    <input type="hidden" asp-for="ValorTotal" id="valor" />
+                </div>
+            </div>
+
+            <!-- Gravar -->
             <div class="row justify-content-center my-5 gap-3">
                 <button class="btn btn-secondary px-5" style="width: 170px">
                     <i class="bi bi-floppy-fill me-1"></i>
                     Gravar
                 </button>
 
-                <a class="btn btn-outline-secondary px-5" style="width: 170px" href="/Cliente/listar">
+                <a class="btn btn-outline-secondary px-5" style="width: 170px" href="/Aluguel/listar">
                     <i class="bi bi-arrow-return-left me-1"></i>
                     Voltar
                 </a>
-            </div>
+                </divclass>
         </form>
     </div>
 </div>
@@ -129,45 +228,392 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            $('#telefone').mask('(00)00000-0000');
-            $('#CPF').mask('000.000.000-00');
-            $('#CNPJ').mask('00.000.000/0000-00');
-            $('#rg').mask('0.000.000');
-            $('#cnh').mask('00000000000');
+            function filtrarCondutoresPorCliente(clienteId) {
+                let condutorEncontrado = false;
 
-            function toggleDocumento() {
-                if ($('#radioPessoaFisica').is(':checked')) {
-                    $('#cpf').removeClass('d-none');
-                    $('#cnpj').addClass('d-none');
-                    $('#rgEcnh').removeClass('d-none');
-                    $('#CPF').prop('name', 'Documento');
-                    $('#CNPJ').prop('name', 'unused');
-                    $('#CNPJ').val('');
-                } else if ($('#radioPessoaJuridica').is(':checked')) {
-                    $('#cpf').addClass('d-none');
-                    $('#cnpj').removeClass('d-none');
-                    $('#rgEcnh').addClass('d-none');
-                    $('#CPF').prop('name', 'unused');
-                    $('#CNPJ').prop('name', 'Documento');
-                    $('#rg').prop('name', 'unused');
-                    $('#cnh').prop('name', 'unused');
-                    $('#CPF').val('');
-                    $('#rg').val('');
-                    $('#cnh').val('');
+                $('#condutorSelect option').each(function () {
+                    const condutorClienteId = $(this).data('clienteid');
+
+                    if (condutorClienteId == clienteId) {
+                        $(this).show();
+                        condutorEncontrado = true;
+                    } else {
+                        $(this).hide();
+                    }
+                });
+
+                if (condutorEncontrado) {
+                    $('#condutorSelect').removeClass('is-invalid').prop('disabled', false);
+                    $('#condutorWarning').hide();
                 } else {
-                    $('#cpf').addClass('d-none');
-                    $('#cnpj').addClass('d-none');
-                    $('#rgEcnh').addClass('d-none');
-                    $('#cpf').prop('name', 'unused');
-                    $('#cnpj').prop('name', 'unused');
+                    $('#condutorSelect').addClass('is-invalid').prop('disabled', true);
+                    $('#condutorWarning').show();
+                    $('#grupoEveiculo').addClass('d-none');
+                    $('#datas').addClass('d-none');
+                }
+
+                $('#condutorSelect').val('');
+            }
+
+            function verificarValidadeCnh() {
+                const condutorSelecionado = $('#condutorSelect option:selected');
+                const validadeCnh = new Date(condutorSelecionado.data('validadecnh'));
+                const dataAtual = new Date();
+
+                if (validadeCnh < dataAtual) {
+                    $('#condutorSelect').addClass('is-invalid');
+                    $('#grupoEveiculo').addClass('d-none');
+                    $('#datas').addClass('d-none');
+                    $('#cnhWarning').show();
+                } else {
+                    $('#condutorSelect').removeClass('is-invalid');
+                    $('#cnhWarning').hide();
+                    $('#grupoEveiculo').removeClass('d-none');
                 }
             }
 
-            toggleDocumento();
+            function filtrarVeiculosPorGrupo(grupoId) {
+                let veiculoEncontrado = false;
 
-            $('#radioPessoaFisica, #radioPessoaJuridica').change(function () {
-                toggleDocumento();
+                $('#veiculoSelect option').each(function () {
+                    const veiculoGrupoId = $(this).data('grupoid');
+
+                    if (veiculoGrupoId == grupoId) {
+                        $(this).show();
+                        veiculoEncontrado = true;
+                    } else {
+                        $(this).hide();
+                    }
+                });
+
+                if (veiculoEncontrado) {
+                    $('#veiculoSelect').prop('disabled', false);
+                    $('#veiculoWarning').hide();
+                } else {
+                    $('#veiculoSelect').prop('disabled', true);
+                    $('#veiculoWarning').show();
+                    $('#datas').addClass('d-none');
+                }
+
+                $('#veiculoSelect').val('');
+            }
+
+            function verificarVeiculoAlugado() {
+                const veiculoSelecionado = $('#veiculoSelect option:selected');
+                const veiculoAlugado = veiculoSelecionado.data('alugado') === true || veiculoSelecionado.data('alugado') === "True";
+
+                if (veiculoAlugado) {
+                    $('#veiculoSelect').addClass('is-invalid');
+                    $('#alugadoWarning').show();
+                } else {
+                    $('#veiculoSelect').removeClass('is-invalid');
+                    $('#alugadoWarning').hide();
+                    $('#datas').removeClass('d-none');
+                }
+            }
+
+            function verificarDataSaida() {
+                const saidaSelecionada = $('#saida').val();
+                const dataSaida = new Date(saidaSelecionada);
+                const dataAtual = new Date();
+
+                dataAtual.setDate(dataAtual.getDate() - 1);
+
+                dataAtual.setHours(0, 0, 0, 0);
+                dataSaida.setHours(0, 0, 0, 0);
+
+                if (dataSaida < dataAtual) {
+                    $('#saida').addClass('is-invalid');
+                    $('#saidaWarning').show();
+                } else {
+                    $('#saida').removeClass('is-invalid');
+                    $('#saidaWarning').hide();
+                    $('#retorno').prop('disabled', false);
+                }
+            }
+
+            function verificarDataRetorno() {
+                const saidaSelecionada = $('#saida').val();
+                const dataSaida = new Date(saidaSelecionada);
+                const retornoSelecionado = $('#retorno').val();
+                const dataRetorno = new Date(retornoSelecionado);
+
+                if (dataRetorno <= dataSaida) {
+                    $('#retorno').addClass('is-invalid');
+                    $('#retornoWarning').show();
+                    $('#entradaEplano').addClass('d-none');
+                    $('#taxas').addClass('d-none');
+                } else {
+                    $('#retorno').removeClass('is-invalid');
+                    $('#retornoWarning').hide();
+                    $('#entradaEplano').removeClass('d-none');
+                    $('#taxas').removeClass('d-none');
+                    calcularDiasAluguel(dataSaida, dataRetorno);
+                }
+            }
+
+            function calcularDiasAluguel(dataSaida, dataRetorno) {
+                const timeDiff = Math.abs(dataRetorno.getTime() - dataSaida.getTime());
+                const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                $('#dias').val(diffDays);
+            }
+
+            function calcularDias() {
+                const dataSaida = new Date($('#saida').val());
+                const dataRetorno = new Date($('#retorno').val());
+
+                if (dataSaida && dataRetorno && dataRetorno > dataSaida) {
+                    const diffTime = Math.abs(dataRetorno - dataSaida);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    $('#dias').val(diffDays);
+                    return diffDays;
+                } else {
+                    $('#dias').val('');
+                    return 0;
+                }
+            }
+
+            function atualizarValorPlano() {
+                const planoSelecionado = $('#planoSelect').val();
+                const grupoSelecionado = $('#grupoSelect option:selected');
+                let valorPlano = '';
+
+                if (planoSelecionado === "diário") {
+                    const precoDiaria = parseFloat(grupoSelecionado.data('preco-diaria')) || 0;
+                    valorPlano = `Valor: ${precoDiaria.toFixed(2)} R$/dia`;
+                } else if (planoSelecionado === "controlado") {
+                    const precoDiariaControlada = parseFloat(grupoSelecionado.data('preco-diaria-controlada')) || 0;
+                    valorPlano = `Valor: ${precoDiariaControlada.toFixed(2)} R$/dia`;
+                } else if (planoSelecionado === "livre") {
+                    const precoLivre = parseFloat(grupoSelecionado.data('preco-livre')) || 0;
+                    valorPlano = `Valor: ${precoLivre.toFixed(2)} R$`;
+                }
+
+                $('#valorPlano').text(valorPlano);
+            }
+
+            function calcularValorTotal() {
+                const dias = calcularDias();
+                const planoSelecionado = $('#planoSelect').val();
+                const grupoSelecionado = $('#grupoSelect option:selected');
+
+                let valorTotal = 1000;
+
+                if (planoSelecionado === "diário") {
+                    const precoDiaria = parseFloat(grupoSelecionado.data('preco-diaria')) || 0;
+                    valorTotal = valorTotal + (dias * precoDiaria);
+                } else if (planoSelecionado === "controlado") {
+                    const precoDiariaControlada = parseFloat(grupoSelecionado.data('preco-diaria-controlada')) || 0;
+                    valorTotal = valorTotal + (dias * precoDiariaControlada);
+                } else if (planoSelecionado === "livre") {
+                    const precoLivre = parseFloat(grupoSelecionado.data('preco-livre')) || 0;
+                    valorTotal = valorTotal + precoLivre;
+                }
+
+                $('.taxa-checkbox:checked').each(function () {
+                    const preco = parseFloat($(this).data('preco')) || 0;
+                    const precoFixo = $(this).data('precofixo') === true;
+
+                    if (precoFixo) {
+                        valorTotal += preco;
+                    } else {
+                        valorTotal += preco * dias;
+                    }
+                });
+
+                $('#total').val(valorTotal.toFixed(2));
+                $('#valor').val(valorTotal);
+            }
+
+            function exibirImagemVeiculo() {
+                const veiculoSelecionado = $('#veiculoSelect option:selected');
+                const imagemDataUrl = veiculoSelecionado.data('imagem');
+
+                if (imagemDataUrl) {
+                    $('#veiculoImagem').attr('src', imagemDataUrl);
+                    $('#veiculoImagemContainer').removeClass('d-none');
+                } else {
+                    $('#veiculoImagemContainer').addClass('d-none');
+                }
+            }
+
+            function marcarTaxasSelecionadas() {
+                const taxasSelecionadas = $('#TaxasSelecionadas').val();
+
+                $('#teste').text(taxasSelecionadas);
+
+                const ids = taxasSelecionadas.split(',');
+
+                ids.forEach(function (id) {
+                    $(`#taxa_${id}`).prop('checked', true);
+                });
+
+                verificarTaxasComSeguro();
+            }
+
+            function verificarTaxasComSeguro() {
+                let seguroSelecionado = false;
+
+                $('.taxa-checkbox:checked').each(function () {
+                    const isSeguro = $(this).closest('.d-flex').find('.form-switch-container').length > 0;
+                    if (isSeguro) {
+                        seguroSelecionado = true;
+                    }
+                });
+
+                $('.form-switch-input').each(function () {
+                    if (seguroSelecionado) {
+                        $(this).prop('disabled', false).attr('required', true);
+                    } else {
+                        $(this).prop('disabled', true).prop('checked', false).removeAttr('required');
+                    }
+                });
+            }
+
+            function atualizarTaxasSelecionadas() {
+                const idsSelecionados = $('.taxa-checkbox:checked')
+                    .map(function () {
+                        return $(this).val();
+                    })
+                    .get()
+                    .join(',');
+
+                $('#TaxasSelecionadas').val(idsSelecionados);
+            }
+
+            $('.taxa-checkbox').change(function () {
+                verificarTaxasComSeguro();
+                atualizarTaxasSelecionadas();
             });
+
+            $('#planoSelect, #grupoSelect, .taxa-checkbox').change(function () {
+                atualizarValorPlano();
+                calcularValorTotal();
+            });
+
+            $('#saida, #retorno').change(function () {
+                calcularValorTotal();
+            });
+
+            $('#clienteSelect').change(function () {
+                const clienteIdSelecionado = $(this).val();
+                filtrarCondutoresPorCliente(clienteIdSelecionado);
+            });
+
+            $('#condutorSelect').change(function () {
+                verificarValidadeCnh();
+            });
+
+            $('#grupoSelect').change(function () {
+                const grupoIdSelecionado = $(this).val();
+                filtrarVeiculosPorGrupo(grupoIdSelecionado);
+                $('#veiculoImagemContainer').addClass('d-none');
+
+                const grupoSelecionado = $('#grupoSelect option:selected');
+                const precoDiaria = parseFloat(grupoSelecionado.data('preco-diaria')) || 0;
+
+                if (precoDiaria == 0) {
+                    $('#planoWarning').show();
+                    $('#veiculoSelect').prop('disabled', true);
+                    $('#veiculoSelect').val('');
+                    $('#datas').addClass('d-none');
+                } else {
+                    $('#planoWarning').hide();
+                }
+            });
+
+            $('#veiculoSelect').change(function () {
+                verificarVeiculoAlugado();
+                exibirImagemVeiculo();
+            });
+
+            $('#saida').change(function () {
+                verificarDataSaida();
+            });
+
+            $('#retorno').change(function () {
+                verificarDataRetorno();
+            });
+
+            $('#planoSelect').change(function () {
+                $('#mostraTotal').removeClass('d-none');
+            });
+
+            $('.taxa-checkbox').each(function () {
+                const isChecked = $(this).is(':checked');
+                const taxaId = $(this).attr('id').split('_')[1];
+                const formSwitchInputs = $(`#seguro_cliente_${taxaId}, #seguro_terceiro_${taxaId}`);
+
+                if (isChecked) {
+                    formSwitchInputs.prop('disabled', false).attr('required', true);
+                } else {
+                    formSwitchInputs.prop('disabled', true).removeAttr('required');
+                }
+
+                atualizarTaxasSelecionadas();
+            });
+
+            $('.form-switch-input').change(function () {
+                const currentSwitch = $(this);
+                const taxaId = currentSwitch.attr('id').split('_')[2];
+                const otherSwitchId = currentSwitch.attr('id').includes('cliente')
+                    ? `#seguro_terceiro_${taxaId}`
+                    : `#seguro_cliente_${taxaId}`;
+
+                if (currentSwitch.is(':checked')) {
+                    $(otherSwitchId).prop('checked', false).prop('required', false);
+                    currentSwitch.prop('required', true);
+                } else {
+                    $(otherSwitchId).prop('required', true);
+                }
+            });
+
+            const clienteIdInicial = $('#clienteSelect').val();
+            const condutorIdInicial = $('#condutorSelect').val();
+            const grupoIdInicial = $('#grupoSelect').val();
+            const veiculoIdInicial = $('#veiculoSelect').val();
+            const planoInicial = $('#planoSelect').val();
+            const saidaInicial = $('#saida').val();
+            const retornoInicial = $('#retorno').val();
+
+            if (clienteIdInicial) {
+                if (condutorIdInicial) {
+                    $('#condutorSelect').prop('disabled', false);
+                    verificarValidadeCnh();
+
+                    if (grupoIdInicial) {
+                        if (veiculoIdInicial) {
+                            $('#veiculoSelect').prop('disabled', false);
+                        }
+                        else {
+                            filtrarVeiculosPorGrupo(grupoIdInicial);
+                        }
+                    }
+                    else {
+                        filtrarVeiculosPorGrupo(grupoIdInicial);
+                    }
+
+                }
+                else {
+                    filtrarCondutoresPorCliente(clienteIdInicial);
+                }
+            }
+            if (planoInicial) {
+                $('#mostraTotal').removeClass('d-none');
+            }
+            if (veiculoIdInicial) {
+                $('#datas').removeClass('d-none');
+                exibirImagemVeiculo();
+            }
+            if (saidaInicial && retornoInicial){
+                $('#retorno').prop('disabled', false);
+                verificarDataRetorno()
+            }
+
+            calcularValorTotal();
+            atualizarTaxasSelecionadas();
+            verificarTaxasComSeguro();
+            marcarTaxasSelecionadas();
         });
     </script>
 }

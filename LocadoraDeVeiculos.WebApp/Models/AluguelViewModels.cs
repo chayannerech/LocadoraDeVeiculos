@@ -11,16 +11,15 @@ namespace LocadoraDeVeiculos.WebApp.Models;
 public class ListarAluguelViewModel
 {
     public int Id { get; set; }
-    public Condutor Condutor { get; set; }
-    public Veiculo Veiculo { get; set; }
     public CategoriaDePlanoEnum CategoriaPlano { get; set; }
     public DateTime DataSaida { get; set; }
     public DateTime DataRetornoPrevista { get; set; }
     public DateTime DataRetornoReal { get; set; }
     public decimal ValorTotal { get; set; }
+    public bool Ativo { get; set; }
 
-    public string CondutorNome { get => Condutor is not null ? Condutor.Nome : ""; set { } }
-    public string VeiculoPlaca { get => Veiculo is not null ? Veiculo.Placa : ""; set { } }
+    public string? CondutorNome { get; set; }
+    public string? VeiculoPlaca { get; set; }
 }
 
 public class InserirAluguelViewModel
@@ -61,10 +60,8 @@ public class InserirAluguelViewModel
     public DateTime DataRetornoPrevista { get; set; }
 
 
-    public bool SeguroCondutor { get; set; }
-    public bool SeguroTerceiro { get; set; }
-
-
+    public decimal ValorTotal { get; set; }
+    public string? TaxasSelecionadasId { get; set; }
     public IEnumerable<Condutor>? Condutores { get; set; }
     public IEnumerable<SelectListItem>? Clientes { get; set; }
     public IEnumerable<GrupoDeAutomoveis>? Grupos { get; set; }
@@ -82,17 +79,41 @@ public class EditarAluguelViewModel : InserirAluguelViewModel
 public class DetalhesAluguelViewModel
 {
     public int Id { get; set; }
-    public string CondutorNome { get; set; }
-    public string ClienteNome { get; set; }
-    public string GrupoNome { get; set; }
-    public string VeiculoPlaca { get; set; }
+    public string? CondutorNome { get; set; }
+    public string? ClienteNome { get; set; }
+    public string? GrupoNome { get; set; }
+    public string? VeiculoPlaca { get; set; }
+    public Veiculo? Veiculo { get; set; }
     public CategoriaDePlanoEnum CategoriaPlano { get; set; }
     public DateTime DataSaida { get; set; }
     public DateTime DataRetornoPrevista { get; set; }
     public DateTime DataRetornoReal { get; set; }
-    public bool SeguroCondutor { get; set; }
-    public bool SeguroTerceiro { get; set; }
+    public bool Ativo { get; set; }
     public decimal ValorTotal { get; set; }
+}
+
+public class DevolverAluguelViewModel
+{
+    public Condutor? Condutor { get; set; }
+    public Cliente? Cliente { get; set; }
+    public PlanoDeCobranca? PlanoDeCobranca { get; set; }
+    public string? GrupoNome { get; set; }
+    public Veiculo? Veiculo { get; set; }
+    public CategoriaDePlanoEnum CategoriaPlano { get; set; }
+    public DateTime DataSaida { get; set; }
+    public DateTime DataRetornoPrevista { get; set; }
+
+
+    [Required(ErrorMessage = "A data de devolução é obrigatória")]
+    [DataType(DataType.Date)]
+    [DataMenorQue(ErrorMessage = "A data de retorno deve ser superior à data de saída")]
+    public DateTime DataRetornoReal { get; set; }
+
+    public int DiasPrevistos { get => (DataRetornoPrevista - DataSaida).Days; set { } }
+
+    public decimal ValorTotal { get; set; }
+    public IEnumerable<Taxa>? Taxas { get; set; }
+    public IEnumerable<Taxa>? Seguros { get; set; }
 }
 
 public class DataMenorQueAttribute : ValidationAttribute

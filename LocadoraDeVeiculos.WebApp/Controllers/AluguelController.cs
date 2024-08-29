@@ -2,11 +2,7 @@
 using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloAluguel;
-using LocadoraDeVeiculos.Dominio.ModuloCliente;
-using LocadoraDeVeiculos.Dominio.ModuloCondutor;
-using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
-using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
@@ -52,12 +48,14 @@ public class AluguelController(
     public IActionResult Inserir(InserirAluguelViewModel inserirRegistroVm)
     {
         if (!ModelState.IsValid)
+        {
+            if (inserirRegistroVm.CategoriaPlano != CategoriaDePlanoEnum.Diário)
             return View(CarregarInformacoes(inserirRegistroVm));
+        }
+
+        inserirRegistroVm.TaxasSelecionadasId ??= "";
 
         var novoRegistro = mapeador.Map<Aluguel>(inserirRegistroVm);
-
-        if (ValidacaoDeRegistroRepetido(servicoAluguel, inserirRegistroVm, null))
-            return View(CarregarInformacoes(inserirRegistroVm));
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
@@ -65,6 +63,8 @@ public class AluguelController(
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
+
+        servicoVeiculo.AlugarVeiculo(inserirRegistroVm.VeiculoId);
 
         ApresentarMensagemSucesso($"O registro \"{novoRegistro}\" foi inserido com sucesso!");
 
@@ -81,6 +81,12 @@ public class AluguelController(
 
         var registro = resultado.Value;
 
+        if (!registro.Ativo)
+        {
+            ApresentarMensagemImpossivelEditar();
+            return RedirectToAction(nameof(Listar));
+        }
+
         var editarPlanoVm = mapeador.Map<EditarAluguelViewModel>(registro);
 
         editarPlanoVm.GrupoId = registro.GrupoDeAutomoveis.Id;
@@ -91,20 +97,21 @@ public class AluguelController(
     public IActionResult Editar(EditarAluguelViewModel editarRegistroVm)
     {
         if (!ModelState.IsValid)
+        {
+            if (editarRegistroVm.CategoriaPlano != CategoriaDePlanoEnum.Diário)
             return View(CarregarInformacoes(editarRegistroVm));
+        }
 
         var registro = mapeador.Map<Aluguel>(editarRegistroVm);
-        var registroAtual = servicoAluguel.SelecionarPorId(editarRegistroVm.Id).Value;
-
-        if (ValidacaoDeRegistroRepetido(servicoAluguel, editarRegistroVm, registroAtual))
-            return View(CarregarInformacoes(editarRegistroVm));
-
         var resultado = servicoAluguel.Editar(registro, editarRegistroVm.CondutorId, editarRegistroVm.ClienteId, editarRegistroVm.GrupoId, editarRegistroVm.VeiculoId);
+        editarRegistroVm.TaxasSelecionadasId ??= "";
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"{registro}\" foi editado com sucesso!");
+        var nome = servicoAluguel.SelecionarPorId(editarRegistroVm.Id).Value;
+
+        ApresentarMensagemSucesso($"O registro \"{nome}\" foi editado com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
@@ -119,6 +126,12 @@ public class AluguelController(
 
         var registro = resultado.Value;
 
+        if (registro.Ativo)
+        {
+            ApresentarMensagemImpossivelExcluir();
+            return RedirectToAction(nameof(Listar));
+        }
+
         var detalhesRegistroVm = mapeador.Map<DetalhesAluguelViewModel>(registro);
 
         return View(detalhesRegistroVm);
@@ -126,12 +139,14 @@ public class AluguelController(
     [HttpPost]
     public IActionResult Excluir(DetalhesAluguelViewModel detalhesRegistroVm)
     {
+        var nome = servicoAluguel.SelecionarPorId(detalhesRegistroVm.Id).Value;
+
         var resultado = servicoAluguel.Excluir(detalhesRegistroVm.Id);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"Plano para o grupo: {detalhesRegistroVm.GrupoNome}\" foi excluído com sucesso!");
+        ApresentarMensagemSucesso($"O registro \"{nome}\" foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
@@ -146,9 +161,9 @@ public class AluguelController(
 
         var registro = resultado.Value;
 
-        var detalhesRegistroVm = mapeador.Map<DetalhesAluguelViewModel>(registro);
+        var devolverVm = mapeador.Map<DevolverAluguelViewModel>(registro);
 
-        return View(detalhesRegistroVm);
+        return View(CarregarInformacoes(devolverVm));
     }
     [HttpPost]
     public IActionResult Devolver(DetalhesAluguelViewModel detalhesRegistroVm)
@@ -240,26 +255,28 @@ public class AluguelController(
         editarRegistroVm.Seguros = seguros;
         return editarRegistroVm;
     }
+    private DevolverAluguelViewModel? CarregarInformacoes(DevolverAluguelViewModel encerrarRegistroVm)
+    {
+        var resultadoTaxas = servicoTaxa.SelecionarTodos(UsuarioId.GetValueOrDefault());
+
+        if (resultadoTaxas.IsFailed)
+        {
+            ApresentarMensagemFalha(Result.Fail("Falha ao encontrar dados necessários!"));
+            return null;
+        }
+
+        var taxas = resultadoTaxas.Value;
+        var seguros = resultadoTaxas.Value.FindAll(t => t.Seguro);
+
+        encerrarRegistroVm.Taxas = taxas;
+        encerrarRegistroVm.Seguros = seguros;
+        return encerrarRegistroVm;
+    }
     protected bool ValidacaoDeFalha(Result<Aluguel> resultado)
     {
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
-            return true;
-        }
-        return false;
-    }
-    private bool ValidacaoDeRegistroRepetido(AluguelService servicoAluguel, InserirAluguelViewModel novoRegistro, Aluguel registroAtual)
-    {
-        var registrosExistentes = servicoAluguel.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
-
-        registroAtual = registroAtual is null ? new() : registroAtual;
-
-        if (registrosExistentes.Exists(r =>
-            r.Veiculo.Id == novoRegistro.VeiculoId &&
-            r.GrupoDeAutomoveis.Id != registroAtual.GrupoDeAutomoveis.Id))
-        {
-            ApresentarMensagemRegistroExistente();
             return true;
         }
         return false;

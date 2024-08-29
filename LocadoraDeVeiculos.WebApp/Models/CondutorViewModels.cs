@@ -14,7 +14,7 @@ public class InserirCondutorViewModel
 
 
     [Required(ErrorMessage = "O nome é obrigatório")]
-    [MinLength(6, ErrorMessage = "O nome deve conter ao menos 6 caracteres")]
+    [MinLength(3, ErrorMessage = "O nome deve conter ao menos 3 caracteres")]
     public string Nome { get; set; }
 
 
@@ -80,8 +80,8 @@ public class DataMenorQueHojeAttribute : ValidationAttribute
     {
         if (value is DateTime data)
         {
-            if (data > DateTime.Today)
-                return ValidationResult.Success;
+            if (data.AddDays(1) > DateTime.Today)
+                return ValidationResult.Success!;
             else
                 return new ValidationResult(ErrorMessage ?? "A data deve ser menor que a data atual");
         }

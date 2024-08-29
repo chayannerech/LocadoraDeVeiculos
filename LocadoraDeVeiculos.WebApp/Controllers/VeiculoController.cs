@@ -228,7 +228,7 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
             r.Placa == novoRegistro.Placa &&
             r.Placa != registroAtual.Placa))
         {
-            ApresentarMensagemRegistroExistente();
+            ApresentarMensagemRegistroExistente("Já existe um veículo com essa placa");
             return true;
         }
         return false;

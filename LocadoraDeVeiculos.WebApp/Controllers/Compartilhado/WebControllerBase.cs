@@ -42,12 +42,12 @@ public abstract class WebControllerBase : Controller
         };
     }
 
-    protected void ApresentarMensagemRegistroExistente()
+    protected void ApresentarMensagemRegistroExistente(string mensagemDeErro)
     {
         ViewBag.Mensagem = new MensagemViewModel
         {
             Titulo = "Falha",
-            Mensagem = "Este registro já existe"
+            Mensagem = mensagemDeErro
         };
     }
 
@@ -59,12 +59,22 @@ public abstract class WebControllerBase : Controller
             Mensagem = $"Ainda não existem itens cadastrados"
         });
     }
+
     protected void ApresentarMensagemImpossivelExcluir()
     {
         TempData.SerializarMensagemViewModel(new MensagemViewModel
         {
             Titulo = "Aviso",
             Mensagem = $"Não é possível excluir este registro"
+        });
+    }
+
+    protected void ApresentarMensagemImpossivelEditar()
+    {
+        TempData.SerializarMensagemViewModel(new MensagemViewModel
+        {
+            Titulo = "Aviso",
+            Mensagem = $"Não é possível editar este registro"
         });
     }
 

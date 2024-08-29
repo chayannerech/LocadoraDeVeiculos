@@ -30,6 +30,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
+
                     b.Property<string>("CategoriaPlano")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -57,9 +60,6 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<DateTime>("DataSaida")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("Devolvido")
-                        .HasColumnType("bit");
-
                     b.Property<string>("GrupoNome")
                         .IsRequired()
                         .HasColumnType("varchar(200)");
@@ -70,11 +70,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<int>("Plano_Id")
                         .HasColumnType("int");
 
-                    b.Property<bool>("SeguroCondutor")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("SeguroTerceiro")
-                        .HasColumnType("bit");
+                    b.Property<string>("TaxasSelecionadasId")
+                        .IsRequired()
+                        .HasColumnType("varchar(10)");
 
                     b.Property<decimal>("ValorTotal")
                         .HasColumnType("decimal(18,2)");

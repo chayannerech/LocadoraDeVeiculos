@@ -4,7 +4,7 @@ namespace LocadoraDeVeiculos.WebApp.Models;
 public class InserirTaxaViewModel
 {
     [Required(ErrorMessage = "O nome é obrigatório")]
-    [MinLength(6, ErrorMessage = "O nome deve conter ao menos 6 caracteres")]
+    [MinLength(4, ErrorMessage = "O nome deve conter ao menos 4 caracteres")]
     public string Nome { get; set; }
 
     [Required(ErrorMessage = "O preço da taxa ou serviço é obrigatório")]

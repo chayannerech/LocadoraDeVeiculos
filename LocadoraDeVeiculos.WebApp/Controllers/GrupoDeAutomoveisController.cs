@@ -71,7 +71,8 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
         var editarGrupoDeAutomoveisVm = mapeador.Map<EditarGrupoDeAutomoveisViewModel>(registro);
 
         return View(editarGrupoDeAutomoveisVm);
-    }    [HttpPost]
+    }    
+    [HttpPost]
     public IActionResult Editar(EditarGrupoDeAutomoveisViewModel editarRegistroVm)
     {
         if (!ModelState.IsValid)
@@ -105,26 +106,16 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
 
         var detalhesGrupoDeAutomoveisViewModel = mapeador.Map<DetalhesGrupoDeAutomoveisViewModel>(registro);
 
-        foreach (var veiculo in servicoVeiculo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value)
-        {
-            if (veiculo.GrupoDeAutomoveis.Id == registro.Id)
-            {
-                ApresentarMensagemImpossivelExcluir();
-                return RedirectToAction(nameof(Listar));
-            }
-        }
+        if (ValidarPossibilidadeDeExclusao(servicoVeiculo, registro))
+            return RedirectToAction(nameof(Listar));
 
-        foreach (var plano in servicoPlano.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value)
-        {
-            if (plano.GrupoDeAutomoveis.Id == registro.Id)
-            {
-                ApresentarMensagemImpossivelExcluir();
-                return RedirectToAction(nameof(Listar));
-            }
-        }
+        if (ValidarPossibilidadeDeExclusao(servicoPlano, registro))
+            return RedirectToAction(nameof(Listar));
 
         return View(detalhesGrupoDeAutomoveisViewModel);
     }
+
+
     [HttpPost]
     public IActionResult Excluir(DetalhesGrupoDeAutomoveisViewModel detalhesGrupoDeAutomoveisViewModel)
     {
@@ -178,9 +169,31 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
             r.Nome.Validation() == novoRegistro.Nome.Validation() &&
             r.Nome.Validation() != registroAtual.Nome.Validation()))
         {
-            ApresentarMensagemRegistroExistente();
+            ApresentarMensagemRegistroExistente("Já existe um grupo com este nome");
             return true;
         }
+        return false;
+    }
+    private bool ValidarPossibilidadeDeExclusao(VeiculoService servicoVeiculo, GrupoDeAutomoveis registro)
+    {
+        foreach (var veiculo in servicoVeiculo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value)
+            if (veiculo.GrupoDeAutomoveis.Id == registro.Id)
+            {
+                ApresentarMensagemImpossivelExcluir();
+                return true;
+            }
+
+        return false;
+    }
+    private bool ValidarPossibilidadeDeExclusao(PlanoDeCobrancaService servicoPlano, GrupoDeAutomoveis registro)
+    {
+        foreach (var plano in servicoPlano.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value)
+            if (plano.GrupoDeAutomoveis.Id == registro.Id)
+            {
+                ApresentarMensagemImpossivelExcluir();
+                return true;
+            }
+
         return false;
     }
     #endregion

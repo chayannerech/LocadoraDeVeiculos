@@ -20,6 +20,7 @@ public class AluguelService(
         var clienteSelecionado = repositorioCliente.SelecionarPorId(clienteId);
         var grupoSelecionado = repositorioGrupo.SelecionarPorId(grupoId);
         var veiculoSelecionado = repositorioVeiculo.SelecionarPorId(veiculoId);
+        var planoSelecionado = repositorioPlano.SelecionarPorGrupoId(grupoId);
 
         if (condutorSelecionado is null)
             return Result.Fail("O condutor não foi selecionado!");
@@ -34,6 +35,8 @@ public class AluguelService(
         registro.Cliente = clienteSelecionado;
         registro.GrupoDeAutomoveis = grupoSelecionado;
         registro.Veiculo = veiculoSelecionado;
+        registro.PlanoDeCobranca = planoSelecionado;
+        registro.Ativo = true;
 
         var erros = registro.Validar();
         if (erros.Count != 0)
@@ -55,6 +58,7 @@ public class AluguelService(
         var clienteSelecionado = repositorioCliente.SelecionarPorId(clienteId);
         var grupoSelecionado = repositorioGrupo.SelecionarPorId(grupoId);
         var veiculoSelecionado = repositorioVeiculo.SelecionarPorId(veiculoId);
+        var planoSelecionado = repositorioPlano.SelecionarPorGrupoId(grupoId);
 
         if (condutorSelecionado is null)
             return Result.Fail("O condutor não foi selecionado!");
@@ -68,11 +72,13 @@ public class AluguelService(
         registro.Condutor = condutorSelecionado;
         registro.Cliente = clienteSelecionado;
         registro.GrupoDeAutomoveis = grupoSelecionado;
-        registro.Veiculo = veiculoSelecionado; registro.DataSaida = registroAtualizado.DataSaida;
+        registro.Veiculo = veiculoSelecionado;
+        registro.PlanoDeCobranca = planoSelecionado;
+        registro.CategoriaPlano = registroAtualizado.CategoriaPlano;
+        registro.DataSaida = registroAtualizado.DataSaida;
         registro.DataRetornoPrevista = registroAtualizado.DataRetornoPrevista;
-        registro.DataRetornoReal = registroAtualizado.DataRetornoReal;
-        registro.SeguroCondutor = registroAtualizado.SeguroCondutor;
-        registro.SeguroTerceiro = registroAtualizado.SeguroTerceiro;
+        registro.ValorTotal = registroAtualizado.ValorTotal;
+        registro.TaxasSelecionadasId = registroAtualizado.TaxasSelecionadasId;
 
         var erros = registro.Validar();
         if (erros.Count != 0)
@@ -112,8 +118,7 @@ public class AluguelService(
 
                 return Result.Ok(registros);*/
 
-        var registros = repositorioAluguel
-            .SelecionarTodos();
+        var registros = repositorioAluguel.SelecionarTodos();
 
         return Result.Ok(registros);
     }

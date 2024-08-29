@@ -5,7 +5,7 @@ namespace LocadoraDeVeiculos.WebApp.Models;
 public class InserirGrupoDeAutomoveisViewModel
 {
     [Required(ErrorMessage = "O nome é obrigatório")]
-    [MinLength(6, ErrorMessage = "O nome deve conter ao menos 6 caracteres")]
+    [MinLength(4, ErrorMessage = "O nome deve conter ao menos 4 caracteres")]
     public string Nome { get; set; }
 }
 

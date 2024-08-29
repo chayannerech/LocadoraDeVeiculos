@@ -97,4 +97,12 @@ public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositori
 
         return Result.Ok(repositorioVeiculos.ObterVeiculosAgrupadosPorGrupo());
     }
+
+    public void AlugarVeiculo(int id)
+    {
+        var veiculoSelecionado = repositorioVeiculos.SelecionarPorId(id);
+        veiculoSelecionado!.Alugado = true;
+
+        repositorioVeiculos.Editar(veiculoSelecionado);
+    }
 }

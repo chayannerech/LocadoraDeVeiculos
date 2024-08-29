@@ -204,10 +204,15 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
 
         registroAtual = registroAtual is null ? new() : registroAtual;
 
-        if ((cpfsExistentes.Any(c => c.Equals(novoRegistro.CPF)) && novoRegistro.CPF != registroAtual.CPF) ||
-            (cnhExistentes.Any(c => c.Equals(novoRegistro.CNH)) && novoRegistro.CNH != registroAtual.CNH))
+        if (cpfsExistentes.Any(c => c.Equals(novoRegistro.CPF)) && novoRegistro.CPF != registroAtual.CPF)
         {
-            ApresentarMensagemRegistroExistente();
+            ApresentarMensagemRegistroExistente("Já existe uma pessoa com este CPF");
+            return true;
+        }
+
+        if (cnhExistentes.Any(c => c.Equals(novoRegistro.CNH)) && novoRegistro.CNH != registroAtual.CNH)
+        {
+            ApresentarMensagemRegistroExistente("Já existe uma pessoa com essa CNH");
             return true;
         }
         return false;

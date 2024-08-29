@@ -8,8 +8,10 @@ public class AluguelProfile : Profile
     {
         CreateMap<InserirAluguelViewModel, Aluguel>();
         CreateMap<EditarAluguelViewModel, Aluguel>();
+        CreateMap<DevolverAluguelViewModel, Aluguel>();
         CreateMap<Aluguel, ListarAluguelViewModel>();
         CreateMap<Aluguel, DetalhesAluguelViewModel>();
         CreateMap<Aluguel, EditarAluguelViewModel>();
+        CreateMap<Aluguel, DevolverAluguelViewModel>();
     }
 }

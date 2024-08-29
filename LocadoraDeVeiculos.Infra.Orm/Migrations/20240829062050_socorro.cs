@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 {
     /// <inheritdoc />
-    public partial class quaseLa : Migration
+    public partial class socorro : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -328,10 +328,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     DataSaida = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataRetornoPrevista = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DataRetornoReal = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SeguroCondutor = table.Column<bool>(type: "bit", nullable: false),
-                    SeguroTerceiro = table.Column<bool>(type: "bit", nullable: false),
+                    TaxasSelecionadasId = table.Column<string>(type: "varchar(10)", nullable: false),
                     ValorTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Devolvido = table.Column<bool>(type: "bit", nullable: false)
+                    Ativo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

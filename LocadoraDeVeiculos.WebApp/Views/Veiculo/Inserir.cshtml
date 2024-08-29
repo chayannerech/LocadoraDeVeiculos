@@ -19,7 +19,7 @@
 
             <div>
                 <label class="control-label fw-bold mb-1 mt-2">Placa</label>
-                <input class="form-control mb-1" asp-for="Placa" />
+                <input class="form-control mb-1" asp-for="Placa" id="placa"/>
                 <span class="text-danger fs-6" asp-validation-for="Placa"></span>
             </div>
 
@@ -92,7 +92,7 @@
 </div>
 
 <script>
-    document.getElementById('fotoInput').addEventListener('change', function (event) {
+    document.getElementById('fotoInput').addEventListener('change', function (event) {       
         const fotoInput = event.target;
         const fotoPreview = document.getElementById('fotoPreview');
 

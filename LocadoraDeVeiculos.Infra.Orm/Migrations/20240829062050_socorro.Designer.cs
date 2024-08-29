@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 {
     [DbContext(typeof(LocadoraDeVeiculosDbContext))]
-    [Migration("20240828000615_quaseLa")]
-    partial class quaseLa
+    [Migration("20240829062050_socorro")]
+    partial class socorro
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,6 +32,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
 
                     b.Property<string>("CategoriaPlano")
                         .IsRequired()
@@ -60,9 +63,6 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<DateTime>("DataSaida")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("Devolvido")
-                        .HasColumnType("bit");
-
                     b.Property<string>("GrupoNome")
                         .IsRequired()
                         .HasColumnType("varchar(200)");
@@ -73,11 +73,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<int>("Plano_Id")
                         .HasColumnType("int");
 
-                    b.Property<bool>("SeguroCondutor")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("SeguroTerceiro")
-                        .HasColumnType("bit");
+                    b.Property<string>("TaxasSelecionadasId")
+                        .IsRequired()
+                        .HasColumnType("varchar(10)");
 
                     b.Property<decimal>("ValorTotal")
                         .HasColumnType("decimal(18,2)");

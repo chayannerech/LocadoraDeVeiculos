@@ -1,0 +1,349 @@
+﻿@using LocadoraDeVeiculos.Dominio.ModuloAluguel
+@using LocadoraDeVeiculos.WebApp.Models
+@model DevolverAluguelViewModel
+
+@{
+    ViewBag.Title = "Devolver um veículo";
+}
+
+<style>
+    .is-invalid {
+        border-color: red;
+    }
+</style>
+
+<div class="col">
+    <div class="row gap-3 my-3 my-xl-4">
+        <form class="col-lg-6 d-grid" asp-action="Encerrar">
+            <!-- Cliente -->
+            <div>
+                <label class="control-label fw-bold mb-1">Cliente</label>
+                <select class="form-select" disabled>
+                    <option>@Model.Cliente</option>
+                </select>
+            </div>
+
+            <!-- Condutor -->
+            <div>
+                <label class="control-label fw-bold mb-1 mt-3">Condutor</label>
+                <select class="form-select mb-1" disabled>
+                    <option>@Model.Condutor</option>
+                </select>
+            </div>
+
+            <!-- Grupo de Automóveis -->
+            <div>
+                <label class="control-label fw-bold mt-3 mb-1">Grupo de Automóveis</label>
+                <select class="form-select mb-1" disabled>
+                    <option>@Model.GrupoNome</option>
+                </select>
+            </div>
+
+            <!-- Veículo -->
+            <div class="d-flex align-items-start gap-3 mt-3">
+                @{
+                    var imagemBase64 = Convert.ToBase64String(Model.Veiculo.ImagemEmBytes ?? new byte[0]);
+                    var imagemDataUrl = $"data:{Model.Veiculo.TipoDaImagem};base64,{imagemBase64}";
+                }
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">Veículo</label>
+                    <select class="form-select mb-1" id="veiculoSelect" disabled>
+                        <option value="@Model.Veiculo"
+                                data-imagem="@imagemDataUrl">
+                            @Model.Veiculo.Marca modelo @Model.Veiculo.Modelo, Placa @Model.Veiculo.Placa
+                        </option>
+                    </select>
+                </div>
+
+                <div class="flex-shrink-0" id="veiculoImagemContainer">
+                    <img id="veiculoImagem" class="img-fluid" alt="Imagem do veículo selecionado" style="max-width: 150px; max-height: 100px; border: 1px solid #ced4da; border-radius: .25rem;">
+                </div>
+            </div>
+
+            <!-- Data de Retirada e Data de Devolução -->
+            <div class="d-flex flex-row gap-3 mt-4">
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">Data de Retirada</label>
+                    <input type="date" class="form-control mb-1" asp-for="DataSaida" id="saida" disabled/>
+                </div>
+
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">Data de devolução</label>
+                    <input type="date" class="form-control mb-1" asp-for="DataRetornoReal" id="retorno"/>
+                    <span class="text-danger fs-6" asp-validation-for="DataRetornoReal"></span>
+                    <div id="retornoWarning" class="text-danger fs-6" style="display: none;">
+                        A data de devolução deve ser superior à data de retirada
+                    </div>
+                </div>
+            </div>
+
+            <!-- Valor de Entrada, Dias de Aluguel e Plano de Aluguel -->
+            <div class="d-flex flex-row gap-3 mt-4">
+                <div class="w-25">
+                    <label class="control-label fw-bold mb-1">Valor de Entrada</label>
+                    <input class="form-control mb-1" value="R$ 1000,00" disabled/>
+                </div>
+
+                <div class="w-25">
+                    <label class="control-label fw-bold mb-1">Dias previstos</label>
+                    <input class="form-control mb-1" value="@Model.DiasPrevistos" id="diasPrevistos" disabled />
+                </div>
+
+                <div class="w-25">
+                    <label class="control-label fw-bold mb-1">Dias totais</label>
+                    <input class="form-control mb-1" id="diasTotais" disabled />
+                </div>
+
+                <div class="w-25">
+                    <label class="control-label fw-bold mb-1">Plano de aluguel</label>
+                    <select class="form-select mb-1" id="planoSelect" disabled>
+                        <option>@Model.CategoriaPlano</option>
+                    </select>
+                    <small id="valorPlano"></small>
+                </div>
+
+                <input type="hidden" value="@Model.PlanoDeCobranca"
+                    data-precoDiaria=" @Model.PlanoDeCobranca!.PrecoDiaria"
+                    data-precoKm=" @Model.PlanoDeCobranca.PrecoKm"
+                    data-kmDisponivel=" @Model.PlanoDeCobranca.KmDisponivel"
+                    data-precoDiariaControlada=" @Model.PlanoDeCobranca.PrecoDiariaControlada"
+                    data-precoKmExtrapolado=" @Model.PlanoDeCobranca.PrecoExtrapolado"               
+                    id="plano" />
+            </div>
+
+            <!-- Taxas e Serviços -->
+            <div>
+                <label class="control-label fw-bold mb-1 mt-3">Taxas e Serviços</label>
+                <div class="gap-4" style="border: 1px solid #ced4da; border-radius: .25rem; padding: .375rem;">
+                    @if (!Model.Taxas.Any())
+                    {
+                        <div>Ainda não existem taxas associadas</div>
+                    }
+                    else
+                    {
+                        @foreach (var taxa in Model.Taxas!)
+                        {
+                            var cobranca = taxa.PrecoFixo ? "Valor fixo" : "Valor diário";
+
+                            if (taxa.Seguro)
+                            {
+                                <div class="d-flex gap-3 mt-2 mb-2 align-items-center">
+                                    <div class="form-check me-5">
+                                        <input class="form-check-input taxa-checkbox" type="checkbox" name="TaxasSelecionadas" value="@taxa.Id" id="taxa_@taxa.Id" data-preco="@taxa.Preco" data-precofixo="@taxa.PrecoFixo.ToString().ToLower()">
+                                        <label class="form-check-label" for="taxa_@taxa.Id">
+                                            @taxa.Nome (@taxa.Preco R$ - @cobranca)
+                                        </label>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-2 form-switch-container">
+                                        <label class="control-label ms-3 me-2">Cliente</label>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input form-switch-input" type="checkbox" name="SeguroCliente_@taxa.Id" id="seguro_cliente_@taxa.Id" disabled required>
+                                        </div>
+                                        <label class="control-label">Terceiro</label>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input form-switch-input" type="checkbox" name="SeguroTerceiro_@taxa.Id" id="seguro_terceiro_@taxa.Id" disabled required>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-check mt-2 mb-2">
+                                    <input class="form-check-input taxa-checkbox" type="checkbox" name="TaxasSelecionadas" value="@taxa.Id" id="taxa_@taxa.Id" data-preco="@taxa.Preco" data-precofixo="@taxa.PrecoFixo.ToString().ToLower()">
+                                    <label class="form-check-label" for="taxa_@taxa.Id">
+                                        @taxa.Nome (@taxa.Preco R$ - @cobranca)
+                                    </label>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+            </div>
+
+            <!-- Valor total -->
+            <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
+                <label class="control-label fw-bold mb-0">Valor total</label>
+                <div class="flex-fill" style="max-width: 150px;">
+                    <input class="form-control mb-0" id="total" disabled />
+                    <input type="hidden" asp-for="ValorTotal" id="valor"/>
+                </div>
+            </div>
+
+            <!-- Gravar -->
+            <div class="row justify-content-center my-5 gap-3">
+                <button class="btn btn-secondary px-5" style="width: 170px">
+                    <i class="bi bi-floppy-fill me-1"></i>
+                    Gravar
+                </button>
+
+                <a class="btn btn-outline-secondary px-5" style="width: 170px" href="/Aluguel/listar">
+                    <i class="bi bi-arrow-return-left me-1"></i>
+                    Voltar
+                </a>
+            </divclass>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            function verificarDataRetorno() {
+                const saidaSelecionada = $('#saida').val();
+                const dataSaida = new Date(saidaSelecionada);
+                const retornoSelecionado = $('#retorno').val();
+                const dataRetorno = new Date(retornoSelecionado);
+
+                if (dataRetorno <= dataSaida) {
+                    $('#retorno').addClass('is-invalid');
+                    $('#retornoWarning').show();
+                } else {
+                    $('#retorno').removeClass('is-invalid');
+                    $('#retornoWarning').hide();
+                    calcularDiasAluguel(dataSaida, dataRetorno);
+                }
+            }
+
+            function calcularDiasAluguel(dataSaida, dataRetorno) {
+                const timeDiff = Math.abs(dataRetorno.getTime() - dataSaida.getTime());
+                const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                $('#dias').val(diffDays);
+            }
+
+            function calcularDias() {
+                const dataSaida = new Date($('#saida').val());
+                const dataRetorno = new Date($('#retorno').val());
+
+                if (dataSaida && dataRetorno && dataRetorno > dataSaida) {
+                    const diffTime = Math.abs(dataRetorno - dataSaida);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    $('#diasTotais').val(diffDays);
+
+                    const diasPrevistos = parseInt($('#diasPrevistos').val(), 10);
+                    if (diffDays > diasPrevistos) {
+                        $('#diasTotais').addClass('is-invalid');
+                    } else {
+                        $('#diasTotais').removeClass('is-invalid');
+                    }
+
+                    return diffDays;
+                } else {
+                    $('#diasTotais').val('');
+                    $('#diasTotais').removeClass('is-invalid');
+                    return 0;
+                }
+            }
+
+            function atualizarValorPlano() {
+                const planoSelecionado = $('#planoSelect').val();
+                let valorPlano = '';
+
+                if (planoSelecionado === "diario") {
+                    const precoDiaria = parseFloat($('#plano').data('preco-diaria')) || 0;
+                    valorPlano = `Valor: ${precoDiaria.toFixed(2)} R$/dia`;
+                } else if (planoSelecionado === "controlado") {
+                    const precoDiariaControlada = parseFloat($('#plano').data('preco-diaria-controlada')) || 0;
+                    valorPlano = `Valor: ${precoDiariaControlada.toFixed(2)} R$/dia`;
+                } else if (planoSelecionado === "livre") {
+                    const precoLivre = parseFloat($('#plano').data('preco-livre')) || 0;
+                    valorPlano = `Valor: ${precoLivre.toFixed(2)} R$`;
+                }
+
+                $('#valorPlano').text(valorPlano);
+            }
+
+            function calcularValorTotal() {
+                const dias = calcularDias();
+                const planoSelecionado = $('#planoSelect').val();
+                const grupoSelecionado = $('#grupoSelect option:selected');
+
+                let valorTotal = 1000;
+
+                if (planoSelecionado === "diario") {
+                    const precoDiaria = parseFloat(grupoSelecionado.data('preco-diaria')) || 0;
+                    valorTotal = valorTotal + (dias * precoDiaria);
+                } else if (planoSelecionado === "controlado") {
+                    const precoDiariaControlada = parseFloat(grupoSelecionado.data('preco-diaria-controlada')) || 0;
+                    valorTotal = valorTotal + (dias * precoDiariaControlada);
+                } else if (planoSelecionado === "livre") {
+                    const precoLivre = parseFloat(grupoSelecionado.data('preco-livre')) || 0;
+                    valorTotal = valorTotal + precoLivre;
+                }
+
+                $('.taxa-checkbox:checked').each(function () {
+                    const preco = parseFloat($(this).data('preco')) || 0;
+                    const precoFixo = $(this).data('precofixo') === true;
+
+                    if (precoFixo) {
+                        valorTotal += preco;
+                    } else {
+                        valorTotal += preco * dias;
+                    }
+                });
+
+                $('#total').val(valorTotal.toFixed(2));
+                $('#valor').val(valorTotal);
+            }
+
+            const veiculoSelecionado = $('#veiculoSelect option:selected');
+            const imagemDataUrl = veiculoSelecionado.data('imagem');
+
+            $('#veiculoImagem').attr('src', imagemDataUrl);
+
+            $('.taxa-checkbox').change(function () {
+                calcularValorTotal();
+            });
+
+            $('#retorno').change(function () {
+                calcularValorTotal();
+            });
+
+            $('#retorno').change(function () {
+                verificarDataRetorno();
+                calcularDias(); 
+            });
+
+            $('.taxa-checkbox').change(function () {
+                const isChecked = $(this).is(':checked');
+                const taxaId = $(this).attr('id').split('_')[1];
+                const formSwitchInputs = $(`#seguro_cliente_${taxaId}, #seguro_terceiro_${taxaId}`);
+
+                if (isChecked) {
+                    formSwitchInputs.prop('disabled', false).attr('required', true);
+                } else {
+                    formSwitchInputs.prop('disabled', true).prop('checked', false).removeAttr('required');
+                }
+            });
+
+            $('.taxa-checkbox').each(function () {
+                const isChecked = $(this).is(':checked');
+                const taxaId = $(this).attr('id').split('_')[1];
+                const formSwitchInputs = $(`#seguro_cliente_${taxaId}, #seguro_terceiro_${taxaId}`);
+
+                if (isChecked) {
+                    formSwitchInputs.prop('disabled', false).attr('required', true);
+                } else {
+                    formSwitchInputs.prop('disabled', true).removeAttr('required');
+                }
+            });
+
+            $('.form-switch-input').change(function () {
+                const currentSwitch = $(this);
+                const taxaId = currentSwitch.attr('id').split('_')[2];
+                const otherSwitchId = currentSwitch.attr('id').includes('cliente')
+                    ? `#seguro_terceiro_${taxaId}`
+                    : `#seguro_cliente_${taxaId}`;
+
+                if (currentSwitch.is(':checked')) {
+                    $(otherSwitchId).prop('checked', false);
+                }
+            });
+
+            calcularDias();
+            atualizarValorPlano();
+            calcularValorTotal();
+        });
+    </script>
+}

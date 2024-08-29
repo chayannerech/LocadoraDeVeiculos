@@ -73,17 +73,16 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
         aBuilder.Property(c => c.DataRetornoReal)
             .HasColumnType("datetime2");
 
-        aBuilder.Property(c => c.SeguroCondutor)
-            .IsRequired()
-            .HasColumnType("bit");
-
-        aBuilder.Property(c => c.SeguroTerceiro)
+        aBuilder.Property(c => c.Ativo)
             .IsRequired()
             .HasColumnType("bit");
 
         aBuilder.Property(a => a.ValorTotal)
             .IsRequired()
             .HasColumnType("decimal(18,2)");
+
+        aBuilder.Property(a => a.TaxasSelecionadasId)
+            .HasColumnType("varchar(10)");
 
         /*        aBuilder.Property(s => s.UsuarioId)
                     .IsRequired()

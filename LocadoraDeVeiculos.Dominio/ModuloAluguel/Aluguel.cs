@@ -9,21 +9,27 @@ public class Aluguel() : EntidadeBase
 {
     public Condutor Condutor { get; set; }
     public string CondutorNome { get => Condutor is not null ? Condutor.Nome : ""; set { } }
+
     public Cliente Cliente { get; set; }
     public string ClienteNome { get => Cliente is not null ? Cliente.Nome : ""; set { } }
+
     public PlanoDeCobranca PlanoDeCobranca { get; set; }
     public CategoriaDePlanoEnum CategoriaPlano { get; set; }
+
     public GrupoDeAutomoveis GrupoDeAutomoveis { get; set; }
     public string GrupoNome { get => GrupoDeAutomoveis is not null ? GrupoDeAutomoveis.Nome : ""; set { } }
+
     public Veiculo Veiculo { get; set; }
     public string VeiculoPlaca { get => Veiculo is not null ? Veiculo.Placa : ""; set { } }
+
     public DateTime DataSaida { get; set; }
     public DateTime DataRetornoPrevista { get; set; }
     public DateTime DataRetornoReal { get; set; }
-    public bool SeguroCondutor { get; set; }
-    public bool SeguroTerceiro {  get; set; }
+
+    public string TaxasSelecionadasId { get; set; }
+
     public decimal ValorTotal { get; set; }
-    public bool Devolvido { get; set; }
+    public bool Ativo { get; set; }
 
 
     public List<string> Validar()
@@ -36,14 +42,9 @@ public class Aluguel() : EntidadeBase
         VerificaNulo(ref erros, Veiculo, "Veiculo");
         VerificaDataInferior(ref erros, DataSaida, "O veículo deve ser retirado hoje ou após o dia de hoje");
         VerificaDataInferior(ref erros, DataRetornoPrevista, DataSaida, "O veículo deve ser devolvido após a data de retirada");        
-        VerificaSeguro(ref erros, SeguroCondutor, SeguroTerceiro);
 
         return erros;
     }
 
-    protected void VerificaSeguro(ref List<string> erros, bool seguroCondutor, bool seguroTerceiro)
-    {
-        if (seguroCondutor && seguroTerceiro)
-            erros.Add($"Deve-se informar à quem o seguro se aplica");
-    }
+    public override string ToString() => $"Aluguel do {Veiculo} do dia {DataSaida.ToShortDateString()} ao dia {DataRetornoPrevista.ToShortDateString()}";
 }

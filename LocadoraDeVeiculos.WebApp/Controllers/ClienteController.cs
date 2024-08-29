@@ -207,17 +207,25 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
 
         if (novoRegistro.PessoaFisica)
         {
-            if ((cpfsExistentes.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual.Documento) ||
-                (cnhExistentes.Any(c => c == novoRegistro.CNH) && novoRegistro.CNH != registroAtual.CNH) ||
-                (rgExistentes.Any(c => c == novoRegistro.RG) && novoRegistro.RG != registroAtual.RG))
+            if (cpfsExistentes.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual.Documento)
             {
-                ApresentarMensagemRegistroExistente();
+                ApresentarMensagemRegistroExistente("Já existe um cadastro com esse CPF");
+                return true;
+            }
+            if (cnhExistentes.Any(c => c == novoRegistro.CNH) && novoRegistro.CNH != registroAtual.CNH)
+            {
+                ApresentarMensagemRegistroExistente("Já existe um cadastro com essa CNH");
+                return true;
+            }
+            if (rgExistentes.Any(c => c == novoRegistro.RG) && novoRegistro.RG != registroAtual.RG)
+            {
+                ApresentarMensagemRegistroExistente("Já existe um cadastro com esse RG");
                 return true;
             }
         }
         else if (cnpjExistente.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual.Documento)
         {
-            ApresentarMensagemRegistroExistente();
+            ApresentarMensagemRegistroExistente("Já existe um cadastro com esse CNPJ");
             return true;
         }
 

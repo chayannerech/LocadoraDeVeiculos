@@ -203,7 +203,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
             r.GrupoDeAutomoveis.Id == novoRegistro.GrupoId &&
             r.GrupoDeAutomoveis.Id != registroAtual.GrupoDeAutomoveis.Id))
         {
-            ApresentarMensagemRegistroExistente();
+            ApresentarMensagemRegistroExistente("Este grupo de automóveis já possui um plano de cobrança");
             return true;
         }
         return false;

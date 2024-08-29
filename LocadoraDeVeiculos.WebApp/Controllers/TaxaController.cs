@@ -161,7 +161,7 @@ public class TaxaController(TaxaService servicoTaxa, IMapper mapeador) : WebCont
             r.Nome.Validation() == novoRegistro.Nome.Validation() &&
             r.Nome.Validation() != registroAtual.Nome.Validation()))
         {
-            ApresentarMensagemRegistroExistente();
+            ApresentarMensagemRegistroExistente("Já existe um cadastro com esse nome");
             return true;
         }
         return false;
