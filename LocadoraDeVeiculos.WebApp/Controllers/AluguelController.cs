@@ -3,6 +3,7 @@ using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloAluguel;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
+using LocadoraDeVeiculos.Dominio.ModuloTaxa;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
@@ -102,12 +103,16 @@ public class AluguelController(
             return View(CarregarInformacoes(editarRegistroVm));
         }
 
+        servicoVeiculo.LiberarVeiculo(servicoAluguel.SelecionarPorId(editarRegistroVm.Id).Value.Veiculo.Id);
+
         var registro = mapeador.Map<Aluguel>(editarRegistroVm);
+
         var resultado = servicoAluguel.Editar(registro, editarRegistroVm.CondutorId, editarRegistroVm.ClienteId, editarRegistroVm.GrupoId, editarRegistroVm.VeiculoId);
-        editarRegistroVm.TaxasSelecionadasId ??= "";
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
+
+        servicoVeiculo.AlugarVeiculo(editarRegistroVm.VeiculoId);
 
         var nome = servicoAluguel.SelecionarPorId(editarRegistroVm.Id).Value;
 
@@ -141,6 +146,8 @@ public class AluguelController(
     {
         var nome = servicoAluguel.SelecionarPorId(detalhesRegistroVm.Id).Value;
 
+        servicoVeiculo.LiberarVeiculo(detalhesRegistroVm.Veiculo!.Id);
+
         var resultado = servicoAluguel.Excluir(detalhesRegistroVm.Id);
 
         if (ValidacaoDeFalha(resultado))
@@ -166,14 +173,19 @@ public class AluguelController(
         return View(CarregarInformacoes(devolverVm));
     }
     [HttpPost]
-    public IActionResult Devolver(DetalhesAluguelViewModel detalhesRegistroVm)
+    public IActionResult Devolver(DevolverAluguelViewModel devolverRegistroVm)
     {
-        var resultado = servicoAluguel.Excluir(detalhesRegistroVm.Id);
+        if (!ModelState.IsValid)
+            return View(CarregarInformacoes(devolverRegistroVm));
+
+        var resultado = servicoAluguel.Devolver(devolverRegistroVm.Id, devolverRegistroVm.ValorTotal, devolverRegistroVm.DataRetornoReal);
+
+        servicoVeiculo.LiberarVeiculo(servicoAluguel.SelecionarPorId(devolverRegistroVm.Id).Value.Veiculo.Id);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"Plano para o grupo: {detalhesRegistroVm.GrupoNome}\" foi excluído com sucesso!");
+        ApresentarMensagemSucesso($"O registro \"Plano para o grupo: {devolverRegistroVm.GrupoNome}\" foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
@@ -257,6 +269,23 @@ public class AluguelController(
     }
     private DevolverAluguelViewModel? CarregarInformacoes(DevolverAluguelViewModel encerrarRegistroVm)
     {
+        List<Taxa> taxas = [];
+
+        var registro = servicoAluguel.SelecionarPorId(encerrarRegistroVm.Id).Value;
+
+        encerrarRegistroVm.Cliente = registro.Cliente;
+        encerrarRegistroVm.Condutor = registro.Condutor;
+        encerrarRegistroVm.GrupoNome = registro.GrupoNome;
+        encerrarRegistroVm.Veiculo = registro.Veiculo;
+        encerrarRegistroVm.DataSaida = registro.DataSaida;
+        encerrarRegistroVm.DataRetornoPrevista = registro.DataRetornoPrevista;
+        encerrarRegistroVm.PlanoDeCobranca = registro.PlanoDeCobranca;
+        encerrarRegistroVm.TaxasSelecionadasId = registro.TaxasSelecionadasId;
+
+        if (encerrarRegistroVm.TaxasSelecionadasId != "")
+            foreach(var taxaId in encerrarRegistroVm.TaxasSelecionadasId!.Split(','))
+                taxas.Add(servicoTaxa.SelecionarPorId(Convert.ToInt32(taxaId)).Value);
+
         var resultadoTaxas = servicoTaxa.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
         if (resultadoTaxas.IsFailed)
@@ -265,11 +294,7 @@ public class AluguelController(
             return null;
         }
 
-        var taxas = resultadoTaxas.Value;
-        var seguros = resultadoTaxas.Value.FindAll(t => t.Seguro);
-
         encerrarRegistroVm.Taxas = taxas;
-        encerrarRegistroVm.Seguros = seguros;
         return encerrarRegistroVm;
     }
     protected bool ValidacaoDeFalha(Result<Aluguel> resultado)

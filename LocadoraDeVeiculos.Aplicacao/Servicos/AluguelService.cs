@@ -101,6 +101,22 @@ public class AluguelService(
         return Result.Ok();
     }
 
+    public Result Devolver(int registroId, decimal valorTotal, DateTime dataDevolucaoReal)
+    {
+        var registro = repositorioAluguel.SelecionarPorId(registroId);
+
+        if (registro is null)
+            return Result.Fail("O aluguel não foi encontrado!");
+
+        registro.Ativo = false;
+        registro.ValorTotal = valorTotal;
+        registro.DataRetornoReal = dataDevolucaoReal;
+
+        repositorioAluguel.Editar(registro);
+
+        return Result.Ok();
+    }
+
     public Result<Aluguel> SelecionarPorId(int registroId)
     {
         var registro = repositorioAluguel.SelecionarPorId(registroId);

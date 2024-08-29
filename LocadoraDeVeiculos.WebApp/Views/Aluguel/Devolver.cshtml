@@ -10,6 +10,10 @@
     .is-invalid {
         border-color: red;
     }
+
+    .nav-link {
+        color: #999;
+    }
 </style>
 
 <div class="col">
@@ -64,12 +68,12 @@
             <div class="d-flex flex-row gap-3 mt-4">
                 <div class="flex-fill">
                     <label class="control-label fw-bold mb-1">Data de Retirada</label>
-                    <input type="date" class="form-control mb-1" asp-for="DataSaida" id="saida" disabled/>
+                    <input type="date" class="form-control mb-1" asp-for="DataSaida" id="saida" disabled />
                 </div>
 
                 <div class="flex-fill">
                     <label class="control-label fw-bold mb-1">Data de devolução</label>
-                    <input type="date" class="form-control mb-1" asp-for="DataRetornoReal" id="retorno"/>
+                    <input type="date" class="form-control mb-1" asp-for="DataRetornoReal" id="retorno" />
                     <span class="text-danger fs-6" asp-validation-for="DataRetornoReal"></span>
                     <div id="retornoWarning" class="text-danger fs-6" style="display: none;">
                         A data de devolução deve ser superior à data de retirada
@@ -77,87 +81,114 @@
                 </div>
             </div>
 
-            <!-- Valor de Entrada, Dias de Aluguel e Plano de Aluguel -->
+            <!-- Valor de Entrada, Dias de Aluguel -->
             <div class="d-flex flex-row gap-3 mt-4">
-                <div class="w-25">
+                <div class="flex-fil">
                     <label class="control-label fw-bold mb-1">Valor de Entrada</label>
-                    <input class="form-control mb-1" value="R$ 1000,00" disabled/>
+                    <input class="form-control mb-1" value="R$ 1000,00" disabled />
                 </div>
 
-                <div class="w-25">
+                <div class="flex-fil">
                     <label class="control-label fw-bold mb-1">Dias previstos</label>
                     <input class="form-control mb-1" value="@Model.DiasPrevistos" id="diasPrevistos" disabled />
                 </div>
 
-                <div class="w-25">
+                <div class="flex-fil">
                     <label class="control-label fw-bold mb-1">Dias totais</label>
                     <input class="form-control mb-1" id="diasTotais" disabled />
                 </div>
+            </div>
 
-                <div class="w-25">
+            <!-- Plano de Aluguel e Valor-->
+            <div class="d-flex flex-row gap-3 mt-4 align-items-center">
+                <div class="flex-fill">
                     <label class="control-label fw-bold mb-1">Plano de aluguel</label>
                     <select class="form-select mb-1" id="planoSelect" disabled>
                         <option>@Model.CategoriaPlano</option>
                     </select>
-                    <small id="valorPlano"></small>
                 </div>
 
+                <div class="w-25">
+                    <label class="control-label fw-bold mb-1">Valor plano</label>
+                    <input class="form-control mb-1" id="valorPlano" disabled />
+                </div>
+
+                <small class="text-muted ms-3 mt-4" id="planoInfo"></small>
+
                 <input type="hidden" value="@Model.PlanoDeCobranca"
-                    data-precoDiaria=" @Model.PlanoDeCobranca!.PrecoDiaria"
-                    data-precoKm=" @Model.PlanoDeCobranca.PrecoKm"
-                    data-kmDisponivel=" @Model.PlanoDeCobranca.KmDisponivel"
-                    data-precoDiariaControlada=" @Model.PlanoDeCobranca.PrecoDiariaControlada"
-                    data-precoKmExtrapolado=" @Model.PlanoDeCobranca.PrecoExtrapolado"               
-                    id="plano" />
+                       data-precoDiaria="@Model.PlanoDeCobranca!.PrecoDiaria"
+                       data-precoKm="@Model.PlanoDeCobranca.PrecoKm"
+                       data-kmDisponivel="@Model.PlanoDeCobranca.KmDisponivel"
+                       data-precoDiariaControlada="@Model.PlanoDeCobranca.PrecoDiariaControlada"
+                       data-precoKmExtrapolado="@Model.PlanoDeCobranca.PrecoExtrapolado"
+                       data-precoLivre="@Model.PlanoDeCobranca.PrecoLivre"
+                       id="plano" />
             </div>
 
             <!-- Taxas e Serviços -->
             <div>
-                <label class="control-label fw-bold mb-1 mt-3">Taxas e Serviços</label>
+                <label class="control-label fw-bold mb-1 mt-4">Taxas e Serviços</label>
                 <div class="gap-4" style="border: 1px solid #ced4da; border-radius: .25rem; padding: .375rem;">
-                    @if (!Model.Taxas.Any())
-                    {
-                        <div>Ainda não existem taxas associadas</div>
-                    }
-                    else
-                    {
-                        @foreach (var taxa in Model.Taxas!)
-                        {
-                            var cobranca = taxa.PrecoFixo ? "Valor fixo" : "Valor diário";
+                    <ul class="nav nav-tabs mb-3" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active" id="taxasAnteriores-tab" data-bs-toggle="tab" data-bs-target="#taxasAnteriores" type="button" role="tab" aria-controls="taxasAnteriores" aria-selected="true">Taxas Selecionadas</button>
+                        </li>
 
-                            if (taxa.Seguro)
+                        <li class="nav-item">
+                            <button class="nav-link" id="taxasAdicionais-tab" data-bs-toggle="tab" data-bs-target="#taxasAdicionais" type="button" role="tab" aria-controls="taxasAdicionais" aria-selected="false">Taxas Adicionais</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="taxasAnteriores" role="tabpanel" aria-labelledby="taxasAnteriores-tab">
+                            @if (!Model.Taxas.Any())
                             {
-                                <div class="d-flex gap-3 mt-2 mb-2 align-items-center">
-                                    <div class="form-check me-5">
-                                        <input class="form-check-input taxa-checkbox" type="checkbox" name="TaxasSelecionadas" value="@taxa.Id" id="taxa_@taxa.Id" data-preco="@taxa.Preco" data-precofixo="@taxa.PrecoFixo.ToString().ToLower()">
-                                        <label class="form-check-label" for="taxa_@taxa.Id">
-                                            @taxa.Nome (@taxa.Preco R$ - @cobranca)
-                                        </label>
-                                    </div>
-
-                                    <div class="d-flex align-items-center gap-2 form-switch-container">
-                                        <label class="control-label ms-3 me-2">Cliente</label>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input form-switch-input" type="checkbox" name="SeguroCliente_@taxa.Id" id="seguro_cliente_@taxa.Id" disabled required>
-                                        </div>
-                                        <label class="control-label">Terceiro</label>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input form-switch-input" type="checkbox" name="SeguroTerceiro_@taxa.Id" id="seguro_terceiro_@taxa.Id" disabled required>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div>Nenhuma taxa associada</div>
                             }
                             else
                             {
-                                <div class="form-check mt-2 mb-2">
-                                    <input class="form-check-input taxa-checkbox" type="checkbox" name="TaxasSelecionadas" value="@taxa.Id" id="taxa_@taxa.Id" data-preco="@taxa.Preco" data-precofixo="@taxa.PrecoFixo.ToString().ToLower()">
-                                    <label class="form-check-label" for="taxa_@taxa.Id">
-                                        @taxa.Nome (@taxa.Preco R$ - @cobranca)
-                                    </label>
-                                </div>
+                                @foreach (var taxa in Model.Taxas!)
+                                {
+                                    var cobranca = taxa.PrecoFixo ? "" : "/dia";
+
+                                    <div class="form-check mt-2 mb-2">
+                                        <label class="form-check-label" for="taxa_@taxa.Id">
+                                            @taxa.Nome (@taxa.Preco R$@cobranca) - Total: <span class="totalTaxa" data-preco="@taxa.Preco" data-precofixo="@taxa.PrecoFixo.ToString().ToLower()">0</span> R$
+                                        </label>
+                                    </div>
+                                }
                             }
-                        }
-                    }
+                        </div>
+
+                        <div class="tab-pane fade" id="taxasAdicionais" role="tabpanel" aria-labelledby="taxasAdicionais-tab">
+                            oiee
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quilometragem -->
+            <div>
+                <label class="control-label fw-bold mb-1 mt-4">Estado do Veículo</label>
+                <div class="gap-4" style="border: 1px solid #ced4da; border-radius: .25rem; padding: .375rem;">
+                    <div class="d-flex flex-row gap-2 align-items-center">
+                        <div class="flex-fill ms-3 mt-3">
+                            <label class="control-label fw-bold mb-1">Km Inicial</label>
+                            <input type="number" class="form-control mb-1" asp-for="KmInicial" />
+                            <span class="text-danger fs-6" asp-validation-for="KmInicial"></span>
+                        </div>
+
+                        <div class="flex-fill mx-3 mt-3">
+                            <label class="control-label fw-bold mb-1">Km Atual</label>
+                            <input type="number" class="form-control mb-1" asp-for="KmAtual" />
+                            <span class="text-danger fs-6" asp-validation-for="KmAtual"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center my-3 ms-3 gap-2">
+                        <label class="control-label fw-bold mt-1" for="check">Tanque cheio</label>
+                        <input class="form-check-input" type="checkbox" value="true" id="check">
+                    </div>
                 </div>
             </div>
 
@@ -165,8 +196,8 @@
             <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
                 <label class="control-label fw-bold mb-0">Valor total</label>
                 <div class="flex-fill" style="max-width: 150px;">
-                    <input class="form-control mb-0" id="total" disabled />
-                    <input type="hidden" asp-for="ValorTotal" id="valor"/>
+                    <input class="form-control mb-0" id="total" value="@Model.ValorTotal" disabled />
+                    <input type="hidden" asp-for="ValorTotal" id="valor" />
                 </div>
             </div>
 
@@ -181,7 +212,7 @@
                     <i class="bi bi-arrow-return-left me-1"></i>
                     Voltar
                 </a>
-            </divclass>
+                </divclass>
         </form>
     </div>
 </div>
@@ -189,7 +220,6 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-
             function verificarDataRetorno() {
                 const saidaSelecionada = $('#saida').val();
                 const dataSaida = new Date(saidaSelecionada);
@@ -202,14 +232,8 @@
                 } else {
                     $('#retorno').removeClass('is-invalid');
                     $('#retornoWarning').hide();
-                    calcularDiasAluguel(dataSaida, dataRetorno);
+                    calcularDias();
                 }
-            }
-
-            function calcularDiasAluguel(dataSaida, dataRetorno) {
-                const timeDiff = Math.abs(dataRetorno.getTime() - dataSaida.getTime());
-                const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                $('#dias').val(diffDays);
             }
 
             function calcularDias() {
@@ -236,55 +260,62 @@
                 }
             }
 
-            function atualizarValorPlano() {
-                const planoSelecionado = $('#planoSelect').val();
-                let valorPlano = '';
+            function calcularValoresTaxas() {
+                $('.totalTaxa').each(function () {
+                    const preco = parseFloat($(this).data('preco')) || 0;
+                    const precoFixo = $(this).data('precofixo') === "true";
+                    const diasPrevistos = $('#diasPrevistos').val();
 
-                if (planoSelecionado === "diario") {
-                    const precoDiaria = parseFloat($('#plano').data('preco-diaria')) || 0;
-                    valorPlano = `Valor: ${precoDiaria.toFixed(2)} R$/dia`;
+                    const totalTaxa = precoFixo ? preco : preco * diasPrevistos;
+                    $(this).text(totalTaxa.toFixed(2));
+                });
+            }
+
+            function calcularValorPlano() {
+                const planoSelecionado = $('#planoSelect').val().toLowerCase();
+                const planoData = $('#plano');
+                const diasPrevistos = parseInt($('#diasPrevistos').val(), 10);
+                let valorPlano = 0;
+
+                if (planoSelecionado === "diário") {
+                    const precoDiaria = parseFloat(planoData.data('precodiaria'));
+                    valorPlano = precoDiaria * diasPrevistos;
                 } else if (planoSelecionado === "controlado") {
-                    const precoDiariaControlada = parseFloat($('#plano').data('preco-diaria-controlada')) || 0;
-                    valorPlano = `Valor: ${precoDiariaControlada.toFixed(2)} R$/dia`;
+                    const precoDiariaControlada = parseFloat(planoData.data('precodiariacontrolada'));
+                    valorPlano = precoDiariaControlada * diasPrevistos;
                 } else if (planoSelecionado === "livre") {
-                    const precoLivre = parseFloat($('#plano').data('preco-livre')) || 0;
-                    valorPlano = `Valor: ${precoLivre.toFixed(2)} R$`;
+                    valorPlano = parseFloat(planoData.data('precolivre'));
                 }
 
-                $('#valorPlano').text(valorPlano);
+                $('#valorPlano').val(valorPlano.toFixed(2));
             }
 
             function calcularValorTotal() {
-                const dias = calcularDias();
-                const planoSelecionado = $('#planoSelect').val();
-                const grupoSelecionado = $('#grupoSelect option:selected');
+                let valorTotal = parseFloat($('#valorPlano').val()) || 0;
+                // Aqui pode adicionar mais cálculos ao valor total se necessário
+                $('#valor').val(valorTotal);
+            }
 
-                let valorTotal = 1000;
+            function mostrarPlanoInfo() {
+                const planoSelecionado = $('#planoSelect').val().toLowerCase();
+                const planoData = $('#plano');
+                let infoText = "";
 
-                if (planoSelecionado === "diario") {
-                    const precoDiaria = parseFloat(grupoSelecionado.data('preco-diaria')) || 0;
-                    valorTotal = valorTotal + (dias * precoDiaria);
+                if (planoSelecionado === "diário") {
+                    const precoDiaria = planoData.data('precodiaria');
+                    const precoKm = planoData.data('precokm');
+                    infoText = `Preço Diária: R$ ${precoDiaria}/dia<br>Preço Km: R$ ${precoKm}/Km`;
                 } else if (planoSelecionado === "controlado") {
-                    const precoDiariaControlada = parseFloat(grupoSelecionado.data('preco-diaria-controlada')) || 0;
-                    valorTotal = valorTotal + (dias * precoDiariaControlada);
+                    const precoDiariaControlada = planoData.data('precodiariacontrolada');
+                    const kmDisponivel = planoData.data('kmdisponivel');
+                    const precoKmExtrapolado = planoData.data('precokmextrapolado');
+                    infoText = `Preço Diária Controlada: R$ ${precoDiariaControlada}/dia<br>Km Disponível: ${kmDisponivel}Km<br>Preço Km Extrapolado: R$ ${precoKmExtrapolado}/Km`;
                 } else if (planoSelecionado === "livre") {
-                    const precoLivre = parseFloat(grupoSelecionado.data('preco-livre')) || 0;
-                    valorTotal = valorTotal + precoLivre;
+                    const precoLivre = planoData.data('precolivre');
+                    infoText = `Preço Livre: R$ ${precoLivre}`;
                 }
 
-                $('.taxa-checkbox:checked').each(function () {
-                    const preco = parseFloat($(this).data('preco')) || 0;
-                    const precoFixo = $(this).data('precofixo') === true;
-
-                    if (precoFixo) {
-                        valorTotal += preco;
-                    } else {
-                        valorTotal += preco * dias;
-                    }
-                });
-
-                $('#total').val(valorTotal.toFixed(2));
-                $('#valor').val(valorTotal);
+                $('#planoInfo').html(infoText);
             }
 
             const veiculoSelecionado = $('#veiculoSelect option:selected');
@@ -292,57 +323,17 @@
 
             $('#veiculoImagem').attr('src', imagemDataUrl);
 
-            $('.taxa-checkbox').change(function () {
-                calcularValorTotal();
-            });
-
-            $('#retorno').change(function () {
-                calcularValorTotal();
-            });
-
             $('#retorno').change(function () {
                 verificarDataRetorno();
-                calcularDias(); 
-            });
-
-            $('.taxa-checkbox').change(function () {
-                const isChecked = $(this).is(':checked');
-                const taxaId = $(this).attr('id').split('_')[1];
-                const formSwitchInputs = $(`#seguro_cliente_${taxaId}, #seguro_terceiro_${taxaId}`);
-
-                if (isChecked) {
-                    formSwitchInputs.prop('disabled', false).attr('required', true);
-                } else {
-                    formSwitchInputs.prop('disabled', true).prop('checked', false).removeAttr('required');
-                }
-            });
-
-            $('.taxa-checkbox').each(function () {
-                const isChecked = $(this).is(':checked');
-                const taxaId = $(this).attr('id').split('_')[1];
-                const formSwitchInputs = $(`#seguro_cliente_${taxaId}, #seguro_terceiro_${taxaId}`);
-
-                if (isChecked) {
-                    formSwitchInputs.prop('disabled', false).attr('required', true);
-                } else {
-                    formSwitchInputs.prop('disabled', true).removeAttr('required');
-                }
-            });
-
-            $('.form-switch-input').change(function () {
-                const currentSwitch = $(this);
-                const taxaId = currentSwitch.attr('id').split('_')[2];
-                const otherSwitchId = currentSwitch.attr('id').includes('cliente')
-                    ? `#seguro_terceiro_${taxaId}`
-                    : `#seguro_cliente_${taxaId}`;
-
-                if (currentSwitch.is(':checked')) {
-                    $(otherSwitchId).prop('checked', false);
-                }
+                calcularDias();
+                calcularValorPlano();
+                calcularValorTotal();
             });
 
             calcularDias();
-            atualizarValorPlano();
+            calcularValoresTaxas();
+            mostrarPlanoInfo();
+            calcularValorPlano();
             calcularValorTotal();
         });
     </script>

@@ -347,14 +347,8 @@
                     $('#retornoWarning').hide();
                     $('#entradaEplano').removeClass('d-none');
                     $('#taxas').removeClass('d-none');
-                    calcularDiasAluguel(dataSaida, dataRetorno);
+                    calcularDias();
                 }
-            }
-
-            function calcularDiasAluguel(dataSaida, dataRetorno) {
-                const timeDiff = Math.abs(dataRetorno.getTime() - dataSaida.getTime());
-                const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                $('#dias').val(diffDays);
             }
 
             function calcularDias() {

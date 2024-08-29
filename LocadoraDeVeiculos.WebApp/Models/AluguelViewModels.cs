@@ -94,6 +94,7 @@ public class DetalhesAluguelViewModel
 
 public class DevolverAluguelViewModel
 {
+    public int Id { get; set; }
     public Condutor? Condutor { get; set; }
     public Cliente? Cliente { get; set; }
     public PlanoDeCobranca? PlanoDeCobranca { get; set; }
@@ -102,11 +103,23 @@ public class DevolverAluguelViewModel
     public CategoriaDePlanoEnum CategoriaPlano { get; set; }
     public DateTime DataSaida { get; set; }
     public DateTime DataRetornoPrevista { get; set; }
+    public string? TaxasSelecionadasId { get; set; }
+
+
+    [Required(ErrorMessage = "A quilometragem inicial é obrigatória")]
+    [Range(1, 50000, ErrorMessage = "O valor deve ser maior que zero")]
+    public int? KmInicial {  get; set; }
+
+
+    [Required(ErrorMessage = "A quilometragem atual é obrigatória")]
+    [Range(1, 50000, ErrorMessage = "O valor deve ser maior que zero")]
+    [KmMaior(ErrorMessage = "O km atual deve ser superior ao km inicial")]
+    public int? KmAtual {  get; set; }
 
 
     [Required(ErrorMessage = "A data de devolução é obrigatória")]
     [DataType(DataType.Date)]
-    [DataMenorQue(ErrorMessage = "A data de retorno deve ser superior à data de saída")]
+    [DataDevolucaoMenorQue(ErrorMessage = "A data de retorno deve ser superior à data de saída")]
     public DateTime DataRetornoReal { get; set; }
 
     public int DiasPrevistos { get => (DataRetornoPrevista - DataSaida).Days; set { } }
@@ -123,7 +136,32 @@ public class DataMenorQueAttribute : ValidationAttribute
         var model = (InserirAluguelViewModel)validationContext.ObjectInstance;
 
         if (model.DataRetornoPrevista <= model.DataSaida)
-            return new ValidationResult("A data de retorno deve ser superior à data de saída");
+            return new ValidationResult("");
+
+        return ValidationResult.Success;
+    }
+}
+public class DataDevolucaoMenorQueAttribute : ValidationAttribute
+{
+    protected override ValidationResult? IsValid(object value, ValidationContext validationContext)
+    {
+        var model = (DevolverAluguelViewModel)validationContext.ObjectInstance;
+
+        if (model.DataRetornoPrevista <= model.DataSaida)
+            return new ValidationResult("");
+
+        return ValidationResult.Success;
+    }
+}
+
+public class KmMaiorAttribute : ValidationAttribute
+{
+    protected override ValidationResult? IsValid(object value, ValidationContext validationContext)
+    {
+        var model = (DevolverAluguelViewModel)validationContext.ObjectInstance;
+
+        if (model.KmAtual <= model.KmInicial)
+            return new ValidationResult("O km atual deve ser superior ao km inicial");
 
         return ValidationResult.Success;
     }

@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
+
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositorioGrupoDeAutomoveis repositorioGrupo)
 {
@@ -102,6 +103,14 @@ public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositori
     {
         var veiculoSelecionado = repositorioVeiculos.SelecionarPorId(id);
         veiculoSelecionado!.Alugado = true;
+
+        repositorioVeiculos.Editar(veiculoSelecionado);
+    }
+
+    public void LiberarVeiculo(int id)
+    {
+        var veiculoSelecionado = repositorioVeiculos.SelecionarPorId(id);
+        veiculoSelecionado!.Alugado = false;
 
         repositorioVeiculos.Editar(veiculoSelecionado);
     }
