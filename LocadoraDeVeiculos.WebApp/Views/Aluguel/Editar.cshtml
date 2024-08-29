@@ -197,7 +197,7 @@
                     }
                 </div>
                 <input type="hidden" asp-for="TaxasSelecionadasId" id="taxasSelecionadas"/>
-            <p id="teste"></p>
+                <p id="teste"></p>
             </div>
 
             <!-- Valor total -->
@@ -438,9 +438,7 @@
             }
 
             function marcarTaxasSelecionadas() {
-                const taxasSelecionadas = $('#TaxasSelecionadas').val();
-
-                $('#teste').text(taxasSelecionadas);
+                const taxasSelecionadas = $('#taxasSelecionadas').val();
 
                 const ids = taxasSelecionadas.split(',');
 
@@ -478,7 +476,7 @@
                     .get()
                     .join(',');
 
-                $('#TaxasSelecionadas').val(idsSelecionados);
+                $('#taxasSelecionadas').val(idsSelecionados);
             }
 
             $('.taxa-checkbox').change(function () {
@@ -549,8 +547,6 @@
                 } else {
                     formSwitchInputs.prop('disabled', true).removeAttr('required');
                 }
-
-                atualizarTaxasSelecionadas();
             });
 
             $('.form-switch-input').change(function () {
@@ -611,7 +607,6 @@
             }
 
             calcularValorTotal();
-            atualizarTaxasSelecionadas();
             verificarTaxasComSeguro();
             marcarTaxasSelecionadas();
         });
