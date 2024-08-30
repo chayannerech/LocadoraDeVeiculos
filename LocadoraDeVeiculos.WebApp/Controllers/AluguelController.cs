@@ -186,7 +186,9 @@ public class AluguelController(
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"Plano para o grupo: {devolverRegistroVm.GrupoNome}\" foi excluído com sucesso!");
+        var nome = servicoAluguel.SelecionarPorId(devolverRegistroVm.Id).Value;
+
+        ApresentarMensagemSucesso($"O registro \"{nome}\" foi devolvido com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }

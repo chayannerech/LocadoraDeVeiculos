@@ -149,7 +149,7 @@ public class DataDevolucaoMenorQueAttribute : ValidationAttribute
     {
         var model = (DevolverAluguelViewModel)validationContext.ObjectInstance;
 
-        if (model.DataRetornoPrevista <= model.DataSaida)
+        if (model.DataRetornoReal <= model.DataSaida)
             return new ValidationResult("");
 
         return ValidationResult.Success;

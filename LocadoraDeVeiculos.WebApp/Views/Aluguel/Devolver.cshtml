@@ -212,6 +212,8 @@
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="check" checked>
                         </div>
+
+                        <p class="text-muted mt-3 mx-3 d-none" id="tanque"></p>
                     </div>
                 </div>
             </div>
@@ -266,6 +268,7 @@
                     $('#retornoWarning').hide();
                     $('#kmMostrar').removeClass('d-none');
                     calcularDias();
+                    atualizarTudo();
                 }
             }
 
@@ -279,6 +282,7 @@
                 } else {
                     $('#kmAtual').removeClass('is-invalid');
                     $('#kmWarning').hide();
+                    atualizarTudo();
                 }
             }
 
@@ -309,7 +313,7 @@
             function calcularValoresTaxas(dias) {
                 $('.totalTaxa').each(function () {
                     const preco = parseFloat($(this).data('preco')) || 0;
-                    const precoFixo = $(this).data('precofixo') == true;
+                    const precoFixo = $(this).data('precofixo') === "true";
 
                     const totalTaxa = precoFixo ? preco : preco * dias;
                     $(this).text(totalTaxa.toFixed(2));
@@ -371,7 +375,7 @@
                     $('#km').removeClass('d-none');
                     $('#kmTotal').val(kmTotal);
                     $('#kmValor').val(valorKm.toFixed(2));
-                    if (planoSelecionado === "controlado"){
+                    if (planoSelecionado === "controlado") {
                         $('#kmTotal').val(kmExtrapolado);
                     }
                 } else {
@@ -380,7 +384,7 @@
                     $('#kmValor').val(0);
                 }
 
-                return valorKm;                 
+                return valorKm;
             }
 
             function atualizarTudo() {
@@ -397,13 +401,42 @@
                 });
 
                 const valorKm = calcularQuilometragem();
-
                 valorTotal += valorKm;
+
+                const precoCombustivel = calcularPrecoCombustivel();
+                valorTotal += precoCombustivel;
 
                 const multa = calcularMulta(valorTotal);
 
                 $('#total').val((valorTotal + multa).toFixed(2));
                 $('#valor').val(valorTotal);
+            }
+
+            function calcularPrecoCombustivel() {
+                const veiculoData = $('#veiculoSelect option:selected');
+                const configData = $('#configuracao');
+                const capacidade = parseInt(veiculoData.data('capacidade'));
+                let precoCombustivel = 0;
+
+                if (veiculoData.data('combustivel') === 'Gasolina') {
+                    precoCombustivel = capacidade * parseFloat(configData.data('gasolina'));
+                } else if (veiculoData.data('combustivel') === 'GNV') {
+                    precoCombustivel = capacidade * parseFloat(configData.data('gnv'));
+                } else if (veiculoData.data('combustivel') === 'Etanol') {
+                    precoCombustivel = capacidade * parseFloat(configData.data('etanol'));
+                } else if (veiculoData.data('combustivel') === 'Diesel') {
+                    precoCombustivel = capacidade * parseFloat(configData.data('diesel'));
+                }
+
+                if ($('#check').is(':checked')) {
+                    precoCombustivel = 0;
+                    $('#tanque').addClass('d-none');
+                } else {
+                    $('#tanque').removeClass('d-none');
+                    $('#tanque').text(`Valor total: ${precoCombustivel.toFixed(2)}R$`);
+                }
+
+                return precoCombustivel;
             }
 
             function mostrarPlanoInfo() {
@@ -436,24 +469,16 @@
 
             $('#retorno').change(function () {
                 verificarDataRetorno();
-                atualizarTudo();
+                atualizarTudo()
             });
 
             $('#kmAtual').change(function () {
                 verificarKmAtual();
-                atualizarTudo();
+                atualizarTudo()
             });
 
             $('#check').change(function () {
-                const veiculoSelecionado = $('#veiculoSelect').val();
-                const configuracao = $('#configuracao').val();
-                const veiculoData = $('#veiculoSelect');
-                const configData = $('#configuracao');
-
-                if (veiculoData.data('combustivel') == 'Gasolina')
-
-                let kmExtrapolado = kmTotal - veiculoData.data('kmdisponivel');
-
+                atualizarTudo();
             });
 
             calcularValoresTaxas(dias);
