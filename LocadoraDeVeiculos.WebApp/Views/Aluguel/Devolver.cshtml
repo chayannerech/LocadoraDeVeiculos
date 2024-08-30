@@ -313,7 +313,7 @@
             function calcularValoresTaxas(dias) {
                 $('.totalTaxa').each(function () {
                     const preco = parseFloat($(this).data('preco')) || 0;
-                    const precoFixo = $(this).data('precofixo') === "true";
+                    const precoFixo = $(this).data('precofixo') == true;
 
                     const totalTaxa = precoFixo ? preco : preco * dias;
                     $(this).text(totalTaxa.toFixed(2));
@@ -409,7 +409,7 @@
                 const multa = calcularMulta(valorTotal);
 
                 $('#total').val((valorTotal + multa).toFixed(2));
-                $('#valor').val(valorTotal);
+                $('#valor').val((valorTotal + multa));
             }
 
             function calcularPrecoCombustivel() {
