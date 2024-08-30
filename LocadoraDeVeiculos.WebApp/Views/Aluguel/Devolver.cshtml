@@ -161,27 +161,47 @@
                         </div>
 
                         <div class="tab-pane fade" id="taxasAdicionais" role="tabpanel" aria-labelledby="taxasAdicionais-tab">
-                            <span id="multaContent"></span>
+                            <span class="mx-4 mb-2" id="multaContent"></span>
+                            <span id="kmContent"></span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Quilometragem -->
-            <div>
+            <div class="d-none" id="kmMostrar">
                 <label class="control-label fw-bold mb-1 mt-4">Estado do Veículo</label>
                 <div class="gap-4" style="border: 1px solid #ced4da; border-radius: .25rem; padding: .375rem;">
                     <div class="d-flex flex-row gap-2 align-items-center">
                         <div class="flex-fill ms-3 mt-3">
                             <label class="control-label fw-bold mb-1">Km Inicial</label>
-                            <input type="number" class="form-control mb-1" asp-for="KmInicial" />
+                            <input type="number" class="form-control mb-1" asp-for="KmInicial" id="kmInicial" />
                             <span class="text-danger fs-6" asp-validation-for="KmInicial"></span>
                         </div>
 
                         <div class="flex-fill mx-3 mt-3">
                             <label class="control-label fw-bold mb-1">Km Atual</label>
-                            <input type="number" class="form-control mb-1" asp-for="KmAtual" />
+                            <input type="number" class="form-control mb-1" asp-for="KmAtual" id="kmAtual" />
                             <span class="text-danger fs-6" asp-validation-for="KmAtual"></span>
+                            <div id="kmWarning" class="text-danger align-content-center fs-6" style="display: none;">
+                                A quilometragem atual deve ser superior à inicial
+                            </div>
+                        </div>
+                    </div>
+
+                    @{
+                        var plano = Model.CategoriaPlano.ToString() == "Controlado" ? "extrapolados" : "rodados";
+                    }
+
+                    <div class="d-flex flex-row gap-2 align-items-center d-none mt-3" id="km">
+                        <div class="flex-fill ms-3">
+                            <label class="control-label fw-bold mb-1">Km @plano</label>
+                            <input type="number" class="form-control mb-1" id="kmTotal" disabled/>
+                        </div>
+
+                        <div class="flex-fill mx-3">
+                            <label class="control-label fw-bold mb-1">Valor Km @plano</label>
+                            <input type="number" class="form-control mb-1" id="kmValor" disabled />
                         </div>
                     </div>
 
@@ -231,10 +251,25 @@
                 if (dataRetorno <= dataSaida) {
                     $('#retorno').addClass('is-invalid');
                     $('#retornoWarning').show();
+                    $('#kmMostrar').addClass('d-none');
                 } else {
                     $('#retorno').removeClass('is-invalid');
                     $('#retornoWarning').hide();
+                    $('#kmMostrar').removeClass('d-none');
                     calcularDias();
+                }
+            }
+
+            function verificarKmAtual() {
+                const kmAtual = $('#kmAtual').val();
+                const kmInicial = $('#kmInicial').val();
+
+                if (kmAtual <= kmInicial) {
+                    $('#kmAtual').addClass('is-invalid');
+                    $('#kmWarning').show();
+                } else {
+                    $('#kmAtual').removeClass('is-invalid');
+                    $('#kmWarning').hide();
                 }
             }
 
@@ -290,15 +325,14 @@
                 $('#valorPlano').val(valorPlano.toFixed(2));
             }
 
-            function calcularMulta() {
+            function calcularMulta(valorTotal) {
                 const diasTotais = parseInt($('#diasTotais').val(), 10);
                 const diasPrevistos = parseInt($('#diasPrevistos').val(), 10);
-                const valorAtual = parseFloat($('#valor').val()) || 0;
                 let multa = 0;
 
                 if (diasTotais > diasPrevistos) {
-                    multa = valorAtual * 0.10;
-                    $('#multaContent').text(`Multa por atraso: R$ ${multa.toFixed(2)}`);
+                    multa = valorTotal * 0.10;
+                    $('#multaContent').text(`Multa por atraso de devolução (10%): R$ ${multa.toFixed(2)}`);
                 } else {
                     $('#multaContent').text('');
                 }
@@ -306,25 +340,60 @@
                 return multa;
             }
 
-            function calcularValorTotal(dias) {
+            function calcularQuilometragem() {
+                const kmAtual = $('#kmAtual').val();
+                const kmInicial = $('#kmInicial').val();
+                const kmTotal = kmAtual - kmInicial;
+                let valorKm = 0;
+
+                const planoSelecionado = $('#planoSelect').val().toLowerCase();
+                const planoData = $('#plano');
+                let kmExtrapolado = kmTotal - planoData.data('kmdisponivel');
+
+                kmExtrapolado = kmExtrapolado > 0 ? kmExtrapolado : 0;
+
+                if (planoSelecionado === "diário") {
+                    valorKm = parseFloat(planoData.data('precokm')) * kmTotal;
+                } else if (planoSelecionado === "controlado") {
+                    valorKm = parseFloat(planoData.data('precokmextrapolado')) * kmExtrapolado
+                }
+
+                if (kmTotal > 0) {
+                    $('#km').removeClass('d-none');
+                    $('#kmTotal').val(kmTotal);
+                    $('#kmValor').val(valorKm.toFixed(2));
+                    if (planoSelecionado === "controlado"){
+                        $('#kmTotal').val(kmExtrapolado);
+                    }
+                } else {
+                    $('#km').addClass('d-none');
+                    $('#kmTotal').val(0);
+                    $('#kmValor').val(0);
+                }
+
+                return valorKm;                 
+            }
+
+            function atualizarTudo() {
+                const diasTotais = calcularDias();
+                const diasPrevistos = parseInt($('#diasPrevistos').val(), 10);
+
+                calcularValorPlano(diasTotais);
+                calcularValoresTaxas(diasTotais);
+
                 let valorTotal = 1000 + parseFloat($('#valorPlano').val()) || 0;
 
                 $('.totalTaxa').each(function () {
-                    const preco = parseFloat($(this).data('preco')) || 0;
-                    const precoFixo = $(this).data('precofixo') == true;
-
-                    const totalTaxa = precoFixo ? preco : preco * dias;
-                    valorTotal += totalTaxa;
+                    valorTotal += parseFloat($(this).text()) || 0;
                 });
 
-                $('#teste').text(valorTotal);
+                const valorKm = calcularQuilometragem();
 
-                $('#valor').val(valorTotal);
+                valorTotal += valorKm;
 
-                const multa = calcularMulta();
-                valorTotal += multa;
+                const multa = calcularMulta(valorTotal);
 
-                $('#total').val(valorTotal.toFixed(2));
+                $('#total').val((valorTotal + multa).toFixed(2));
                 $('#valor').val(valorTotal);
             }
 
@@ -358,16 +427,17 @@
 
             $('#retorno').change(function () {
                 verificarDataRetorno();
-                calcularDias();
-                const dias = parseInt($('#diasTotais').val(), 10);
-                calcularValorPlano(dias);
-                calcularValoresTaxas(dias);
-                calcularValorTotal(dias);
+                atualizarTudo();
+            });
+
+            $('#kmAtual').change(function () {
+                verificarKmAtual();
+                atualizarTudo();
             });
 
             calcularValoresTaxas(dias);
-            mostrarPlanoInfo();
             calcularValorPlano(dias);
+            mostrarPlanoInfo();
         });
     </script>
 }
