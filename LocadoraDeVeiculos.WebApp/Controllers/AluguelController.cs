@@ -18,6 +18,7 @@ public class AluguelController(
         GrupoDeAutomoveisService servicoGrupo,
         VeiculoService servicoVeiculo,
         TaxaService servicoTaxa,
+        ConfiguracaoService servicoConfiguracao,
         IMapper mapeador) : WebControllerBase
 {
     public IActionResult Listar()
@@ -272,6 +273,7 @@ public class AluguelController(
         List<Taxa> taxas = [];
 
         var registro = servicoAluguel.SelecionarPorId(encerrarRegistroVm.Id).Value;
+        var config = servicoConfiguracao.Selecionar();
 
         encerrarRegistroVm.Cliente = registro.Cliente;
         encerrarRegistroVm.Condutor = registro.Condutor;
@@ -281,6 +283,7 @@ public class AluguelController(
         encerrarRegistroVm.DataRetornoPrevista = registro.DataRetornoPrevista;
         encerrarRegistroVm.PlanoDeCobranca = registro.PlanoDeCobranca;
         encerrarRegistroVm.TaxasSelecionadasId = registro.TaxasSelecionadasId;
+        encerrarRegistroVm.Configuracao = config;
 
         if (encerrarRegistroVm.TaxasSelecionadasId != "")
             foreach(var taxaId in encerrarRegistroVm.TaxasSelecionadasId!.Split(','))

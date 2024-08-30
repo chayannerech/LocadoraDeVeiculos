@@ -1,5 +1,6 @@
 ﻿using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloCondutor;
+using LocadoraDeVeiculos.Dominio.ModuloConfiguracao;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloTaxa;
@@ -104,6 +105,7 @@ public class DevolverAluguelViewModel
     public DateTime DataSaida { get; set; }
     public DateTime DataRetornoPrevista { get; set; }
     public string? TaxasSelecionadasId { get; set; }
+    public Configuracao? Configuracao { get; set; }
 
 
     [Required(ErrorMessage = "A quilometragem inicial é obrigatória")]
