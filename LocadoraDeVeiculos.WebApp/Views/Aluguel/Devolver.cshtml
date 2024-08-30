@@ -46,7 +46,7 @@
             <!-- Veículo -->
             <div class="d-flex align-items-start gap-3 mt-3">
                 @{
-                    var imagemBase64 = Convert.ToBase64String(Model.Veiculo.ImagemEmBytes ?? new byte[0]);
+                    var imagemBase64 = Convert.ToBase64String(Model.Veiculo!.ImagemEmBytes ?? new byte[0]);
                     var imagemDataUrl = $"data:{Model.Veiculo.TipoDaImagem};base64,{imagemBase64}";
                 }
                 <div class="flex-fill">
@@ -141,7 +141,7 @@
 
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="taxasAnteriores" role="tabpanel" aria-labelledby="taxasAnteriores-tab">
-                            @if (!Model.Taxas.Any())
+                            @if (!Model.Taxas!.Any())
                             {
                                 <div>Nenhuma taxa associada</div>
                             }
@@ -161,7 +161,7 @@
                         </div>
 
                         <div class="tab-pane fade" id="taxasAdicionais" role="tabpanel" aria-labelledby="taxasAdicionais-tab">
-                            oiee
+                            <span id="multaContent"></span>
                         </div>
                     </div>
                 </div>
@@ -191,6 +191,8 @@
                     </div>
                 </div>
             </div>
+
+            <p id="teste"></p>
 
             <!-- Valor total -->
             <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
@@ -260,29 +262,27 @@
                 }
             }
 
-            function calcularValoresTaxas() {
+            function calcularValoresTaxas(dias) {
                 $('.totalTaxa').each(function () {
                     const preco = parseFloat($(this).data('preco')) || 0;
-                    const precoFixo = $(this).data('precofixo') === "true";
-                    const diasPrevistos = $('#diasPrevistos').val();
+                    const precoFixo = $(this).data('precofixo') == true;
 
-                    const totalTaxa = precoFixo ? preco : preco * diasPrevistos;
+                    const totalTaxa = precoFixo ? preco : preco * dias;
                     $(this).text(totalTaxa.toFixed(2));
                 });
             }
 
-            function calcularValorPlano() {
+            function calcularValorPlano(dias) {
                 const planoSelecionado = $('#planoSelect').val().toLowerCase();
                 const planoData = $('#plano');
-                const diasPrevistos = parseInt($('#diasPrevistos').val(), 10);
-                let valorPlano = 0;
+                let valorPlano = 1000;
 
                 if (planoSelecionado === "diário") {
                     const precoDiaria = parseFloat(planoData.data('precodiaria'));
-                    valorPlano = precoDiaria * diasPrevistos;
+                    valorPlano = precoDiaria * dias;
                 } else if (planoSelecionado === "controlado") {
                     const precoDiariaControlada = parseFloat(planoData.data('precodiariacontrolada'));
-                    valorPlano = precoDiariaControlada * diasPrevistos;
+                    valorPlano = precoDiariaControlada * dias;
                 } else if (planoSelecionado === "livre") {
                     valorPlano = parseFloat(planoData.data('precolivre'));
                 }
@@ -290,9 +290,41 @@
                 $('#valorPlano').val(valorPlano.toFixed(2));
             }
 
-            function calcularValorTotal() {
-                let valorTotal = parseFloat($('#valorPlano').val()) || 0;
-                // Aqui pode adicionar mais cálculos ao valor total se necessário
+            function calcularMulta() {
+                const diasTotais = parseInt($('#diasTotais').val(), 10);
+                const diasPrevistos = parseInt($('#diasPrevistos').val(), 10);
+                const valorAtual = parseFloat($('#valor').val()) || 0;
+                let multa = 0;
+
+                if (diasTotais > diasPrevistos) {
+                    multa = valorAtual * 0.10;
+                    $('#multaContent').text(`Multa por atraso: R$ ${multa.toFixed(2)}`);
+                } else {
+                    $('#multaContent').text('');
+                }
+
+                return multa;
+            }
+
+            function calcularValorTotal(dias) {
+                let valorTotal = 1000 + parseFloat($('#valorPlano').val()) || 0;
+
+                $('.totalTaxa').each(function () {
+                    const preco = parseFloat($(this).data('preco')) || 0;
+                    const precoFixo = $(this).data('precofixo') == true;
+
+                    const totalTaxa = precoFixo ? preco : preco * dias;
+                    valorTotal += totalTaxa;
+                });
+
+                $('#teste').text(valorTotal);
+
+                $('#valor').val(valorTotal);
+
+                const multa = calcularMulta();
+                valorTotal += multa;
+
+                $('#total').val(valorTotal.toFixed(2));
                 $('#valor').val(valorTotal);
             }
 
@@ -320,21 +352,22 @@
 
             const veiculoSelecionado = $('#veiculoSelect option:selected');
             const imagemDataUrl = veiculoSelecionado.data('imagem');
+            const dias = parseInt($('#diasPrevistos').val(), 10);
 
             $('#veiculoImagem').attr('src', imagemDataUrl);
 
             $('#retorno').change(function () {
                 verificarDataRetorno();
                 calcularDias();
-                calcularValorPlano();
-                calcularValorTotal();
+                const dias = parseInt($('#diasTotais').val(), 10);
+                calcularValorPlano(dias);
+                calcularValoresTaxas(dias);
+                calcularValorTotal(dias);
             });
 
-            calcularDias();
-            calcularValoresTaxas();
+            calcularValoresTaxas(dias);
             mostrarPlanoInfo();
-            calcularValorPlano();
-            calcularValorTotal();
+            calcularValorPlano(dias);
         });
     </script>
 }
