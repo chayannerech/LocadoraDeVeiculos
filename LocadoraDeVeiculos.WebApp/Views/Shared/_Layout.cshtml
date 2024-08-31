@@ -3,7 +3,13 @@
     string caminho = Context.Request.Path;
 
     var grupoAtivo = caminho.StartsWith("/GrupoDeAutomoveis") ? "nav-link active fw-semibold" : "nav-link";
-    var veiculoAtivo = caminho.StartsWith("/Veiculos") ? "nav-link active fw-semibold" : "nav-link";
+    var veiculoAtivo = caminho.StartsWith("/Veiculo") ? "nav-link active fw-semibold" : "nav-link";
+    var planoAtivo = caminho.StartsWith("/PlanoDeCobranca") ? "nav-link active fw-semibold" : "nav-link";
+    var clienteAtivo = caminho.StartsWith("/Cliente") ? "nav-link active fw-semibold" : "nav-link";
+    var condutorAtivo = caminho.StartsWith("/Condutor") ? "nav-link active fw-semibold" : "nav-link";
+    var taxaAtivo = caminho.StartsWith("/Taxa") ? "nav-link active fw-semibold" : "nav-link";
+    var configAtivo = caminho.StartsWith("/Configuracao") ? "nav-link active fw-semibold" : "nav-link";
+    var aluguelAtivo = caminho.StartsWith("/Aluguel") ? "nav-link active fw-semibold" : "nav-link";
 
     MensagemViewModel? mensagem = ViewBag.Mensagem ?? null;
 }
@@ -45,13 +51,33 @@
                 height: auto;
             }
 
-        .navbar-light .navbar-nav .nav-link {
-            color: #555;
-        }
-
         .footer[b-9c60xkqeqy] {
             line-height: 40px;
         }
+
+        .navbar-nav .nav-item {
+            margin-left: 10px;
+        }
+
+        .navbar-nav .nav-link {
+            font-weight: 500;
+            color: #6c757d; 
+            padding: 5px 5px;
+            transition: color 0.3s ease; 
+            border-bottom: 3px solid transparent;
+            font-size: 16px;
+        }
+
+            .navbar-nav .nav-link:hover {
+                color: #111;
+                border-bottom: 3px solid #e9ecef;
+            }
+
+            .navbar-nav .nav-link.active {
+                border-bottom: 3px solid #999; 
+                font-weight: 600;
+                color: #999;
+            }
     </style>
 </head>
 <body>
@@ -70,7 +96,30 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1 justify-content-end">
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index">Início</a>
+                            <a class="nav-link @clienteAtivo" asp-controller="Cliente" asp-action="Listar">Cliente</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @condutorAtivo" asp-controller="Condutor" asp-action="Listar">Condutor</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @grupoAtivo" asp-controller="GrupoDeAutomoveis" asp-action="Listar">Grupo</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @veiculoAtivo" asp-controller="Veiculo" asp-action="Listar">Veículo</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @planoAtivo" asp-controller="PlanoDeCobranca" asp-action="Listar">Plano</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @taxaAtivo" asp-controller="Taxa" asp-action="Listar">Taxa</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @aluguelAtivo" asp-controller="Aluguel" asp-action="Listar">Aluguel</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @configAtivo" asp-controller="Configuracao" asp-action="Detalhes">
+                                <i class="bi bi-gear"></i>
+                            </a>
                         </li>
                     </ul>
                 </div>

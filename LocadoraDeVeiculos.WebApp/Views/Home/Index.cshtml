@@ -1,8 +1,109 @@
-﻿@{
+﻿@using LocadoraDeVeiculos.WebApp.Models
+@{
     ViewBag.Title = "Página Inicial";
+
+    IEnumerable<AgrupamentoVeiculosPorGrupoViewModel> agrupamentosVm = ViewBag.Agrupamentos;
 }
 
-<div class="text-center">
-    <h1 class="display-4 fw-bold">Em construção 🛠️</h1>
-    <p class="fs-3 mt-5">A página estará completa em breve, volte logo!</p>
+<div class="col">
+    @if (User.IsInRole("Empresa"))
+    {
+        <section class="row row-cols-lg-4 justify-content-start align-items-stretch gap-3 px-lg-2">
+
+            <!-- Veículos -->
+            <div title="Veículos" class="card px-0">
+                <img class="card-img-top" src="~/img/car-fleet.jpg" alt="Imagem de frota de veículos">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-2 text-primary">
+                        <i class="bi bi-car-front-fill"></i>
+                        <label class="fs-6 fw-semibold ">@ViewBag.QuantidadeVeiculos veículo(s) disponível(is)</label>
+                    </div>
+
+                    <label>Em <strong class="text-primary">@ViewBag.QuantidadeGrupos</strong> grupo(s) de veículos</label>
+                </div>
+                <a href="/veiculo/listar" class="stretched-link"></a>
+            </div>
+
+            <!-- Planos de Aluguel -->
+            <div title="Planos" class="card px-0">
+                <img class="card-img-top " src="~/img/car-rental.jpg" alt="Imagem de aluguel de carro">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-2 text-primary">
+                        <i class="bi bi-clipboard-data"></i>
+                        <label class="fs-6 fw-semibold ">@ViewBag.QuantidadePlanos plano(s) de aluguel</label>
+                    </div>
+
+                    <label>Disponíveis para <strong class="text-primary">@ViewBag.QuantidadeCategorias</strong> categorias de veículos</label>
+                </div>
+                <a href="/planoDeCobranca/listar" class="stretched-link"></a>
+            </div>
+
+            <!-- Taxas e Serviços -->
+            <div title="Taxas e Serviços" class="card px-0">
+                <img class="card-img-top" src="~/img/extra-services.jpg" alt="Imagem de serviços extras para aluguel de carro">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-2 text-primary">
+                        <i class="bi bi-cash-coin"></i>
+                        <label class="fs-6 fw-semibold ">@ViewBag.QuantidadeTaxas taxa(s) e serviço(s)</label>
+                    </div>
+                </div>
+                <a href="/taxa/listar" class="stretched-link"></a>
+            </div>
+        </section>
+    }
+
+    <!-- Seção de Boas-vindas e Informações Gerais -->
+    <section class="row my-3 my-xl-5">
+        <div class="col-lg-6">
+            <img class="img-fluid" src="~/img/viagem5.jpg" alt="Imagem promocional de aluguel de carro" />
+        </div>
+        <div class="col d-grid gap-1">
+            <h2 class="display-6 fw-bold text-secondary">Seja bem-vindo à <br />Locadora de Veículos Afonso!</h2>
+
+            <p class="fs-5 fw-semibold">
+                <span class="fs-5 fw-semibold text-secondary">Descubra a liberdade de alugar um carro conosco</span> <br /><br />
+                Oferecemos uma ampla variedade de veículos, desde compactos econômicos até SUVs luxuosos, tudo com planos flexíveis e serviços personalizados para atender às suas necessidades.
+            </p>
+
+            @if (User.Identity is null || (User.Identity is not null && !User.Identity.IsAuthenticated))
+            {
+                <div class="d-flex justify-content-center gap-3 align-items-center mt-3">
+                    <a asp-controller="Usuario" asp-action="Login" class="btn btn-outline-secondary" style="width: 160px">Login</a>
+                    <a asp-controller="Usuario" asp-action="Registrar" class="btn btn-secondary" style="width: 160px">Registrar</a>
+                </div>
+            }
+        </div>
+
+    </section>
+
+    @if (User.Identity is not null && User.Identity.IsAuthenticated)
+    {
+        <!-- Seção de Veículos Disponíveis -->
+        <section class="px-lg-2">
+            @if (!agrupamentosVm.Any())
+            {
+                <h3 class="text-bg-primary fs-3 fw-semibold p-3 rounded-3">
+                    Nenhum veículo disponível no momento.
+                </h3>
+            }
+            else
+            {
+                <h3 class="display-4 text-primary fw-semibold">Veículos Disponíveis</h3>
+                <hr />
+
+                <partial name="../Veiculo/_Agrupar" model="agrupamentosVm"></partial>
+            }
+        </section>
+
+        <section class="card text-light mt-5 mb-3 d-none d-lg-block">
+            <img src="~/img/car-rental-promo.jpg" alt="Promoção de aluguel de carros" class="card-img">
+            <div class="card-img-overlay px-2 px-lg-5">
+                <h3 class="display-2 fw-bolder mt-5">Novidades e Promoções!</h3>
+
+                <p class="fs-2 fw-bold mt-5">
+                    Em breve, lançaremos novos planos de fidelidade para clientes frequentes e descontos especiais em aluguéis de longa duração. Fique de olho!
+                </p>
+            </div>
+        </section>
+    }
 </div>
