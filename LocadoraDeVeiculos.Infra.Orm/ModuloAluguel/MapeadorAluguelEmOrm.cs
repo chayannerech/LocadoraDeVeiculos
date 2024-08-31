@@ -15,7 +15,6 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
         aBuilder.HasOne(v => v.Condutor)
             .WithMany()
             .HasForeignKey("Condutor_Id")
-            .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
 
         aBuilder.Property(a => a.CondutorNome)
@@ -25,7 +24,6 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
         aBuilder.HasOne(v => v.Cliente)
             .WithMany()
             .HasForeignKey("Cliente_Id")
-            .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
 
         aBuilder.Property(a => a.ClienteNome)
@@ -35,7 +33,6 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
         aBuilder.HasOne(v => v.PlanoDeCobranca)
             .WithMany()
             .HasForeignKey("Plano_Id")
-            .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
 
         aBuilder.Property(a => a.CategoriaPlano)
@@ -45,7 +42,6 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
         aBuilder.HasOne(v => v.GrupoDeAutomoveis)
             .WithMany()
             .HasForeignKey("Grupo_Id")
-            .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
 
         aBuilder.Property(a => a.GrupoNome)
@@ -55,7 +51,6 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
         aBuilder.HasOne(v => v.Veiculo)
             .WithMany()
             .HasForeignKey("Veiculo_Id")
-            .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
 
         aBuilder.Property(a => a.VeiculoPlaca)

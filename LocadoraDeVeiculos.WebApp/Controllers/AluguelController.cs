@@ -34,7 +34,9 @@ public class AluguelController(
 
         var registros = resultado.Value;
 
-        if (registros.Count == 0)
+        ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
+
+        if (registros.Count == 0 && ViewBag.Mensagem is null)
             ApresentarMensagemSemRegistros();
 
         var listarAluguelVm = mapeador.Map<IEnumerable<ListarAluguelViewModel>>(registros);
@@ -45,7 +47,13 @@ public class AluguelController(
     }
 
 
-    public IActionResult Inserir() => View(CarregarInformacoes(new InserirAluguelViewModel()));
+    public IActionResult Inserir()
+    {
+        if (ValidacaoSemDependencias())
+            return RedirectToAction(nameof(Listar));
+
+        return View(CarregarInformacoes(new InserirAluguelViewModel()));
+    }
     [HttpPost]
     public IActionResult Inserir(InserirAluguelViewModel inserirRegistroVm)
     {
@@ -309,6 +317,40 @@ public class AluguelController(
             ApresentarMensagemFalha(resultado.ToResult());
             return true;
         }
+        return false;
+    }
+    private bool ValidacaoSemDependencias()
+    {
+        if (servicoCliente.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
+        {
+            ApresentarMensagemSemDependencias("Clientes");
+            return true;
+        }
+
+        if (servicoCondutor.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
+        {
+            ApresentarMensagemSemDependencias("Condutores");
+            return true;
+        }
+
+        if (servicoGrupo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
+        {
+            ApresentarMensagemSemDependencias("Grupos de Automóveis");
+            return true;
+        }
+
+        if (servicoVeiculo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
+        {
+            ApresentarMensagemSemDependencias("Veículos");
+            return true;
+        }
+
+        if (servicoPlano.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
+        {
+            ApresentarMensagemSemDependencias("Planos de Aluguel");
+            return true;
+        }
+
         return false;
     }
     #endregion

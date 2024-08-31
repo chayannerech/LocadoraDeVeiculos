@@ -2,6 +2,7 @@
 using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
+using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
@@ -117,6 +118,9 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
 
         var registro = resultado.Value;
 
+        if (ValidarPossibilidadeDeExclusao(servicoCondutor, registro))
+            return RedirectToAction(nameof(Listar));
+
         var detalhesRegistroVm = mapeador.Map<DetalhesClienteViewModel>(registro);
 
         return View(detalhesRegistroVm);
@@ -226,6 +230,17 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
         else if (cnpjExistente.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual.Documento)
         {
             ApresentarMensagemRegistroExistente("Já existe um cadastro com esse CNPJ");
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool ValidarPossibilidadeDeExclusao(CondutorService servicoCondutor, Cliente registro)
+    {
+        if (servicoCondutor.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Any(c => c.Cliente.Id == registro.Id))
+        {
+            ApresentarMensagemImpossivelExcluir();
             return true;
         }
 

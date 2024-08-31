@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
+using LocadoraDeVeiculos.Dominio.Compartilhado;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculo;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
@@ -25,7 +26,9 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
 
         var agrupamentos = resultado.Value;
 
-        if (agrupamentos.Count == 0)
+        ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
+
+        if (agrupamentos.Count == 0 && ViewBag.Mensagem is null)
             ApresentarMensagemSemRegistros();
 
         var agrupamentosVeiculosVm = agrupamentos.Select(MapearAgrupamentoVeiculos);
@@ -36,7 +39,14 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
     }
 
 
-    public IActionResult Inserir() => View(CarregarInformacoes(new InserirVeiculosViewModel()));
+    public IActionResult Inserir()
+    {
+        if (ValidacaoSemDependencias("Grupos de Automóveis"))
+            return RedirectToAction(nameof(Listar));
+
+        return View(CarregarInformacoes(new InserirVeiculosViewModel()));
+    }
+
     [HttpPost]
     public IActionResult Inserir(InserirVeiculosViewModel inserirRegistroVm)
     {
@@ -229,6 +239,15 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
             r.Placa != registroAtual.Placa))
         {
             ApresentarMensagemRegistroExistente("Já existe um veículo com essa placa");
+            return true;
+        }
+        return false;
+    }
+    private bool ValidacaoSemDependencias(string dependencia)
+    {
+        if (servicoGrupos.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
+        {
+            ApresentarMensagemSemDependencias(dependencia);
             return true;
         }
         return false;

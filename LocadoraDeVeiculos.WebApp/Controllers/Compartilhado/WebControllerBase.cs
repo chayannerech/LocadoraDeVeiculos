@@ -69,6 +69,15 @@ public abstract class WebControllerBase : Controller
         });
     }
 
+    protected void ApresentarMensagemSemDependencias(string dependencia)
+    {
+        TempData.SerializarMensagemViewModel(new MensagemViewModel
+        {
+            Titulo = "Aviso",
+            Mensagem = $"Não é possível inserir um novo registro. Não existem {dependencia} cadastrados"
+        });
+    }
+
     protected void ApresentarMensagemImpossivelEditar()
     {
         TempData.SerializarMensagemViewModel(new MensagemViewModel

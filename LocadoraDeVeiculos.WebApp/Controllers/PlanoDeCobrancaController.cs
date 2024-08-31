@@ -24,7 +24,9 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
 
         var registros = resultado.Value;
 
-        if (registros.Count == 0)
+        ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
+
+        if (registros.Count == 0 && ViewBag.Mensagem is null)
             ApresentarMensagemSemRegistros();
 
         var listarPlanoDeCobrancaVm = mapeador.Map<IEnumerable<ListarPlanoDeCobrancaViewModel>>(registros);
@@ -35,7 +37,13 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
     }
 
 
-    public IActionResult Inserir() => View(CarregarInformacoes(new InserirPlanoDeCobrancaViewModel()));
+    public IActionResult Inserir()
+    {
+        if (ValidacaoSemDependencias("Grupos de Automóveis"))
+            return RedirectToAction(nameof(Listar));
+
+        return View(CarregarInformacoes(new InserirPlanoDeCobrancaViewModel()));
+    }
     [HttpPost]
     public IActionResult Inserir(InserirPlanoDeCobrancaViewModel inserirRegistroVm)
     {
@@ -204,6 +212,15 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
             r.GrupoDeAutomoveis.Id != registroAtual.GrupoDeAutomoveis.Id))
         {
             ApresentarMensagemRegistroExistente("Este grupo de automóveis já possui um plano de cobrança");
+            return true;
+        }
+        return false;
+    }
+    private bool ValidacaoSemDependencias(string dependencia)
+    {
+        if (servicoGrupos.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
+        {
+            ApresentarMensagemSemDependencias(dependencia);
             return true;
         }
         return false;

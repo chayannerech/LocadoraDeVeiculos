@@ -176,24 +176,20 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
     }
     private bool ValidarPossibilidadeDeExclusao(VeiculoService servicoVeiculo, GrupoDeAutomoveis registro)
     {
-        foreach (var veiculo in servicoVeiculo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value)
-            if (veiculo.GrupoDeAutomoveis.Id == registro.Id)
-            {
-                ApresentarMensagemImpossivelExcluir();
-                return true;
-            }
-
+        if (servicoVeiculo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Any(c => c.GrupoDeAutomoveis.Id == registro.Id))
+        {
+            ApresentarMensagemImpossivelExcluir();
+            return true;
+        }
         return false;
     }
     private bool ValidarPossibilidadeDeExclusao(PlanoDeCobrancaService servicoPlano, GrupoDeAutomoveis registro)
     {
-        foreach (var plano in servicoPlano.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value)
-            if (plano.GrupoDeAutomoveis.Id == registro.Id)
-            {
-                ApresentarMensagemImpossivelExcluir();
-                return true;
-            }
-
+        if (servicoVeiculo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Any(c => c.GrupoDeAutomoveis.Id == registro.Id))
+        {
+            ApresentarMensagemImpossivelExcluir();
+            return true;
+        }
         return false;
     }
     #endregion

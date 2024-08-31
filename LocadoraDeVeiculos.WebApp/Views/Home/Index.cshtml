@@ -19,7 +19,7 @@
                         <label class="fs-6 fw-semibold ">@ViewBag.QuantidadeVeiculos veículo(s) disponível(is)</label>
                     </div>
 
-                    <label>Em <strong class="text-primary">@ViewBag.QuantidadeGrupos</strong> grupo(s) de veículos</label>
+                    <label>Em <strong class="text-primary">@ViewBag.QuantidadeGrupos</strong> Grupo(s) de veículos</label>
                 </div>
                 <a href="/veiculo/listar" class="stretched-link"></a>
             </div>
@@ -52,7 +52,6 @@
         </section>
     }
 
-    <!-- Seção de Boas-vindas e Informações Gerais -->
     <section class="row my-3 my-xl-5">
         <div class="col-lg-6">
             <img class="img-fluid" src="~/img/viagem5.jpg" alt="Imagem promocional de aluguel de carro" />
@@ -62,7 +61,7 @@
 
             <p class="fs-5 fw-semibold">
                 <span class="fs-5 fw-semibold text-secondary">Descubra a liberdade de alugar um carro conosco</span> <br /><br />
-                Oferecemos uma ampla variedade de veículos, desde compactos econômicos até SUVs luxuosos, tudo com planos flexíveis e serviços personalizados para atender às suas necessidades.
+                Oferecemos uma ampla variedade de veículos, desde compactos econômicos até SUVs luxuosos, tudo com planos flexíveis e serviços personalizados para atender às suas necessidades
             </p>
 
             @if (User.Identity is null || (User.Identity is not null && !User.Identity.IsAuthenticated))
@@ -78,7 +77,7 @@
 
     @if (User.Identity is not null && User.Identity.IsAuthenticated)
     {
-        <!-- Seção de Veículos Disponíveis -->
+        <!-- Veículos Disponíveis -->
         <section class="px-lg-2">
             @if (!agrupamentosVm.Any())
             {

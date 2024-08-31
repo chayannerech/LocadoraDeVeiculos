@@ -22,7 +22,9 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
 
         var registros = resultado.Value;
 
-        if (registros.Count == 0)
+        ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
+
+        if (registros.Count == 0 && ViewBag.Mensagem is null)
             ApresentarMensagemSemRegistros();
 
         var listarCondutorVm = mapeador.Map<IEnumerable<ListarCondutorViewModel>>(registros);
@@ -33,7 +35,13 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
     }
 
 
-    public IActionResult Inserir() => View(CarregarInformacoes(new InserirCondutorViewModel()));
+    public IActionResult Inserir()
+    {
+        if (ValidacaoSemDependencias("Clientes"))
+            return RedirectToAction(nameof(Listar));
+
+        return View(CarregarInformacoes(new InserirCondutorViewModel()));
+    }
     [HttpPost]
     public IActionResult Inserir(InserirCondutorViewModel inserirRegistroVm)
     {   
@@ -213,6 +221,15 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
         if (cnhExistentes.Any(c => c.Equals(novoRegistro.CNH)) && novoRegistro.CNH != registroAtual.CNH)
         {
             ApresentarMensagemRegistroExistente("Já existe uma pessoa com essa CNH");
+            return true;
+        }
+        return false;
+    }
+    private bool ValidacaoSemDependencias(string dependencia)
+    {
+        if (servicoClientes.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
+        {
+            ApresentarMensagemSemDependencias(dependencia);
             return true;
         }
         return false;
