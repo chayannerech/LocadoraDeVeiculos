@@ -39,7 +39,7 @@
             <div>
                 <label class="control-label fw-bold mt-3 mb-1">Grupo de Automóveis</label>
                 <select class="form-select mb-1" disabled>
-                    <option>@Model.GrupoNome</option>
+                    <option>@Model.Grupo</option>
                 </select>
             </div>
 
@@ -47,7 +47,7 @@
             <div class="d-flex align-items-start gap-3 mt-3">
                 @{
                     var imagemBase64 = Convert.ToBase64String(Model.Veiculo!.ImagemEmBytes ?? new byte[0]);
-                    var imagemDataUrl = $"data:{Model.Veiculo.TipoDaImagem};base64,{imagemBase64}";
+                    var imagemDataUrl = $"data:{Model.TipoDaImagem};base64,{imagemBase64}";
                 }
                 <div class="flex-fill">
                     <label class="control-label fw-bold mb-1">Veículo</label>

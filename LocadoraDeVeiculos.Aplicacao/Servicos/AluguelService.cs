@@ -20,7 +20,6 @@ public class AluguelService(
         var clienteSelecionado = repositorioCliente.SelecionarPorId(clienteId);
         var grupoSelecionado = repositorioGrupo.SelecionarPorId(grupoId);
         var veiculoSelecionado = repositorioVeiculo.SelecionarPorId(veiculoId);
-        var planoSelecionado = repositorioPlano.SelecionarPorGrupoId(grupoId);
 
         if (condutorSelecionado is null)
             return Result.Fail("O condutor não foi selecionado!");
@@ -31,11 +30,11 @@ public class AluguelService(
         if (veiculoSelecionado is null)
             return Result.Fail("O veículo não foi selecionado!");
 
-        registro.Condutor = condutorSelecionado;
-        registro.Cliente = clienteSelecionado;
-        registro.GrupoDeAutomoveis = grupoSelecionado;
-        registro.Veiculo = veiculoSelecionado;
-        registro.PlanoDeCobranca = planoSelecionado;
+        registro.CondutorNome = condutorSelecionado.Nome;
+        registro.ClienteNome = clienteSelecionado.Nome;
+        registro.GrupoNome = grupoSelecionado.Nome;
+        registro.VeiculoId = veiculoSelecionado.Id;
+        registro.VeiculoPlaca = veiculoSelecionado.Placa;
         registro.Ativo = true;
 
         var erros = registro.Validar();
@@ -58,7 +57,6 @@ public class AluguelService(
         var clienteSelecionado = repositorioCliente.SelecionarPorId(clienteId);
         var grupoSelecionado = repositorioGrupo.SelecionarPorId(grupoId);
         var veiculoSelecionado = repositorioVeiculo.SelecionarPorId(veiculoId);
-        var planoSelecionado = repositorioPlano.SelecionarPorGrupoId(grupoId);
 
         if (condutorSelecionado is null)
             return Result.Fail("O condutor não foi selecionado!");
@@ -69,11 +67,11 @@ public class AluguelService(
         if (veiculoSelecionado is null)
             return Result.Fail("O veículo não foi selecionado!");
 
-        registro.Condutor = condutorSelecionado;
-        registro.Cliente = clienteSelecionado;
-        registro.GrupoDeAutomoveis = grupoSelecionado;
-        registro.Veiculo = veiculoSelecionado;
-        registro.PlanoDeCobranca = planoSelecionado;
+        registro.CondutorNome = condutorSelecionado.Nome;
+        registro.ClienteNome = clienteSelecionado.Nome;
+        registro.GrupoNome = grupoSelecionado.Nome;
+        registro.VeiculoPlaca = veiculoSelecionado.Placa;
+        registro.VeiculoId = veiculoSelecionado.Id;
         registro.CategoriaPlano = registroAtualizado.CategoriaPlano;
         registro.DataSaida = registroAtualizado.DataSaida;
         registro.DataRetornoPrevista = registroAtualizado.DataRetornoPrevista;

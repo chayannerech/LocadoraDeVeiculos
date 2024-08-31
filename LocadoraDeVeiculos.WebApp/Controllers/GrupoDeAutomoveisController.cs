@@ -114,8 +114,6 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
 
         return View(detalhesGrupoDeAutomoveisViewModel);
     }
-
-
     [HttpPost]
     public IActionResult Excluir(DetalhesGrupoDeAutomoveisViewModel detalhesGrupoDeAutomoveisViewModel)
     {

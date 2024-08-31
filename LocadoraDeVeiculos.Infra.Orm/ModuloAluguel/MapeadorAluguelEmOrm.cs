@@ -12,46 +12,37 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
             .IsRequired()
             .ValueGeneratedOnAdd();
 
-        aBuilder.HasOne(v => v.Condutor)
-            .WithMany()
-            .HasForeignKey("Condutor_Id")
-            .OnDelete(DeleteBehavior.NoAction);
-
         aBuilder.Property(a => a.CondutorNome)
             .IsRequired()
             .HasColumnType("varchar(200)");
 
-        aBuilder.HasOne(v => v.Cliente)
-            .WithMany()
-            .HasForeignKey("Cliente_Id")
-            .OnDelete(DeleteBehavior.NoAction);
+        aBuilder.Property(a => a.CondutorId)
+            .IsRequired()
+            .HasColumnType("int");
 
         aBuilder.Property(a => a.ClienteNome)
             .IsRequired()
             .HasColumnType("varchar(200)");
 
-        aBuilder.HasOne(v => v.PlanoDeCobranca)
-            .WithMany()
-            .HasForeignKey("Plano_Id")
-            .OnDelete(DeleteBehavior.NoAction);
+        aBuilder.Property(a => a.ClienteId)
+            .IsRequired()
+            .HasColumnType("int");
 
         aBuilder.Property(a => a.CategoriaPlano)
             .HasConversion<string>()
             .IsRequired();
 
-        aBuilder.HasOne(v => v.GrupoDeAutomoveis)
-            .WithMany()
-            .HasForeignKey("Grupo_Id")
-            .OnDelete(DeleteBehavior.NoAction);
-
         aBuilder.Property(a => a.GrupoNome)
             .IsRequired()
             .HasColumnType("varchar(200)");
 
-        aBuilder.HasOne(v => v.Veiculo)
-            .WithMany()
-            .HasForeignKey("Veiculo_Id")
-            .OnDelete(DeleteBehavior.NoAction);
+        aBuilder.Property(a => a.GrupoId)
+            .IsRequired()
+            .HasColumnType("int");
+
+        aBuilder.Property(a => a.VeiculoId)
+            .IsRequired()
+            .HasColumnType("int");
 
         aBuilder.Property(a => a.VeiculoPlaca)
             .IsRequired()

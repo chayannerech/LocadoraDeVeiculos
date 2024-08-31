@@ -46,9 +46,9 @@
 
         <div class="col-md-4">
             <dt class="mb-1">Imagem do veículo:</dt>
-            @if (Model.Veiculo.ImagemEmBytes != null && Model.Veiculo.TipoDaImagem != null)
+            @if (Model.ImagemEmBytes != null && Model.TipoDaImagem != null)
             {
-                <img src="data:@Model.Veiculo.TipoDaImagem;base64,@Convert.ToBase64String(Model.Veiculo.ImagemEmBytes)"
+                <img src="data:@Model.TipoDaImagem;base64,@Convert.ToBase64String(Model.ImagemEmBytes)"
                      alt="Foto do veículo"
                      class="img-fluid"
                      style="max-width:80%; height:auto;" />

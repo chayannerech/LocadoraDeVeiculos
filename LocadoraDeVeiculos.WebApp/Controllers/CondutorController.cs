@@ -8,11 +8,11 @@ using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDeCondutor.WebApp.Controllers;
-public class CondutorController(CondutorService servicoPlanos, ClienteService servicoClientes, IMapper mapeador) : WebControllerBase
+public class CondutorController(CondutorService servicoCondutor, ClienteService servicoClientes, IMapper mapeador) : WebControllerBase
 {
     public IActionResult Listar()
     {
-        var resultado = servicoPlanos.SelecionarTodos(UsuarioId.GetValueOrDefault());
+        var resultado = servicoCondutor.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
         if (resultado.IsFailed)
         {
@@ -50,12 +50,12 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
             
         var novoRegistro = mapeador.Map<Condutor>(inserirRegistroVm);
 
-        if (ValidacaoDeRegistroRepetido(servicoPlanos, inserirRegistroVm, null))
+        if (ValidacaoDeRegistroRepetido(servicoCondutor, inserirRegistroVm, null))
             return View(CarregarInformacoes(inserirRegistroVm));
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
-        var resultado = servicoPlanos.Inserir(novoRegistro, inserirRegistroVm.ClienteId);
+        var resultado = servicoCondutor.Inserir(novoRegistro, inserirRegistroVm.ClienteId);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
@@ -68,7 +68,7 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
 
     public IActionResult Editar(int id)
     {
-        var resultado = servicoPlanos.SelecionarPorId(id);
+        var resultado = servicoCondutor.SelecionarPorId(id);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
@@ -88,12 +88,12 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
             return View(CarregarInformacoes(editarRegistroVm));
 
         var registro = mapeador.Map<Condutor>(editarRegistroVm);
-        var registroAtual = servicoPlanos.SelecionarPorId(editarRegistroVm.Id).Value;
+        var registroAtual = servicoCondutor.SelecionarPorId(editarRegistroVm.Id).Value;
 
-        if (ValidacaoDeRegistroRepetido(servicoPlanos, editarRegistroVm, registroAtual))
+        if (ValidacaoDeRegistroRepetido(servicoCondutor, editarRegistroVm, registroAtual))
             return View(CarregarInformacoes(editarRegistroVm));
 
-        var resultado = servicoPlanos.Editar(registro, editarRegistroVm.ClienteId);
+        var resultado = servicoCondutor.Editar(registro, editarRegistroVm.ClienteId);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
@@ -106,26 +106,27 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
 
     public IActionResult Excluir(int id)
     {
-        var resultado = servicoPlanos.SelecionarPorId(id);
+        var resultado = servicoCondutor.SelecionarPorId(id);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registro = resultado.Value;
 
-        var detalhesCondutorViewModel = mapeador.Map<DetalhesCondutorViewModel>(registro);
+        var detalhesRegistroVm = mapeador.Map<DetalhesCondutorViewModel>(registro);
 
-        return View(detalhesCondutorViewModel);
+        return View(detalhesRegistroVm);
     }
     [HttpPost]
-    public IActionResult Excluir(DetalhesCondutorViewModel detalhesCondutorViewModel)
+    public IActionResult Excluir(DetalhesCondutorViewModel detalhesRegistroVm)
     {
-        var resultado = servicoPlanos.Excluir(detalhesCondutorViewModel.Id);
+        var nome = servicoCondutor.SelecionarPorId(detalhesRegistroVm.Id).Value.Nome;
+        var resultado = servicoCondutor.Excluir(detalhesRegistroVm.Id);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"{detalhesCondutorViewModel.Nome}\" foi excluído com sucesso!");
+        ApresentarMensagemSucesso($"O registro \"{nome}\" foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
@@ -133,16 +134,16 @@ public class CondutorController(CondutorService servicoPlanos, ClienteService se
 
     public IActionResult Detalhes(int id)
     {
-        var resultado = servicoPlanos.SelecionarPorId(id);
+        var resultado = servicoCondutor.SelecionarPorId(id);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registro = resultado.Value;
 
-        var detalhesCondutorViewModel = mapeador.Map<DetalhesCondutorViewModel>(registro);
+        var detalhesRegistroVm = mapeador.Map<DetalhesCondutorViewModel>(registro);
 
-        return View(detalhesCondutorViewModel);
+        return View(detalhesRegistroVm);
     }
 
     #region Auxiliares

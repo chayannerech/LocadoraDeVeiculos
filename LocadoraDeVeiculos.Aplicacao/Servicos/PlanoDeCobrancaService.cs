@@ -87,4 +87,14 @@ public class PlanoDeCobrancaService(IRepositorioPlanoDeCobranca repositorioPlano
 
         return Result.Ok(registros);
     }
+
+    public Result<PlanoDeCobranca> SelecionarPorGrupoId(int grupoId)
+    {
+        var registro = repositorioPlano.SelecionarPorGrupoId(grupoId);
+
+        if (registro is null)
+            return Result.Fail("O plano de cobrança não foi encontrado!");
+
+        return Result.Ok(registro);
+    }
 }

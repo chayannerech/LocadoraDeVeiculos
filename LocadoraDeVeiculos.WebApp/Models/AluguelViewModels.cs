@@ -83,8 +83,10 @@ public class DetalhesAluguelViewModel
     public string? CondutorNome { get; set; }
     public string? ClienteNome { get; set; }
     public string? GrupoNome { get; set; }
+    public int VeiculoId { get; set; }
     public string? VeiculoPlaca { get; set; }
-    public Veiculo? Veiculo { get; set; }
+    public byte[]? ImagemEmBytes { get; set; }
+    public string? TipoDaImagem { get; set; }
     public CategoriaDePlanoEnum CategoriaPlano { get; set; }
     public DateTime DataSaida { get; set; }
     public DateTime DataRetornoPrevista { get; set; }
@@ -99,8 +101,10 @@ public class DevolverAluguelViewModel
     public Condutor? Condutor { get; set; }
     public Cliente? Cliente { get; set; }
     public PlanoDeCobranca? PlanoDeCobranca { get; set; }
-    public string? GrupoNome { get; set; }
+    public GrupoDeAutomoveis? Grupo { get; set; }
     public Veiculo? Veiculo { get; set; }
+    public byte[]? ImagemEmBytes { get; set; }
+    public string? TipoDaImagem { get; set; }
     public CategoriaDePlanoEnum CategoriaPlano { get; set; }
     public DateTime DataSaida { get; set; }
     public DateTime DataRetornoPrevista { get; set; }
@@ -128,7 +132,6 @@ public class DevolverAluguelViewModel
 
     public decimal ValorTotal { get; set; }
     public IEnumerable<Taxa>? Taxas { get; set; }
-    public IEnumerable<Taxa>? Seguros { get; set; }
 }
 
 public class DataMenorQueAttribute : ValidationAttribute
@@ -143,6 +146,7 @@ public class DataMenorQueAttribute : ValidationAttribute
         return ValidationResult.Success;
     }
 }
+
 public class DataDevolucaoMenorQueAttribute : ValidationAttribute
 {
     protected override ValidationResult? IsValid(object value, ValidationContext validationContext)

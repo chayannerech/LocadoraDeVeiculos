@@ -13,17 +13,6 @@ public class RepositorioVeiculoEmOrm : RepositorioBaseEmOrm<Veiculo>, IRepositor
 
     public void Excluir(Veiculo entidade)
     {
-        var alugueis = _dbContext.Alugueis.Include(a => a.Veiculo).ToList();
-        
-        var alugueisAssociados = alugueis.FindAll(a => a.Veiculo.Id == entidade.Id);
-
-        var copia = entidade;
-
-        foreach (var aluguel in alugueisAssociados)
-            aluguel.Veiculo = copia;
-
-        _dbContext.SaveChanges();
-
         ObterRegistros().Remove(entidade);
 
         _dbContext.SaveChanges();

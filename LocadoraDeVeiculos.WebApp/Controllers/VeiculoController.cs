@@ -126,19 +126,20 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
 
         var registro = resultado.Value;
 
-        var detalhesVeiculosViewModel = mapeador.Map<DetalhesVeiculosViewModel>(registro);
+        var detalhesRegistroVm = mapeador.Map<DetalhesVeiculosViewModel>(registro);
 
-        return View(detalhesVeiculosViewModel);
+        return View(detalhesRegistroVm);
     }
     [HttpPost]
-    public IActionResult Excluir(DetalhesVeiculosViewModel detalhesVeiculosViewModel)
+    public IActionResult Excluir(DetalhesVeiculosViewModel detalhesRegistroVm)
     {
-        var resultado = servicoVeiculos.Excluir(detalhesVeiculosViewModel.Id);
+        var nome = servicoVeiculos.SelecionarPorId(detalhesRegistroVm.Id).Value.Placa;
+        var resultado = servicoVeiculos.Excluir(detalhesRegistroVm.Id);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"{detalhesVeiculosViewModel.Placa}\" foi excluído com sucesso!");
+        ApresentarMensagemSucesso($"O veículo de placa \"{nome}\" foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
@@ -153,11 +154,11 @@ public class VeiculoController(VeiculoService servicoVeiculos, GrupoDeAutomoveis
 
         var registro = resultado.Value;
 
-        var detalhesVeiculosViewModel = mapeador.Map<DetalhesVeiculosViewModel>(registro);
+        var detalhesRegistroVm = mapeador.Map<DetalhesVeiculosViewModel>(registro);
 
-        detalhesVeiculosViewModel.GrupoNome = registro.GrupoDeAutomoveis.Nome;
+        detalhesRegistroVm.GrupoNome = registro.GrupoDeAutomoveis.Nome;
 
-        return View(detalhesVeiculosViewModel);
+        return View(detalhesRegistroVm);
     }
 
     #region Auxiliares

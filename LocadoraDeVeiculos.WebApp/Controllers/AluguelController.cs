@@ -97,11 +97,9 @@ public class AluguelController(
             return RedirectToAction(nameof(Listar));
         }
 
-        var editarPlanoVm = mapeador.Map<EditarAluguelViewModel>(registro);
+        var editarRegistroVm = mapeador.Map<EditarAluguelViewModel>(registro);
 
-        editarPlanoVm.GrupoId = registro.GrupoDeAutomoveis.Id;
-
-        return View(CarregarInformacoes(editarPlanoVm));
+        return View(CarregarInformacoes(editarRegistroVm));
     }
     [HttpPost]
     public IActionResult Editar(EditarAluguelViewModel editarRegistroVm)
@@ -112,7 +110,7 @@ public class AluguelController(
             return View(CarregarInformacoes(editarRegistroVm));
         }
 
-        servicoVeiculo.LiberarVeiculo(servicoAluguel.SelecionarPorId(editarRegistroVm.Id).Value.Veiculo.Id);
+        servicoVeiculo.LiberarVeiculo(servicoAluguel.SelecionarPorId(editarRegistroVm.Id).Value.VeiculoId);
 
         var registro = mapeador.Map<Aluguel>(editarRegistroVm);
 
@@ -155,7 +153,7 @@ public class AluguelController(
     {
         var nome = servicoAluguel.SelecionarPorId(detalhesRegistroVm.Id).Value;
 
-        servicoVeiculo.LiberarVeiculo(detalhesRegistroVm.Veiculo!.Id);
+        servicoVeiculo.LiberarVeiculo(detalhesRegistroVm.VeiculoId);
 
         var resultado = servicoAluguel.Excluir(detalhesRegistroVm.Id);
 
@@ -189,7 +187,7 @@ public class AluguelController(
 
         var resultado = servicoAluguel.Devolver(devolverRegistroVm.Id, devolverRegistroVm.ValorTotal, devolverRegistroVm.DataRetornoReal);
 
-        servicoVeiculo.LiberarVeiculo(servicoAluguel.SelecionarPorId(devolverRegistroVm.Id).Value.Veiculo.Id);
+        servicoVeiculo.LiberarVeiculo(servicoAluguel.SelecionarPorId(devolverRegistroVm.Id).Value.VeiculoId);
 
         if (ValidacaoDeFalha(resultado))
             return RedirectToAction(nameof(Listar));
@@ -213,7 +211,7 @@ public class AluguelController(
 
         var detalhesRegistroVm = mapeador.Map<DetalhesAluguelViewModel>(registro);
 
-        return View(detalhesRegistroVm);
+        return View(CarregarInformacoes(detalhesRegistroVm));
     }
 
     #region Auxiliares
@@ -278,37 +276,59 @@ public class AluguelController(
         editarRegistroVm.Seguros = seguros;
         return editarRegistroVm;
     }
-    private DevolverAluguelViewModel? CarregarInformacoes(DevolverAluguelViewModel encerrarRegistroVm)
+    private DetalhesAluguelViewModel? CarregarInformacoes(DetalhesAluguelViewModel detalhesRegistroVm)
     {
         List<Taxa> taxas = [];
 
-        var registro = servicoAluguel.SelecionarPorId(encerrarRegistroVm.Id).Value;
-        var config = servicoConfiguracao.Selecionar();
+        var veiculoSelecionado = servicoVeiculo.SelecionarPorId(detalhesRegistroVm.VeiculoId);
 
-        encerrarRegistroVm.Cliente = registro.Cliente;
-        encerrarRegistroVm.Condutor = registro.Condutor;
-        encerrarRegistroVm.GrupoNome = registro.GrupoNome;
-        encerrarRegistroVm.Veiculo = registro.Veiculo;
-        encerrarRegistroVm.DataSaida = registro.DataSaida;
-        encerrarRegistroVm.DataRetornoPrevista = registro.DataRetornoPrevista;
-        encerrarRegistroVm.PlanoDeCobranca = registro.PlanoDeCobranca;
-        encerrarRegistroVm.TaxasSelecionadasId = registro.TaxasSelecionadasId;
-        encerrarRegistroVm.Configuracao = config;
-
-        if (encerrarRegistroVm.TaxasSelecionadasId != "")
-            foreach(var taxaId in encerrarRegistroVm.TaxasSelecionadasId!.Split(','))
-                taxas.Add(servicoTaxa.SelecionarPorId(Convert.ToInt32(taxaId)).Value);
-
-        var resultadoTaxas = servicoTaxa.SelecionarTodos(UsuarioId.GetValueOrDefault());
-
-        if (resultadoTaxas.IsFailed)
+        if (veiculoSelecionado.IsFailed)
         {
             ApresentarMensagemFalha(Result.Fail("Falha ao encontrar dados necessários!"));
             return null;
         }
 
-        encerrarRegistroVm.Taxas = taxas;
-        return encerrarRegistroVm;
+        detalhesRegistroVm.ImagemEmBytes = veiculoSelecionado.Value.ImagemEmBytes;
+        detalhesRegistroVm.TipoDaImagem = veiculoSelecionado.Value.TipoDaImagem;
+
+        return detalhesRegistroVm;
+    }
+    private DevolverAluguelViewModel? CarregarInformacoes(DevolverAluguelViewModel devolverRegistroVm)
+    {
+        List<Taxa> taxas = [];
+
+        var registro = servicoAluguel.SelecionarPorId(devolverRegistroVm.Id).Value;
+
+        var clienteResultado = servicoCliente.SelecionarPorId(registro.ClienteId);
+        var condutorResultado = servicoCondutor.SelecionarPorId(registro.CondutorId);
+        var grupoResultado = servicoGrupo.SelecionarPorId(registro.GrupoId);
+        var veiculoResultado = servicoVeiculo.SelecionarPorId(registro.VeiculoId);
+        var planoResultado = servicoPlano.SelecionarPorGrupoId(registro.GrupoId);
+        var configResultado = servicoConfiguracao.Selecionar();
+
+
+        if (clienteResultado.IsFailed || condutorResultado.IsFailed || grupoResultado.IsFailed || veiculoResultado.IsFailed)
+        {
+            ApresentarMensagemFalha(Result.Fail("Falha ao encontrar dados necessários!"));
+            return null;
+        }
+
+        if (devolverRegistroVm.TaxasSelecionadasId != "")
+            foreach (var taxaId in devolverRegistroVm.TaxasSelecionadasId!.Split(','))
+                taxas.Add(servicoTaxa.SelecionarPorId(Convert.ToInt32(taxaId)).Value);
+
+        devolverRegistroVm.Cliente = clienteResultado.Value;
+        devolverRegistroVm.Condutor = condutorResultado.Value;
+        devolverRegistroVm.Grupo = grupoResultado.Value;
+        devolverRegistroVm.Veiculo = veiculoResultado.Value;
+        devolverRegistroVm.Configuracao = configResultado;
+        devolverRegistroVm.TaxasSelecionadasId = registro.TaxasSelecionadasId;
+        devolverRegistroVm.Taxas = taxas;
+        devolverRegistroVm.ImagemEmBytes = veiculoResultado.Value.ImagemEmBytes;
+        devolverRegistroVm.TipoDaImagem = veiculoResultado.Value.TipoDaImagem;
+        devolverRegistroVm.PlanoDeCobranca = planoResultado.Value;
+
+        return devolverRegistroVm;
     }
     protected bool ValidacaoDeFalha(Result<Aluguel> resultado)
     {
@@ -348,6 +368,12 @@ public class AluguelController(
         if (servicoPlano.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
         {
             ApresentarMensagemSemDependencias("Planos de Aluguel");
+            return true;
+        }
+
+        if (servicoConfiguracao.Selecionar().GNV == 0)
+        {
+            ApresentarMensagemSemDependencias("Preços dos Combustíveis");
             return true;
         }
 
