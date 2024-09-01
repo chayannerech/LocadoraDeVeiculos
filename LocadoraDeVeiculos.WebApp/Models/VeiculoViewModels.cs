@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 namespace LocadoraDeVeiculos.WebApp.Models;
 
-public class InserirVeiculosViewModel
+public class PropriedadesVeiculosViewModel
 {
     [Required(ErrorMessage = "O grupo é obrigatório")]
     [Range(1, int.MaxValue, ErrorMessage = "O grupo é obrigatório")]
@@ -46,20 +46,7 @@ public class InserirVeiculosViewModel
     public IEnumerable<SelectListItem>? Grupos { get; set; }
     public IEnumerable<SelectListItem>? TiposDeCombustiveis { get; set; }
 
-
-    [Required(ErrorMessage = "A foto do veículo é obrigatória")]
-    public IFormFile Foto { get; set; }
-    public byte[] ImagemEmBytes
-    {
-        get => Foto != null ? ConverterImagemParaArrayDeBytes(Foto) : null!;
-        set { }
-    }
-    public string TipoDaImagem
-    {
-        get => Foto != null ? Foto.ContentType : null!;
-        set { }
-    }
-    private byte[] ConverterImagemParaArrayDeBytes(IFormFile imagem)
+    public byte[] ConverterImagemParaArrayDeBytes(IFormFile imagem)
     {
         if (imagem == null || imagem.Length == 0)
         {
@@ -72,9 +59,27 @@ public class InserirVeiculosViewModel
     }
 }
 
-public class EditarVeiculosViewModel : InserirVeiculosViewModel
+public class InserirVeiculosViewModel : PropriedadesVeiculosViewModel
+{
+    [Required(ErrorMessage = "A foto do veículo é obrigatória")]
+    public IFormFile Foto { get; set; }
+    public byte[] ImagemEmBytes
+    {
+        get => Foto != null ? ConverterImagemParaArrayDeBytes(Foto) : null!;
+        set { }
+    }
+    public string TipoDaImagem
+    {
+        get => Foto != null ? Foto.ContentType : null!;
+        set { }
+    }
+
+}
+
+public class EditarVeiculosViewModel : PropriedadesVeiculosViewModel
 {    
     public int Id { get; set; }
+    public IFormFile Foto { get; set; }
     public byte[] ImagemEmBytes { get; set; }
     public string TipoDaImagem { get; set; }
 }

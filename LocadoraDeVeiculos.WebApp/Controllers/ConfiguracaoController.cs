@@ -23,7 +23,7 @@ public class ConfiguracaoController(ConfiguracaoService servicoConfiguracao, IMa
 
         var resultado = servicoConfiguracao.Inserir(novoRegistro);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Detalhes));
 
         ApresentarMensagemSucesso($"A configuração dos preços de combustível foi inserida com sucesso!");
@@ -36,7 +36,7 @@ public class ConfiguracaoController(ConfiguracaoService servicoConfiguracao, IMa
     {
         var resultado = servicoConfiguracao.Selecionar();
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Detalhes));
 
         return View(mapeador.Map<EditarConfiguracaoViewModel>(resultado));
@@ -51,7 +51,7 @@ public class ConfiguracaoController(ConfiguracaoService servicoConfiguracao, IMa
 
         var resultado = servicoConfiguracao.Editar(registro);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Detalhes));
 
         ApresentarMensagemSucesso($"As configurações foram atualizadas com sucesso!");
@@ -64,14 +64,14 @@ public class ConfiguracaoController(ConfiguracaoService servicoConfiguracao, IMa
     {
         var resultado = servicoConfiguracao.Selecionar();
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Detalhes));
 
         return View(mapeador.Map<DetalhesConfiguracaoViewModel>(resultado));
     }
 
 
-    protected bool ValidacaoDeFalha(Result<Configuracao> resultado)
+    protected bool ValidarFalha(Result<Configuracao> resultado)
     {
         if (resultado.IsFailed)
         {

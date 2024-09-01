@@ -8,40 +8,38 @@ using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+
 namespace LocadoraDePlanoDeCobranca.WebApp.Controllers;
-public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, GrupoDeAutomoveisService servicoGrupos, IMapper mapeador) : WebControllerBase
+public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, GrupoDeAutomoveisService servicoGrupo, AluguelService servicoAluguel, IMapper mapeador) : WebControllerBase
 {
     public IActionResult Listar()
     {
-        var resultado =
-            servicoPlanos.SelecionarTodos(UsuarioId.GetValueOrDefault());
+        var resultado = servicoPlano.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado.ToResult());
-            return RedirectToAction("Index", "Inicio");
-        }
+        if (ValidarFalhaLista(resultado))
+            return RedirectToAction(nameof(Listar));
 
         var registros = resultado.Value;
 
         ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 
-        if (registros.Count == 0 && ViewBag.Mensagem is null)
+        if (servicoPlano.SemRegistros() && ViewBag.Mensagem is null)
             ApresentarMensagemSemRegistros();
 
-        var listarPlanoDeCobrancaVm = mapeador.Map<IEnumerable<ListarPlanoDeCobrancaViewModel>>(registros);
+        var listarRegistrosVm = mapeador.Map<IEnumerable<ListarPlanoDeCobrancaViewModel>>(registros);
 
         ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 
-        return View(listarPlanoDeCobrancaVm);
+        return View(listarRegistrosVm);
     }
-
 
     public IActionResult Inserir()
     {
-        if (ValidacaoSemDependencias("Grupos de Automóveis"))
+        if (servicoGrupo.SemRegistros())
+        {
+            ApresentarMensagemSemDependencias("Grupos de Automóveis");
             return RedirectToAction(nameof(Listar));
-
+        }
         return View(CarregarInformacoes(new InserirPlanoDeCobrancaViewModel()));
     }
     [HttpPost]
@@ -52,17 +50,20 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
 
         var novoRegistro = mapeador.Map<PlanoDeCobranca>(inserirRegistroVm);
 
-        if (ValidacaoDeRegistroRepetido(servicoPlanos, inserirRegistroVm, null))
+        if (servicoPlano.ValidarRegistroRepetido(novoRegistro, inserirRegistroVm.GrupoId))
+        {
+            ApresentarMensagemRegistroExistente("Este grupo de automóveis já possui um plano de cobrança");
             return View(CarregarInformacoes(inserirRegistroVm));
+        }
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
-        var resultado = servicoPlanos.Inserir(novoRegistro, inserirRegistroVm.GrupoId);
+        var resultado = servicoPlano.Inserir(novoRegistro, inserirRegistroVm.GrupoId);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        servicoGrupos.AdicionarValores(novoRegistro);
+        servicoGrupo.AdicionarValores(novoRegistro);
 
         ApresentarMensagemSucesso($"O registro \"{novoRegistro}\" foi inserido com sucesso!");
 
@@ -72,12 +73,18 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
 
     public IActionResult Editar(int id)
     {
-        var resultado = servicoPlanos.SelecionarPorId(id);
+        var resultado = servicoPlano.SelecionarPorId(id);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registro = resultado.Value;
+
+        if (servicoAluguel.AluguelRelacionadoAtivo(registro))
+        {
+            ApresentarMensagemImpossivelEditar("Existe um aluguel ativo relacionado");
+            return RedirectToAction(nameof(Listar));
+        }
 
         var editarRegistroVm = mapeador.Map<EditarPlanoDeCobrancaViewModel>(registro);
 
@@ -92,17 +99,19 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
             return View(CarregarInformacoes(editarRegistroVm));
 
         var registro = mapeador.Map<PlanoDeCobranca>(editarRegistroVm);
-        var registroAtual = servicoPlanos.SelecionarPorId(editarRegistroVm.Id).Value;
 
-        if (ValidacaoDeRegistroRepetido(servicoPlanos, editarRegistroVm, registroAtual))
+        if (servicoPlano.ValidarRegistroRepetido(registro, editarRegistroVm.GrupoId))
+        {
+            ApresentarMensagemRegistroExistente("Este grupo de automóveis já possui um plano de cobrança");
             return View(CarregarInformacoes(editarRegistroVm));
+        }
 
-        var resultado = servicoPlanos.Editar(registro, editarRegistroVm.GrupoId);
+        var resultado = servicoPlano.Editar(registro, editarRegistroVm.GrupoId);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        servicoGrupos.AdicionarValores(servicoPlanos.SelecionarPorId(registro.Id).Value);
+        servicoGrupo.AdicionarValores(servicoPlano.SelecionarPorId(registro.Id).Value);
 
         ApresentarMensagemSucesso($"O registro \"{registro}\" foi editado com sucesso!");
 
@@ -112,12 +121,18 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
 
     public IActionResult Excluir(int id)
     {
-        var resultado = servicoPlanos.SelecionarPorId(id);
+        var resultado = servicoPlano.SelecionarPorId(id);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registro = resultado.Value;
+
+        if (servicoAluguel.AluguelRelacionadoAtivo(registro))
+        {
+            ApresentarMensagemImpossivelEditar("Existe um aluguel ativo relacionado");
+            return RedirectToAction(nameof(Listar));
+        }
 
         var detalhesRegistroVm = mapeador.Map<DetalhesPlanoDeCobrancaViewModel>(registro);
 
@@ -126,12 +141,12 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
     [HttpPost]
     public IActionResult Excluir(DetalhesPlanoDeCobrancaViewModel detalhesRegistroVm)
     {
-        var nome = servicoGrupos.SelecionarPorId(detalhesRegistroVm.Id).Value.Nome;
-        servicoGrupos.ExcluirValores(servicoPlanos.SelecionarPorId(detalhesRegistroVm.Id).Value);
+        var nome = servicoGrupo.SelecionarPorId(detalhesRegistroVm.Id).Value.Nome;
+        servicoGrupo.ExcluirValores(servicoPlano.SelecionarPorId(detalhesRegistroVm.Id).Value);
 
-        var resultado = servicoPlanos.Excluir(detalhesRegistroVm.Id);
+        var resultado = servicoPlano.Excluir(detalhesRegistroVm.Id);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         ApresentarMensagemSucesso($"O registro \"Plano para o grupo: {nome}\" foi excluído com sucesso!");
@@ -142,9 +157,9 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
 
     public IActionResult Detalhes(int id)
     {
-        var resultado = servicoPlanos.SelecionarPorId(id);
+        var resultado = servicoPlano.SelecionarPorId(id);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registro = resultado.Value;
@@ -157,7 +172,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
     #region Auxiliares
     private InserirPlanoDeCobrancaViewModel? CarregarInformacoes(InserirPlanoDeCobrancaViewModel inserirRegistroVm)
     {
-        var resultadoGrupos = servicoGrupos.SelecionarTodos(UsuarioId.GetValueOrDefault());
+        var resultadoGrupos = servicoGrupo.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
         if (resultadoGrupos.IsFailed)
         {
@@ -176,7 +191,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
     }
     private EditarPlanoDeCobrancaViewModel? CarregarInformacoes(EditarPlanoDeCobrancaViewModel editarRegistroVm)
     {
-        var resultadoGrupos = servicoGrupos.SelecionarTodos(UsuarioId.GetValueOrDefault());
+        var resultadoGrupos = servicoGrupo.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
         if (resultadoGrupos.IsFailed)
         {
@@ -193,7 +208,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
 
         return editarRegistroVm;
     }
-    protected bool ValidacaoDeFalha(Result<PlanoDeCobranca> resultado)
+    protected bool ValidarFalha(Result<PlanoDeCobranca> resultado)
     {
         if (resultado.IsFailed)
         {
@@ -202,26 +217,11 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlanos, Gru
         }
         return false;
     }
-    private bool ValidacaoDeRegistroRepetido(PlanoDeCobrancaService servicoPlanoDeCobranca, InserirPlanoDeCobrancaViewModel novoRegistro, PlanoDeCobranca registroAtual)
+    private bool ValidarFalhaLista(Result<List<PlanoDeCobranca>> resultado)
     {
-        var registrosExistentes = servicoPlanoDeCobranca.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value;
-
-        registroAtual = registroAtual is null ? new() {GrupoDeAutomoveis = new()} : registroAtual;
-
-        if (registrosExistentes.Exists(r =>
-            r.GrupoDeAutomoveis.Id == novoRegistro.GrupoId &&
-            r.GrupoDeAutomoveis.Id != registroAtual.GrupoDeAutomoveis.Id))
+        if (resultado.IsFailed)
         {
-            ApresentarMensagemRegistroExistente("Este grupo de automóveis já possui um plano de cobrança");
-            return true;
-        }
-        return false;
-    }
-    private bool ValidacaoSemDependencias(string dependencia)
-    {
-        if (servicoGrupos.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
-        {
-            ApresentarMensagemSemDependencias(dependencia);
+            ApresentarMensagemFalha(resultado.ToResult());
             return true;
         }
         return false;

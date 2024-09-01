@@ -9,21 +9,19 @@ using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
-public class ClienteController(ClienteService servicoCliente, CondutorService servicoCondutor, IMapper mapeador) : WebControllerBase
+public class ClienteController(ClienteService servicoCliente, CondutorService servicoCondutor, AluguelService servicoAluguel, IMapper mapeador) : WebControllerBase
 {
     public IActionResult Listar()
+
     {
         var resultado = servicoCliente.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
-        if (resultado.IsFailed)
-        {
-            ApresentarMensagemFalha(resultado.ToResult());
-            return RedirectToAction("Index", "Inicio");
-        }
+        if (ValidarFalhaLista(resultado))
+            return RedirectToAction(nameof(Listar));
 
         var registros = resultado.Value;
 
-        if (registros.Count == 0)
+        if (servicoCliente.SemRegistros())
             ApresentarMensagemSemRegistros();
 
         var listarClienteVm = mapeador.Map<IEnumerable<ListarClienteViewModel>>(registros);
@@ -44,20 +42,22 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
                 inserirRegistroVm.CNH = "";
                 inserirRegistroVm.RG = "";
             }
-            else
-                return View(CarregarInformacoes(inserirRegistroVm));
+            else return View(CarregarInformacoes(inserirRegistroVm));
         }
 
         var novoRegistro = mapeador.Map<Cliente>(inserirRegistroVm);
 
-        if (ValidacaoDeRegistroRepetido(servicoCliente, novoRegistro, null))
+        if (servicoCliente.ValidarRegistroRepetido(novoRegistro, out string itemRepetido))
+        {
+            EnviarMensagemDeRegistroRepetido(itemRepetido);
             return View(CarregarInformacoes(inserirRegistroVm));
+        }
 
         //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
         var resultado = servicoCliente.Inserir(novoRegistro);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         ApresentarMensagemSucesso($"O registro \"{novoRegistro}\" foi inserido com sucesso!");
@@ -65,14 +65,21 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
         return RedirectToAction(nameof(Listar));
     }
 
+
     public IActionResult Editar(int id)
     {
         var resultado = servicoCliente.SelecionarPorId(id);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registro = resultado.Value;
+
+        if (servicoAluguel.AluguelRelacionadoAtivo(registro))
+        {
+            ApresentarMensagemImpossivelEditar("Existe um aluguel ativo relacionado");
+            return RedirectToAction(nameof(Listar));
+        }
 
         var editarRegistroVm = mapeador.Map<EditarClienteViewModel>(registro);
 
@@ -93,15 +100,19 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
         }
 
         var registro = mapeador.Map<Cliente>(editarRegistroVm);
-        var registroAtual = servicoCliente.SelecionarPorId(editarRegistroVm.Id).Value;
 
-        if (ValidacaoDeRegistroRepetido(servicoCliente, registro, registroAtual))
-            return View(editarRegistroVm);
+        if (servicoCliente.ValidarRegistroRepetido(registro, out string itemRepetido))
+        {
+            EnviarMensagemDeRegistroRepetido(itemRepetido);
+            return View(CarregarInformacoes(editarRegistroVm));
+        }
 
         var resultado = servicoCliente.Editar(registro);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
+
+        servicoAluguel.AtualizarClienteDoAluguel(registro);
 
         ApresentarMensagemSucesso($"O registro \"{registro}\" foi editado com sucesso!");
 
@@ -113,13 +124,22 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
     {
         var resultado = servicoCliente.SelecionarPorId(id);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registro = resultado.Value;
 
-        if (ValidarPossibilidadeDeExclusao(servicoCondutor, registro))
+        if (servicoAluguel.AluguelRelacionadoAtivo(registro))
+        {
+            ApresentarMensagemImpossivelExcluir("Existe um aluguel ativo relacionado");
             return RedirectToAction(nameof(Listar));
+        }
+
+        if (servicoCondutor.CondutorRelacionado(registro))
+        {
+            ApresentarMensagemImpossivelExcluir("Existe um condutor relacionado");
+            return RedirectToAction(nameof(Listar));
+        }
 
         var detalhesRegistroVm = mapeador.Map<DetalhesClienteViewModel>(registro);
 
@@ -128,13 +148,12 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
     [HttpPost]
     public IActionResult Excluir(DetalhesClienteViewModel detalhesRegistroVm)
     {
-        var nome = servicoCliente.SelecionarPorId(detalhesRegistroVm.Id).Value.Nome;
         var resultado = servicoCliente.Excluir(detalhesRegistroVm.Id);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"{nome}\" foi excluído com sucesso!");
+        ApresentarMensagemSucesso($"O registro \"{servicoCliente.SelecionarPorId(detalhesRegistroVm.Id).Value.Nome}\" foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
@@ -144,7 +163,7 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
     {
         var resultado = servicoCliente.SelecionarPorId(id);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registro = resultado.Value;
@@ -169,7 +188,7 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
 
         return editarRegistroVm;
     }
-    protected bool ValidacaoDeFalha(Result<Cliente> resultado)
+    protected bool ValidarFalha(Result<Cliente> resultado)
     {
         if (resultado.IsFailed)
         {
@@ -178,73 +197,25 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
         }
         return false;
     }
-    private bool ValidacaoDeRegistroRepetido(ClienteService servicoCliente, Cliente novoRegistro, Cliente registroAtual)
+    protected bool ValidarFalhaLista(Result<List<Cliente>> resultado)
     {
-        var cpfsCondutores = servicoCondutor
-            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value
-            .Select(r => r.CPF);
-
-        var cnhCondutores = servicoCondutor
-            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value
-            .Select(r => r.CNH);
-
-        var cpfsClientes = servicoCliente
-            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.FindAll(c => c.PessoaFisica)
-            .Select(c => c.Documento);
-
-        var cnpjExistente = servicoCliente
-            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.FindAll(c => !c.PessoaFisica)
-            .Select(c => c.Documento);
-
-        var cnhClientes = servicoCliente
-            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.FindAll(c => c.PessoaFisica)
-            .Select(c => c.CNH);
-
-        var rgExistentes = servicoCliente
-            .SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.FindAll(c => c.PessoaFisica)
-            .Select(c => c.RG);
-
-        IEnumerable<string> cpfsExistentes = cpfsCondutores.Concat(cpfsClientes);
-        IEnumerable<string> cnhExistentes = cnhCondutores.Concat(cnhClientes);
-
-        registroAtual = registroAtual is null ? new() : registroAtual;
-
-        if (novoRegistro.PessoaFisica)
+        if (resultado.IsFailed)
         {
-            if (cpfsExistentes.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual.Documento)
-            {
-                ApresentarMensagemRegistroExistente("Já existe um cadastro com esse CPF");
-                return true;
-            }
-            if (cnhExistentes.Any(c => c == novoRegistro.CNH) && novoRegistro.CNH != registroAtual.CNH)
-            {
-                ApresentarMensagemRegistroExistente("Já existe um cadastro com essa CNH");
-                return true;
-            }
-            if (rgExistentes.Any(c => c == novoRegistro.RG) && novoRegistro.RG != registroAtual.RG)
-            {
-                ApresentarMensagemRegistroExistente("Já existe um cadastro com esse RG");
-                return true;
-            }
-        }
-        else if (cnpjExistente.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual.Documento)
-        {
-            ApresentarMensagemRegistroExistente("Já existe um cadastro com esse CNPJ");
+            ApresentarMensagemFalha(resultado.ToResult());
             return true;
         }
-
         return false;
     }
-
-    private bool ValidarPossibilidadeDeExclusao(CondutorService servicoCondutor, Cliente registro)
+    private void EnviarMensagemDeRegistroRepetido(string itemRepetido)
     {
-        if (servicoCondutor.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Any(c => c.Cliente.Id == registro.Id))
-        {
-            ApresentarMensagemImpossivelExcluir();
-            return true;
-        }
-
-        return false;
+        if (itemRepetido == "cpf")
+            ApresentarMensagemRegistroExistente("Já existe um cadastro com esse CPF");
+        if (itemRepetido == "cnpj")
+            ApresentarMensagemRegistroExistente("Já existe um cadastro com esse CNPJ");
+        if (itemRepetido == "rg")
+            ApresentarMensagemRegistroExistente("Já existe um cadastro com esse RG");
+        if (itemRepetido == "cnh")
+            ApresentarMensagemRegistroExistente("Já existe um cadastro com essa CNH");
     }
     #endregion
 }

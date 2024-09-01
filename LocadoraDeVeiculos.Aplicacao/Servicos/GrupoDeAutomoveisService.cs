@@ -1,46 +1,47 @@
 ﻿using FluentResults;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
+using LocadoraDeVeiculos.Dominio.Compartilhado.Extensions;
 
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
-public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioGrupoDeAutomoveis)
+public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioGrupo)
 {
     public Result<GrupoDeAutomoveis> Inserir(GrupoDeAutomoveis registro)
     {
-        repositorioGrupoDeAutomoveis.Inserir(registro);
+        repositorioGrupo.Inserir(registro);
 
         return Result.Ok(registro);
     }
 
     public Result<GrupoDeAutomoveis> Editar(GrupoDeAutomoveis registroAtualizado)
     {
-        var registro = repositorioGrupoDeAutomoveis.SelecionarPorId(registroAtualizado.Id);
+        var registro = repositorioGrupo.SelecionarPorId(registroAtualizado.Id);
 
         if (registro is null)
             return Result.Fail("O grupo de automóveis não foi encontrado!");
 
         registro.Nome = registroAtualizado.Nome;
 
-        repositorioGrupoDeAutomoveis.Editar(registro);
+        repositorioGrupo.Editar(registro);
 
         return Result.Ok(registro);
     }
 
     public Result Excluir(int registroId)
     {
-        var registro = repositorioGrupoDeAutomoveis.SelecionarPorId(registroId);
+        var registro = repositorioGrupo.SelecionarPorId(registroId);
 
         if (registro is null)
             return Result.Fail("O grupo de automóveis não foi encontrado!");
 
-        repositorioGrupoDeAutomoveis.Excluir(registro);
+        repositorioGrupo.Excluir(registro);
 
         return Result.Ok();
     }
 
     public Result<GrupoDeAutomoveis> SelecionarPorId(int registroId)
     {
-        var registro = repositorioGrupoDeAutomoveis.SelecionarPorId(registroId);
+        var registro = repositorioGrupo.SelecionarPorId(registroId);
 
         if (registro is null)
             return Result.Fail("O grupo de automóveis não foi encontrado!");
@@ -50,12 +51,12 @@ public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioG
 
     public Result<List<GrupoDeAutomoveis>> SelecionarTodos(int usuarioId)
     {
-        /*        var registros = repositorioGrupoDeAutomoveis
+        /*        var registros = repositorioGrupo
                     .Filtrar(f => f.UsuarioId == usuarioId);
 
                 return Result.Ok(registros);*/
 
-        var registros = repositorioGrupoDeAutomoveis
+        var registros = repositorioGrupo
             .Filtrar(f => f.Id != 0);
 
         return Result.Ok(registros);
@@ -69,7 +70,7 @@ public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioG
         grupoSelecionado.PrecoDiariaControlada = plano.PrecoDiariaControlada;
         grupoSelecionado.PrecoLivre = plano.PrecoLivre;
 
-        repositorioGrupoDeAutomoveis.Editar(grupoSelecionado);
+        repositorioGrupo.Editar(grupoSelecionado);
     }
 
     public void ExcluirValores(PlanoDeCobranca plano)
@@ -80,6 +81,19 @@ public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioG
         grupoSelecionado.PrecoDiariaControlada = 0;
         grupoSelecionado.PrecoLivre = 0;
 
-        repositorioGrupoDeAutomoveis.Editar(grupoSelecionado);
+        repositorioGrupo.Editar(grupoSelecionado);
     }
+
+    public bool ValidarRegistroRepetido(GrupoDeAutomoveis novoRegistro)
+    {
+        var registrosExistentes = repositorioGrupo.SelecionarTodos();
+        var registroAtual = novoRegistro.Id == 0 ? new() { Nome = "" } : repositorioGrupo.SelecionarPorId(novoRegistro.Id)!;
+
+        return registrosExistentes.Exists(r =>
+            r.Nome.Validation() == novoRegistro.Nome.Validation() &&
+            r.Nome.Validation() != registroAtual.Nome.Validation());
+    }
+
+    public bool SemRegistros()
+    => repositorioGrupo.SelecionarTodos().Count == 0;
 }

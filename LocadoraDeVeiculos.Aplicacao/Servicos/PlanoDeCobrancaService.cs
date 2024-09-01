@@ -1,7 +1,9 @@
 ﻿using FluentResults;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
+using LocadoraDeVeiculos.Dominio.ModuloUsuario;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
+
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class PlanoDeCobrancaService(IRepositorioPlanoDeCobranca repositorioPlano, IRepositorioGrupoDeAutomoveis repositorioGrupo)
 {
@@ -96,5 +98,22 @@ public class PlanoDeCobrancaService(IRepositorioPlanoDeCobranca repositorioPlano
             return Result.Fail("O plano de cobrança não foi encontrado!");
 
         return Result.Ok(registro);
+    }
+
+    public bool PlanoRelacionadoAoGrupo(GrupoDeAutomoveis registro)
+        => repositorioPlano.SelecionarTodos().Any(c => c.GrupoDeAutomoveis.Id == registro.Id);
+
+    public bool SemRegistros()
+        => repositorioPlano.SelecionarTodos().Count == 0;
+
+    public bool ValidarRegistroRepetido(PlanoDeCobranca novoRegistro, int grupoId)
+    {
+        var registrosExistentes = repositorioPlano.SelecionarTodos();
+
+        var registroAtual = novoRegistro.Id == 0 ? new() { GrupoDeAutomoveis = new() } : repositorioPlano.SelecionarPorId(novoRegistro.Id);
+
+        return registrosExistentes.Exists(r =>
+            r.GrupoDeAutomoveis.Id == grupoId &&
+            r.GrupoDeAutomoveis.Id != registroAtual!.GrupoDeAutomoveis.Id);
     }
 }

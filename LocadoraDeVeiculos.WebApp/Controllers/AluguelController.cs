@@ -49,7 +49,7 @@ public class AluguelController(
 
     public IActionResult Inserir()
     {
-        if (ValidacaoSemDependencias())
+        if (ValidacaoSemRegistros())
             return RedirectToAction(nameof(Listar));
 
         return View(CarregarInformacoes(new InserirAluguelViewModel()));
@@ -71,7 +71,7 @@ public class AluguelController(
 
         var resultado = servicoAluguel.Inserir(novoRegistro, inserirRegistroVm.CondutorId, inserirRegistroVm.ClienteId, inserirRegistroVm.GrupoId, inserirRegistroVm.VeiculoId);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         servicoVeiculo.AlugarVeiculo(inserirRegistroVm.VeiculoId);
@@ -86,16 +86,13 @@ public class AluguelController(
     {
         var resultado = servicoAluguel.SelecionarPorId(id);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registro = resultado.Value;
 
-        if (!registro.Ativo)
-        {
-            ApresentarMensagemImpossivelEditar();
+        if (AluguelFinalizado(registro))
             return RedirectToAction(nameof(Listar));
-        }
 
         var editarRegistroVm = mapeador.Map<EditarAluguelViewModel>(registro);
 
@@ -116,7 +113,7 @@ public class AluguelController(
 
         var resultado = servicoAluguel.Editar(registro, editarRegistroVm.CondutorId, editarRegistroVm.ClienteId, editarRegistroVm.GrupoId, editarRegistroVm.VeiculoId);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         servicoVeiculo.AlugarVeiculo(editarRegistroVm.VeiculoId);
@@ -133,21 +130,19 @@ public class AluguelController(
     {
         var resultado = servicoAluguel.SelecionarPorId(id);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registro = resultado.Value;
 
-        if (registro.Ativo)
-        {
-            ApresentarMensagemImpossivelExcluir();
+        if (AluguelAtivo(registro))
             return RedirectToAction(nameof(Listar));
-        }
 
         var detalhesRegistroVm = mapeador.Map<DetalhesAluguelViewModel>(registro);
 
         return View(detalhesRegistroVm);
     }
+
     [HttpPost]
     public IActionResult Excluir(DetalhesAluguelViewModel detalhesRegistroVm)
     {
@@ -157,7 +152,7 @@ public class AluguelController(
 
         var resultado = servicoAluguel.Excluir(detalhesRegistroVm.Id);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         ApresentarMensagemSucesso($"O registro \"{nome}\" foi excluído com sucesso!");
@@ -170,7 +165,7 @@ public class AluguelController(
     {
         var resultado = servicoAluguel.SelecionarPorId(id);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registro = resultado.Value;
@@ -189,7 +184,7 @@ public class AluguelController(
 
         servicoVeiculo.LiberarVeiculo(servicoAluguel.SelecionarPorId(devolverRegistroVm.Id).Value.VeiculoId);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var nome = servicoAluguel.SelecionarPorId(devolverRegistroVm.Id).Value;
@@ -204,7 +199,7 @@ public class AluguelController(
     {
         var resultado = servicoAluguel.SelecionarPorId(id);
 
-        if (ValidacaoDeFalha(resultado))
+        if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registro = resultado.Value;
@@ -274,6 +269,7 @@ public class AluguelController(
         editarRegistroVm.Categorias = Enum.GetNames(typeof(CategoriaDePlanoEnum)).Select(c => new SelectListItem(c, c));
         editarRegistroVm.Taxas = taxas;
         editarRegistroVm.Seguros = seguros;
+
         return editarRegistroVm;
     }
     private DetalhesAluguelViewModel? CarregarInformacoes(DetalhesAluguelViewModel detalhesRegistroVm)
@@ -330,7 +326,7 @@ public class AluguelController(
 
         return devolverRegistroVm;
     }
-    protected bool ValidacaoDeFalha(Result<Aluguel> resultado)
+    protected bool ValidarFalha(Result<Aluguel> resultado)
     {
         if (resultado.IsFailed)
         {
@@ -339,7 +335,7 @@ public class AluguelController(
         }
         return false;
     }
-    private bool ValidacaoSemDependencias()
+    private bool ValidacaoSemRegistros()
     {
         if (servicoCliente.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
         {
@@ -377,6 +373,24 @@ public class AluguelController(
             return true;
         }
 
+        return false;
+    }
+    private bool AluguelFinalizado(Aluguel registro)
+    {
+        if (!registro.Ativo)
+        {
+            ApresentarMensagemImpossivelEditar("Aluguel já finalizado");
+            return true;
+        }
+        return false;
+    }
+    private bool AluguelAtivo(Aluguel registro)
+    {
+        if (registro.Ativo)
+        {
+            ApresentarMensagemImpossivelExcluir("Aluguel ativo");
+            return true;
+        }
         return false;
     }
     #endregion

@@ -1,7 +1,8 @@
 ﻿using FluentResults;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
+using LocadoraDeVeiculos.Dominio.ModuloCondutor;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
-public class ClienteService(IRepositorioCliente repositorioCliente)
+public class ClienteService(IRepositorioCliente repositorioCliente, IRepositorioCondutor repositorioCondutor)
 {
     public Result<Cliente> Inserir(Cliente registro)
     {
@@ -66,5 +67,51 @@ public class ClienteService(IRepositorioCliente repositorioCliente)
             .Filtrar(f => f.Id != 0);
 
         return Result.Ok(registros);
+    }
+
+    public bool SemRegistros()
+        => repositorioCliente.SelecionarTodos().Count() == 0;
+
+    public bool ValidarRegistroRepetido(Cliente novoRegistro, out string itemRepetido)
+    {
+        var cpfsCondutores = repositorioCondutor.SelecionarTodos().Select(r => r.CPF);
+        var cnhCondutores = repositorioCondutor.SelecionarTodos().Select(r => r.CNH);
+        
+        var cpfsClientes = repositorioCliente.SelecionarTodos().FindAll(c => c.PessoaFisica).Select(c => c.Documento);
+        var cnhClientes = repositorioCliente.SelecionarTodos().FindAll(c => c.PessoaFisica).Select(c => c.CNH);
+
+        IEnumerable<string> cpfsExistentes = cpfsCondutores.Concat(cpfsClientes);
+        IEnumerable<string> cnhExistentes = cnhCondutores.Concat(cnhClientes);
+        var cnpjExistente = repositorioCliente.SelecionarTodos().FindAll(c => !c.PessoaFisica).Select(c => c.Documento);
+        var rgExistentes = repositorioCliente.SelecionarTodos().FindAll(c => c.PessoaFisica).Select(c => c.RG);
+
+        var registroAtual = novoRegistro.Id == 0 ? new() : repositorioCliente.SelecionarPorId(novoRegistro.Id);
+
+        if (novoRegistro.PessoaFisica)
+        {
+            if (cpfsExistentes.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual.Documento)
+            {
+                itemRepetido = "cpf";
+                return true;
+            }
+            if (cnhExistentes.Any(c => c == novoRegistro.CNH) && novoRegistro.CNH != registroAtual.CNH)
+            {
+                itemRepetido = "cnh";
+                return true;
+            }
+            if (rgExistentes.Any(c => c == novoRegistro.RG) && novoRegistro.RG != registroAtual.RG)
+            {
+                itemRepetido = "rg";
+                return true;
+            }
+        }
+        else if (cnpjExistente.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual.Documento)
+        {
+            itemRepetido = "cnpj";
+            return true;
+        }
+
+        itemRepetido = "";
+        return false;
     }
 }

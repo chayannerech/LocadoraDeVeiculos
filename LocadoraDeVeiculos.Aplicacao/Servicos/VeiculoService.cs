@@ -1,5 +1,6 @@
 ﻿using FluentResults;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
+using LocadoraDeVeiculos.Dominio.ModuloUsuario;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
@@ -113,5 +114,16 @@ public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositori
         veiculoSelecionado!.Alugado = false;
 
         repositorioVeiculos.Editar(veiculoSelecionado);
+    }
+
+    public bool VeiculoRelacionadoAoGrupo(GrupoDeAutomoveis registro) 
+        => repositorioVeiculos.SelecionarTodos().Any(c => c.GrupoDeAutomoveis.Id == registro.Id);
+
+    public bool ValidarRegistroRepetido(Veiculo novoRegistro)
+    {
+        var registrosExistentes = repositorioVeiculos.SelecionarTodos();
+        var registroAtual = novoRegistro.Id == 0 ? new() : repositorioVeiculos.SelecionarPorId(novoRegistro.Id);
+
+        return registrosExistentes.Exists(r => r.Placa == novoRegistro.Placa && r.Placa != registroAtual!.Placa);
     }
 }

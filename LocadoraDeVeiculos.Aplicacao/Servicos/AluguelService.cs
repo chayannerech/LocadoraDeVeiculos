@@ -5,12 +5,14 @@ using LocadoraDeVeiculos.Dominio.ModuloCondutor;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
+using LocadoraDeVeiculos.Dominio.ModuloUsuario;
+using LocadoraDeVeiculos.Dominio.ModuloTaxa;
+using System.Linq;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class AluguelService(
         IRepositorioAluguel repositorioAluguel, 
         IRepositorioCondutor repositorioCondutor, 
         IRepositorioCliente repositorioCliente,
-        IRepositorioPlanoDeCobranca repositorioPlano,
         IRepositorioGrupoDeAutomoveis repositorioGrupo,
         IRepositorioVeiculo repositorioVeiculo)
 {
@@ -136,4 +138,63 @@ public class AluguelService(
 
         return Result.Ok(registros);
     }
+
+    public void AtualizarVeiculoDoAluguel(Veiculo registro)
+    {
+        var alugueisRelacionados = repositorioAluguel.SelecionarTodos().FindAll(a => a.VeiculoId == registro.Id);
+
+        foreach (var aluguel in alugueisRelacionados)
+        {
+            aluguel.VeiculoPlaca = registro.Placa;
+            repositorioAluguel.Editar(aluguel);
+        }
+    }
+
+    public void AtualizarGrupoDoAluguel(GrupoDeAutomoveis registro)
+    {
+        var alugueisRelacionados = repositorioAluguel.SelecionarTodos().FindAll(a => a.GrupoId == registro.Id);
+
+        foreach (var aluguel in alugueisRelacionados)
+        {
+            aluguel.GrupoNome = registro.Nome;
+            repositorioAluguel.Editar(aluguel);
+        }
+    }
+
+    public void AtualizarClienteDoAluguel(Cliente registro)
+    {
+        var alugueisRelacionados = repositorioAluguel.SelecionarTodos().FindAll(a => a.ClienteId == registro.Id);
+
+        foreach (var aluguel in alugueisRelacionados)
+        {
+            aluguel.ClienteNome = registro.Nome;
+            repositorioAluguel.Editar(aluguel);
+        }
+    }
+
+    public void AtualizarCondutorDoAluguel(Condutor registro)
+    {
+        var alugueisRelacionados = repositorioAluguel.SelecionarTodos().FindAll(a => a.CondutorId == registro.Id);
+
+        foreach (var aluguel in alugueisRelacionados)
+        {
+            aluguel.CondutorNome = registro.Nome;
+            repositorioAluguel.Editar(aluguel);
+        }
+    }
+
+    public bool AluguelRelacionadoAtivo(Veiculo registro)
+        => repositorioAluguel.SelecionarTodos().FindAll(a => a.VeiculoId == registro.Id).Any(a => a.Ativo);
+
+    public bool AluguelRelacionadoAtivo(PlanoDeCobranca registro)
+    => repositorioAluguel.SelecionarTodos().FindAll(a => a.GrupoId == registro.GrupoDeAutomoveis.Id).Any(a => a.Ativo);
+
+    public bool AluguelRelacionadoAtivo(Cliente registro)
+    => repositorioAluguel.SelecionarTodos().FindAll(a => a.ClienteId == registro.Id).Any(a => a.Ativo);
+
+    public bool AluguelRelacionadoAtivo(Condutor registro)
+    => repositorioAluguel.SelecionarTodos().FindAll(a => a.CondutorId == registro.Id).Any(a => a.Ativo);
+
+    public bool AluguelRelacionadoAtivo(Taxa registro)
+        => repositorioAluguel.SelecionarTodos().FindAll(a => a.TaxasSelecionadasId.Split(',').Contains($"{registro.Id}")).Any(a => a.Ativo);
 }

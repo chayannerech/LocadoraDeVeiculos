@@ -51,7 +51,6 @@ public class CondutorService(IRepositorioCondutor repositorioCondutor, IReposito
         return Result.Ok(registro);
     }
 
-
     public Result Excluir(int registroId)
     {
         var registro = repositorioCondutor.SelecionarPorId(registroId);
@@ -85,5 +84,46 @@ public class CondutorService(IRepositorioCondutor repositorioCondutor, IReposito
             .Filtrar(f => f.Id != 0);
 
         return Result.Ok(registros);
+    }
+
+    public bool CondutorRelacionado(Cliente registro)
+        => repositorioCondutor.SelecionarTodos().Any(c => c.Cliente.Id == registro.Id);
+
+    public bool SemRegistros()
+        => repositorioCondutor.SelecionarTodos().Count == 0;
+
+    public bool ValidarRegistroRepetido(bool check, Condutor novoRegistro, out string itemRepetido)
+    {
+        var cpfsCondutores = repositorioCondutor.SelecionarTodos().Select(r => r.CPF);
+        var cnhCondutores = repositorioCondutor.SelecionarTodos().Select(r => r.CNH);
+
+        var cpfsClientes = repositorioCliente.SelecionarTodos().FindAll(c => c.PessoaFisica).Select(c => c.Documento);
+        var cnhClientes = repositorioCliente.SelecionarTodos().FindAll(c => c.PessoaFisica).Select(c => c.CNH);
+
+        IEnumerable<string> cpfsExistentes = cpfsCondutores;
+        IEnumerable<string> cnhExistentes = cnhCondutores;
+
+        if (!check)
+        {
+            cpfsExistentes = cpfsExistentes.Concat(cpfsClientes);
+            cnhExistentes = cnhCondutores.Concat(cnhClientes);
+        }
+
+        var registroAtual = novoRegistro.Id == 0 ? new() : repositorioCondutor.SelecionarPorId(novoRegistro.Id);
+
+        if (cpfsExistentes.Any(c => c.Equals(novoRegistro.CPF)) && novoRegistro.CPF != registroAtual.CPF)
+        {
+            itemRepetido = "cpf";
+            return true;
+        }
+
+        if (cnhExistentes.Any(c => c.Equals(novoRegistro.CNH)) && novoRegistro.CNH != registroAtual.CNH)
+        {
+            itemRepetido = "cnh";
+            return true;
+        }
+
+        itemRepetido = "";
+        return false;
     }
 }

@@ -60,15 +60,6 @@ public abstract class WebControllerBase : Controller
         });
     }
 
-    protected void ApresentarMensagemImpossivelExcluir()
-    {
-        TempData.SerializarMensagemViewModel(new MensagemViewModel
-        {
-            Titulo = "Aviso",
-            Mensagem = $"Não é possível excluir este registro"
-        });
-    }
-
     protected void ApresentarMensagemSemDependencias(string dependencia)
     {
         TempData.SerializarMensagemViewModel(new MensagemViewModel
@@ -78,12 +69,21 @@ public abstract class WebControllerBase : Controller
         });
     }
 
-    protected void ApresentarMensagemImpossivelEditar()
+    protected void ApresentarMensagemImpossivelEditar(string dependencia)
     {
         TempData.SerializarMensagemViewModel(new MensagemViewModel
         {
             Titulo = "Aviso",
-            Mensagem = $"Não é possível editar este registro"
+            Mensagem = $"Não é possível editar este registro. {dependencia}"
+        });
+    }
+
+    protected void ApresentarMensagemImpossivelExcluir(string dependencia)
+    {
+        TempData.SerializarMensagemViewModel(new MensagemViewModel
+        {
+            Titulo = "Aviso",
+            Mensagem = $"Não é possível excluir este registro. {dependencia}"
         });
     }
 

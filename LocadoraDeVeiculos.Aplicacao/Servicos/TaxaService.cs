@@ -1,5 +1,6 @@
 ﻿using FluentResults;
 using LocadoraDeVeiculos.Dominio.ModuloTaxa;
+using LocadoraDeVeiculos.Dominio.Compartilhado.Extensions;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class TaxaService(IRepositorioTaxa repositorioTaxa)
 {
@@ -59,5 +60,19 @@ public class TaxaService(IRepositorioTaxa repositorioTaxa)
             .Filtrar(f => f.Id != 0);
 
         return Result.Ok(registros);
+    }
+
+    public bool SemRegistros()
+        => repositorioTaxa.SelecionarTodos().Count == 0;
+
+    public bool ValidarRegistroRepetido(Taxa novoRegistro)
+    {
+        var registrosExistentes = repositorioTaxa.SelecionarTodos();
+
+        var registroAtual = novoRegistro.Id == 0 ? new() { Nome = "" } : repositorioTaxa.SelecionarPorId(novoRegistro.Id);
+
+        return registrosExistentes.Exists(r =>
+            r.Nome.Validation() == novoRegistro.Nome.Validation() &&
+            r.Nome.Validation() != registroAtual!.Nome.Validation());
     }
 }
