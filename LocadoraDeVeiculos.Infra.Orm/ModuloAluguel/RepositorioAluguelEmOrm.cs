@@ -11,16 +11,6 @@ public class RepositorioAluguelEmOrm : RepositorioBaseEmOrm<Aluguel>, IRepositor
     protected override DbSet<Aluguel> ObterRegistros() 
         => _dbContext.Alugueis;
 
-    public Aluguel? SelecionarPorId(int id)
-    {
-        return _dbContext.Alugueis
-            .FirstOrDefault(s => s.Id == id);
-    }
-
-    public List<Aluguel> SelecionarTodos()
-        => [.. _dbContext.Alugueis
-            .AsNoTracking()];
-
     public List<Aluguel> Filtrar(Func<Aluguel, bool> predicate)
         => ObterRegistros()
             .Where(predicate)

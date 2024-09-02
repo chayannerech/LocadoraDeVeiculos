@@ -29,15 +29,14 @@ public class MapeadorTaxaEmOrm : IEntityTypeConfiguration<Taxa>
             .IsRequired()
             .HasColumnType("bit");
 
+        tBuilder.Property(s => s.UsuarioId)
+            .IsRequired()
+            .HasColumnType("int")
+            .HasColumnName("Usuario_Id");
 
-        /*        tBuilder.Property(s => s.UsuarioId)
-                    .IsRequired()
-                    .HasColumnType("int")
-                    .HasColumnName("Usuario_Id");
-
-                tBuilder.HasOne(g => g.Usuario)
-                    .WithMany()
-                    .HasForeignKey(s => s.UsuarioId)
-                    .OnDelete(DeleteBehavior.NoAction);*/
+        tBuilder.HasOne(g => g.Usuario)
+            .WithMany()
+            .HasForeignKey(s => s.UsuarioId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

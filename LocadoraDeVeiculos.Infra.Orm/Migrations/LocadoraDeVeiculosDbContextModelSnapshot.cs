@@ -71,6 +71,10 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(10)");
 
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("Usuario_Id");
+
                     b.Property<decimal>("ValorTotal")
                         .HasColumnType("decimal(18,2)");
 
@@ -82,6 +86,8 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .HasColumnType("varchar(10)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("TBAluguel", (string)null);
                 });
@@ -140,7 +146,13 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(200)");
 
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("Usuario_Id");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("TBCliente", (string)null);
                 });
@@ -176,12 +188,18 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(200)");
 
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("Usuario_Id");
+
                     b.Property<DateTime>("ValidadeCNH")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Cliente_Id");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("TBCondutor", (string)null);
                 });
@@ -206,9 +224,46 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<decimal>("Gasolina")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("Usuario_Id");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("UsuarioId");
+
                     b.ToTable("TBConfiguracao", (string)null);
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloFuncionario.Funcionario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("Senha")
+                        .IsRequired()
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("Usuario_Id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("TBFuncionario", (string)null);
                 });
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis.GrupoDeAutomoveis", b =>
@@ -232,7 +287,13 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<decimal>("PrecoLivre")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("Usuario_Id");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("TBGrupoDeAutomoveis", (string)null);
                 });
@@ -266,9 +327,15 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<decimal>("PrecoLivre")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("Usuario_Id");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Grupo_Id");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("TBPlanoDeCobranca", (string)null);
                 });
@@ -294,7 +361,13 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<bool>("Seguro")
                         .HasColumnType("bit");
 
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("Usuario_Id");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("TBTaxa", (string)null);
                 });
@@ -445,9 +518,15 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int")
+                        .HasColumnName("Usuario_Id");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Grupo_Id");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("TBVeiculos", (string)null);
                 });
@@ -555,6 +634,28 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloAluguel.Aluguel", b =>
+                {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloUsuario.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloCliente.Cliente", b =>
+                {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloUsuario.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloCondutor.Condutor", b =>
                 {
                     b.HasOne("LocadoraDeVeiculos.Dominio.ModuloCliente.Cliente", "Cliente")
@@ -563,7 +664,48 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloUsuario.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Cliente");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloConfiguracao.Configuracao", b =>
+                {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloUsuario.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloFuncionario.Funcionario", b =>
+                {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloUsuario.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis.GrupoDeAutomoveis", b =>
+                {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloUsuario.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca.PlanoDeCobranca", b =>
@@ -574,7 +716,26 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloUsuario.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("GrupoDeAutomoveis");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloTaxa.Taxa", b =>
+                {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloUsuario.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloVeiculos.Veiculo", b =>
@@ -585,7 +746,15 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloUsuario.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("GrupoDeAutomoveis");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

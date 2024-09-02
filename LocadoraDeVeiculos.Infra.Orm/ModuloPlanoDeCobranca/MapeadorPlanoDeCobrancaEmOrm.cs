@@ -42,14 +42,14 @@ public class MapeadorPlanoDeCobrancaEmOrm : IEntityTypeConfiguration<PlanoDeCobr
             .IsRequired()
             .HasColumnType("decimal(18,2)");
 
-    /*        pBuilder.Property(s => s.UsuarioId)
-                .IsRequired()
-                .HasColumnType("int")
-                .HasColumnName("Usuario_Id");
+        pBuilder.Property(s => s.UsuarioId)
+            .IsRequired()
+            .HasColumnType("int")
+            .HasColumnName("Usuario_Id");
 
-            pBuilder.HasOne(g => g.Usuario)
-                .WithMany()
-                .HasForeignKey(s => s.UsuarioId)
-                .OnDelete(DeleteBehavior.NoAction);*/
+        pBuilder.HasOne(g => g.Usuario)
+            .WithMany()
+            .HasForeignKey(s => s.UsuarioId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

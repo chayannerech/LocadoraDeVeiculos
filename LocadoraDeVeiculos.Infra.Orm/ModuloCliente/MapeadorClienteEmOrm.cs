@@ -60,15 +60,14 @@ public class MapeadorClienteEmOrm : IEntityTypeConfiguration<Cliente>
             .IsRequired()
             .HasColumnType("bit");
 
+        cBuilder.Property(s => s.UsuarioId)
+            .IsRequired()
+            .HasColumnType("int")
+            .HasColumnName("Usuario_Id");
 
-        /*        cBuilder.Property(s => s.UsuarioId)
-                    .IsRequired()
-                    .HasColumnType("int")
-                    .HasColumnName("Usuario_Id");
-
-                cBuilder.HasOne(g => g.Usuario)
-                    .WithMany()
-                    .HasForeignKey(s => s.UsuarioId)
-                    .OnDelete(DeleteBehavior.NoAction);*/
+        cBuilder.HasOne(g => g.Usuario)
+            .WithMany()
+            .HasForeignKey(s => s.UsuarioId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

@@ -70,14 +70,14 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
         aBuilder.Property(a => a.TaxasSelecionadasId)
             .HasColumnType("varchar(10)");
 
-        /*        aBuilder.Property(s => s.UsuarioId)
-                    .IsRequired()
-                    .HasColumnType("int")
-                    .HasColumnName("Usuario_Id");
+        aBuilder.Property(s => s.UsuarioId)
+            .IsRequired()
+            .HasColumnType("int")
+            .HasColumnName("Usuario_Id");
 
-                aBuilder.HasOne(g => g.Usuario)
-                    .WithMany()
-                    .HasForeignKey(s => s.UsuarioId)
-                    .OnDelete(DeleteBehavior.NoAction);*/
+        aBuilder.HasOne(g => g.Usuario)
+            .WithMany()
+            .HasForeignKey(s => s.UsuarioId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

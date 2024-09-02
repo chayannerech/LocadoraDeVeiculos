@@ -38,7 +38,7 @@ public class RepositorioVeiculoEmOrm : RepositorioBaseEmOrm<Veiculo>, IRepositor
 
     public List<IGrouping<string, Veiculo>> ObterVeiculosAgrupadosPorGrupo(int usuarioId)
         => [.. _dbContext.Veiculos
-            //.Where(s => s.UsuarioId == usuarioId)
+            .Where(s => s.UsuarioId == usuarioId)
             .Include(s => s.GrupoDeAutomoveis)
             .GroupBy(s => s.GrupoDeAutomoveis.Nome)
             .AsNoTracking()];

@@ -1,4 +1,5 @@
-﻿namespace LocadoraDeVeiculos.Dominio.ModuloConfiguracao;
+﻿using LocadoraDeVeiculos.Dominio.ModuloUsuario;
+namespace LocadoraDeVeiculos.Dominio.ModuloConfiguracao;
 public class Configuracao()
 {
     public int Id { get; set; }
@@ -6,6 +7,9 @@ public class Configuracao()
     public decimal Etanol { get; set; }
     public decimal Diesel { get; set; }
     public decimal GNV { get; set; }
+    public int UsuarioId { get; set; }
+    public Usuario? Usuario { get; set; }
+
 
     public List<string> Validar()
     {

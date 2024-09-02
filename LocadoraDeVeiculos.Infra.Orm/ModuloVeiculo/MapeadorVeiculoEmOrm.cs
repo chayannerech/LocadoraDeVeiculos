@@ -58,14 +58,14 @@ public class MapeadorVeiculoEmOrm : IEntityTypeConfiguration<Veiculo>
             .IsRequired()
             .HasColumnType("bit");
 
-        /*        vBuilder.Property(s => s.UsuarioId)
-                    .IsRequired()
-                    .HasColumnType("int")
-                    .HasColumnName("Usuario_Id");
+        vBuilder.Property(s => s.UsuarioId)
+            .IsRequired()
+            .HasColumnType("int")
+            .HasColumnName("Usuario_Id");
 
-                vBuilder.HasOne(g => g.Usuario)
-                    .WithMany()
-                    .HasForeignKey(s => s.UsuarioId)
-                    .OnDelete(DeleteBehavior.NoAction);*/
+        vBuilder.HasOne(g => g.Usuario)
+            .WithMany()
+            .HasForeignKey(s => s.UsuarioId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

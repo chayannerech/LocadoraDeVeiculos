@@ -1,4 +1,5 @@
 ﻿@using LocadoraDeVeiculos.WebApp.Models
+
 @{
     ViewBag.Title = "Página Inicial";
 
@@ -8,43 +9,43 @@
 <div class="col">
     @if (User.IsInRole("Empresa"))
     {
-        <section class="row row-cols-lg-4 justify-content-start align-items-stretch gap-3 px-lg-2">
+        <section class="row row-cols-lg-5 justify-content-start align-items-stretch gap-3 px-lg-2">
 
             <!-- Veículos -->
-            <div title="Veículos" class="card px-0">
-                <img class="card-img-top" src="~/img/car-fleet.jpg" alt="Imagem de frota de veículos">
+            <div title="Veículos" class="card col-lg-3 col-xl-2 px-0">
+                <img class="card-img-top" src="~/img/viagem4.jpg" alt="Imagem de frota de veículos">
                 <div class="card-body">
                     <div class="d-flex align-items-center gap-2 text-primary">
-                        <i class="bi bi-car-front-fill"></i>
-                        <label class="fs-6 fw-semibold ">@ViewBag.QuantidadeVeiculos veículo(s) disponível(is)</label>
+                        <i class="mx-2 bi bi-car-front-fill"></i>
+                        <label class="fs-6 fw-semibold">@ViewBag.QuantidadeVeiculos veículo(s) disponível(is)</label>
                     </div>
 
-                    <label>Em <strong class="text-primary">@ViewBag.QuantidadeGrupos</strong> Grupo(s) de veículos</label>
+                    <p class="mt-4 mb-0" style="font-size:14px">Em <strong class="text-primary">@ViewBag.QuantidadeGrupos</strong> Grupo(s) de veículos</p>
                 </div>
                 <a href="/veiculo/listar" class="stretched-link"></a>
             </div>
 
             <!-- Planos de Aluguel -->
-            <div title="Planos" class="card px-0">
-                <img class="card-img-top " src="~/img/car-rental.jpg" alt="Imagem de aluguel de carro">
+            <div title="Planos" class="card col-lg-3 col-xl-2 px-0">
+                <img class="card-img-top " src="~/img/viagem2.jpg" alt="Imagem de aluguel de carro">
                 <div class="card-body">
-                    <div class="d-flex align-items-center gap-2 text-primary">
-                        <i class="bi bi-clipboard-data"></i>
-                        <label class="fs-6 fw-semibold ">@ViewBag.QuantidadePlanos plano(s) de aluguel</label>
+                    <div class="d-flex align-items-center text-primary">
+                        <i class="ms-2 me-0 bi bi-clipboard-data"></i>
+                        <label class="fs-6 text-center fw-semibold ">@ViewBag.QuantidadePlanos plano(s) de aluguel</label>
                     </div>
 
-                    <label>Disponíveis para <strong class="text-primary">@ViewBag.QuantidadeCategorias</strong> categorias de veículos</label>
+                    <p class="mt-2 mb-0 text-center" style="font-size:14px" >Disponíveis para <strong class="text-primary">@ViewBag.QuantidadeCategorias</strong> categorias de veículos</p>
                 </div>
                 <a href="/planoDeCobranca/listar" class="stretched-link"></a>
             </div>
 
             <!-- Taxas e Serviços -->
-            <div title="Taxas e Serviços" class="card px-0">
-                <img class="card-img-top" src="~/img/extra-services.jpg" alt="Imagem de serviços extras para aluguel de carro">
+            <div title="Taxas e Serviços" class="card col-lg-3 col-xl-2 px-0">
+                <img class="card-img-top" src="~/img/viagem3.jpg" alt="Imagem de serviços extras para aluguel de carro">
                 <div class="card-body">
-                    <div class="d-flex align-items-center gap-2 text-primary">
-                        <i class="bi bi-cash-coin"></i>
-                        <label class="fs-6 fw-semibold ">@ViewBag.QuantidadeTaxas taxa(s) e serviço(s)</label>
+                    <div class="d-flex align-items-center text-primary">
+                        <i class="ms-3 me-0 bi bi-cash-coin"></i>
+                        <label class="fs-6 fw-semibold text-center">@ViewBag.QuantidadeTaxas taxa(s) e serviço(s)</label>
                     </div>
                 </div>
                 <a href="/taxa/listar" class="stretched-link"></a>
@@ -54,7 +55,8 @@
 
     <section class="row my-3 my-xl-5">
         <div class="col-lg-6">
-            <img class="img-fluid" src="~/img/viagem5.jpg" alt="Imagem promocional de aluguel de carro" />
+            <img class="img-fluid" src="~/img/viagem1.jpg" alt="Imagem promocional de aluguel de carro" />
+            <p class="text-secondary" style="font-size: 10px">Imagem meramente ilustrativa. Não aconselhamos dirigir desta maneira</p>
         </div>
         <div class="col d-grid gap-1">
             <h2 class="display-6 fw-bold text-secondary">Seja bem-vindo à <br />Locadora de Veículos Afonso!</h2>
