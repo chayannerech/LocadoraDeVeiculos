@@ -44,7 +44,7 @@ public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAlugu
             return View(inserirRegistroVm);
         }
 
-        //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
+        novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
         var resultado = servicoTaxa.Inserir(novoRegistro);
 

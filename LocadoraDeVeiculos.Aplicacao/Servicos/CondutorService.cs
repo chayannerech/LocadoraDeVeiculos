@@ -56,7 +56,7 @@ public class CondutorService(IRepositorioCondutor repositorioCondutor, IReposito
         var registro = repositorioCondutor.SelecionarPorId(registroId);
 
         if (registro is null)
-            return Result.Fail("O cliente não foi encontrado!");
+            return Result.Fail("O condutor não foi encontrado!");
 
         repositorioCondutor.Excluir(registro);
 
@@ -68,20 +68,15 @@ public class CondutorService(IRepositorioCondutor repositorioCondutor, IReposito
         var registro = repositorioCondutor.SelecionarPorId(registroId);
 
         if (registro is null)
-            return Result.Fail("O cliente não foi encontrado!");
+            return Result.Fail("O condutor não foi encontrado!");
 
         return Result.Ok(registro);
     }
 
     public Result<List<Condutor>> SelecionarTodos(int usuarioId)
     {
-        /*        var registros = repositorioCondutor
-                    .Filtrar(f => f.UsuarioId == usuarioId);
-
-                return Result.Ok(registros);*/
-
         var registros = repositorioCondutor
-            .Filtrar(f => f.Id != 0);
+            .Filtrar(f => f.UsuarioId == usuarioId);
 
         return Result.Ok(registros);
     }
@@ -111,13 +106,13 @@ public class CondutorService(IRepositorioCondutor repositorioCondutor, IReposito
 
         var registroAtual = novoRegistro.Id == 0 ? new() : repositorioCondutor.SelecionarPorId(novoRegistro.Id);
 
-        if (cpfsExistentes.Any(c => c.Equals(novoRegistro.CPF)) && novoRegistro.CPF != registroAtual.CPF)
+        if (cpfsExistentes.Any(c => c.Equals(novoRegistro.CPF)) && novoRegistro.CPF != registroAtual!.CPF)
         {
             itemRepetido = "cpf";
             return true;
         }
 
-        if (cnhExistentes.Any(c => c.Equals(novoRegistro.CNH)) && novoRegistro.CNH != registroAtual.CNH)
+        if (cnhExistentes.Any(c => c.Equals(novoRegistro.CNH)) && novoRegistro.CNH != registroAtual!.CNH)
         {
             itemRepetido = "cnh";
             return true;

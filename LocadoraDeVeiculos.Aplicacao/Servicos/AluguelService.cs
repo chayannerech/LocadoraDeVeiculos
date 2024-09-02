@@ -5,9 +5,7 @@ using LocadoraDeVeiculos.Dominio.ModuloCondutor;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
-using LocadoraDeVeiculos.Dominio.ModuloUsuario;
 using LocadoraDeVeiculos.Dominio.ModuloTaxa;
-using System.Linq;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class AluguelService(
         IRepositorioAluguel repositorioAluguel, 
@@ -129,12 +127,8 @@ public class AluguelService(
 
     public Result<List<Aluguel>> SelecionarTodos(int usuarioId)
     {
-        /*        var registros = repositorioAluguel
-                    .Filtrar(f => f.UsuarioId == usuarioId);
-
-                return Result.Ok(registros);*/
-
-        var registros = repositorioAluguel.SelecionarTodos();
+        var registros = repositorioAluguel
+            .Filtrar(f => f.UsuarioId == usuarioId);
 
         return Result.Ok(registros);
     }

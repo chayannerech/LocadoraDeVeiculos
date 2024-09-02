@@ -16,7 +16,7 @@ public class ClienteService(IRepositorioCliente repositorioCliente, IRepositorio
         var registro = repositorioCliente.SelecionarPorId(registroAtualizado.Id);
 
         if (registro is null)
-            return Result.Fail("A taxa ou serviço não foi encontrada!");
+            return Result.Fail("O cliente não foi encontrado!");
 
         registro.Nome = registroAtualizado.Nome;
         registro.Email = registroAtualizado.Email;
@@ -58,19 +58,14 @@ public class ClienteService(IRepositorioCliente repositorioCliente, IRepositorio
 
     public Result<List<Cliente>> SelecionarTodos(int usuarioId)
     {
-        /*        var registros = repositorioCliente
-                    .Filtrar(f => f.UsuarioId == usuarioId);
-
-                return Result.Ok(registros);*/
-
         var registros = repositorioCliente
-            .Filtrar(f => f.Id != 0);
+            .Filtrar(f => f.UsuarioId == usuarioId);
 
         return Result.Ok(registros);
     }
 
     public bool SemRegistros()
-        => repositorioCliente.SelecionarTodos().Count() == 0;
+        => repositorioCliente.SelecionarTodos().Count == 0;
 
     public bool ValidarRegistroRepetido(Cliente novoRegistro, out string itemRepetido)
     {
@@ -87,31 +82,26 @@ public class ClienteService(IRepositorioCliente repositorioCliente, IRepositorio
 
         var registroAtual = novoRegistro.Id == 0 ? new() : repositorioCliente.SelecionarPorId(novoRegistro.Id);
 
+        itemRepetido = "";
+
         if (novoRegistro.PessoaFisica)
         {
-            if (cpfsExistentes.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual.Documento)
-            {
+            if (cpfsExistentes.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual!.Documento)
                 itemRepetido = "cpf";
-                return true;
-            }
-            if (cnhExistentes.Any(c => c == novoRegistro.CNH) && novoRegistro.CNH != registroAtual.CNH)
-            {
+
+            if (cnhExistentes.Any(c => c == novoRegistro.CNH) && novoRegistro.CNH != registroAtual!.CNH)
                 itemRepetido = "cnh";
-                return true;
-            }
-            if (rgExistentes.Any(c => c == novoRegistro.RG) && novoRegistro.RG != registroAtual.RG)
-            {
+
+            if (rgExistentes.Any(c => c == novoRegistro.RG) && novoRegistro.RG != registroAtual!.RG)
                 itemRepetido = "rg";
-                return true;
-            }
+
+            return true;
         }
-        else if (cnpjExistente.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual.Documento)
+        else if (cnpjExistente.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual!.Documento)
         {
             itemRepetido = "cnpj";
             return true;
         }
-
-        itemRepetido = "";
         return false;
     }
 }

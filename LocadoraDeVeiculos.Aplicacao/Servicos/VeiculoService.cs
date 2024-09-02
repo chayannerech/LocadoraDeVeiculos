@@ -2,7 +2,6 @@
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloUsuario;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
-
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositorioGrupoDeAutomoveis repositorioGrupo)
 {
@@ -81,13 +80,8 @@ public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositori
 
     public Result<List<Veiculo>> SelecionarTodos(int usuarioId)
     {
-        /*        var registros = repositorioVeiculos
-                    .Filtrar(f => f.UsuarioId == usuarioId);
-
-                return Result.Ok(registros);*/
-
         var registros = repositorioVeiculos
-            .SelecionarTodos();
+            .Filtrar(f => f.UsuarioId == usuarioId);
 
         return Result.Ok(registros);
     }
@@ -126,4 +120,7 @@ public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositori
 
         return registrosExistentes.Exists(r => r.Placa == novoRegistro.Placa && r.Placa != registroAtual!.Placa);
     }
+
+    public bool SemRegistros()
+        => repositorioVeiculos.SelecionarTodos().Count == 0;
 }

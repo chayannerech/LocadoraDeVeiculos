@@ -49,7 +49,7 @@ public class AluguelController(
 
     public IActionResult Inserir()
     {
-        if (ValidacaoSemRegistros())
+        if (SemDependencias())
             return RedirectToAction(nameof(Listar));
 
         return View(CarregarInformacoes(new InserirAluguelViewModel()));
@@ -67,7 +67,7 @@ public class AluguelController(
 
         var novoRegistro = mapeador.Map<Aluguel>(inserirRegistroVm);
 
-        //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
+        novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
         var resultado = servicoAluguel.Inserir(novoRegistro, inserirRegistroVm.CondutorId, inserirRegistroVm.ClienteId, inserirRegistroVm.GrupoId, inserirRegistroVm.VeiculoId);
 
@@ -335,46 +335,6 @@ public class AluguelController(
         }
         return false;
     }
-    private bool ValidacaoSemRegistros()
-    {
-        if (servicoCliente.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
-        {
-            ApresentarMensagemSemDependencias("Clientes");
-            return true;
-        }
-
-        if (servicoCondutor.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
-        {
-            ApresentarMensagemSemDependencias("Condutores");
-            return true;
-        }
-
-        if (servicoGrupo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
-        {
-            ApresentarMensagemSemDependencias("Grupos de Automóveis");
-            return true;
-        }
-
-        if (servicoVeiculo.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
-        {
-            ApresentarMensagemSemDependencias("Veículos");
-            return true;
-        }
-
-        if (servicoPlano.SelecionarTodos(UsuarioId.GetValueOrDefault()).Value.Count == 0)
-        {
-            ApresentarMensagemSemDependencias("Planos de Aluguel");
-            return true;
-        }
-
-        if (servicoConfiguracao.Selecionar().GNV == 0)
-        {
-            ApresentarMensagemSemDependencias("Preços dos Combustíveis");
-            return true;
-        }
-
-        return false;
-    }
     private bool AluguelFinalizado(Aluguel registro)
     {
         if (!registro.Ativo)
@@ -389,6 +349,32 @@ public class AluguelController(
         if (registro.Ativo)
         {
             ApresentarMensagemImpossivelExcluir("Aluguel ativo");
+            return true;
+        }
+        return false;
+    }
+    private bool SemDependencias()
+    {
+        if (servicoCliente.SemRegistros() || servicoCondutor.SemRegistros() || servicoGrupo.SemRegistros() || servicoVeiculo.SemRegistros() || servicoPlano.SemRegistros() || servicoConfiguracao.SemRegistros())
+        {
+            if (servicoCliente.SemRegistros())
+                ApresentarMensagemSemDependencias("Clientes");
+
+            if (servicoCondutor.SemRegistros())
+                ApresentarMensagemSemDependencias("Condutores");
+
+            if (servicoGrupo.SemRegistros())
+                ApresentarMensagemSemDependencias("Grupos de Automóveis");
+
+            if (servicoVeiculo.SemRegistros())
+                ApresentarMensagemSemDependencias("Veículos");
+
+            if (servicoPlano.SemRegistros())
+                ApresentarMensagemSemDependencias("Planos de Aluguel");
+
+            if (servicoConfiguracao.SemRegistros())
+                ApresentarMensagemSemDependencias("Preços dos Combustíveis");
+
             return true;
         }
         return false;

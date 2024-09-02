@@ -22,21 +22,21 @@ public class UsuarioController(UserManager<Usuario> userManager, SignInManager<U
 
         var resultadoCriacaoUsuario = await userManager.CreateAsync(usuario, registrarVm.Senha!);
 
-        var resultadoCriacaoTipoUsuario = await roleManager.FindByNameAsync(registrarVm.Tipo!);
+        var resultadoCriacaoTipoUsuario = await roleManager.FindByNameAsync("Empresa");
 
         if (resultadoCriacaoTipoUsuario is null)
         {
             var cargo = new Perfil()
             {
-                Name = registrarVm.Tipo,
-                NormalizedName = registrarVm.Tipo!.ToUpper(),
+                Name = "Empresa",
+                NormalizedName ="EMPRESA",
                 ConcurrencyStamp = Guid.NewGuid().ToString()
             };
 
             await roleManager.CreateAsync(cargo);
         }
 
-        await userManager.AddToRoleAsync(usuario, registrarVm.Tipo!);
+        await userManager.AddToRoleAsync(usuario, "Empresa");
 
         if (resultadoCriacaoUsuario.Succeeded)
         {
@@ -87,5 +87,6 @@ public class UsuarioController(UserManager<Usuario> userManager, SignInManager<U
         await signInManager.SignOutAsync();
         return RedirectToAction(nameof(Login));
     }
+
     public IActionResult AcessoNegado() => View();
 }

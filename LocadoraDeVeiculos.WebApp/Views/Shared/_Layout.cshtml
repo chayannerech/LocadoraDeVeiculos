@@ -95,31 +95,40 @@
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1 justify-content-end">
-                        <li class="nav-item">
-                            <a class="nav-link @clienteAtivo" asp-controller="Cliente" asp-action="Listar">Cliente</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @condutorAtivo" asp-controller="Condutor" asp-action="Listar">Condutor</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @grupoAtivo" asp-controller="GrupoDeAutomoveis" asp-action="Listar">Grupo</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @veiculoAtivo" asp-controller="Veiculo" asp-action="Listar">Veículo</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @planoAtivo" asp-controller="PlanoDeCobranca" asp-action="Listar">Plano</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @taxaAtivo" asp-controller="Taxa" asp-action="Listar">Taxa</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @aluguelAtivo" asp-controller="Aluguel" asp-action="Listar">Aluguel</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @configAtivo" asp-controller="Configuracao" asp-action="Detalhes">
-                                <i class="bi bi-gear"></i>
+                        @if (User.IsInRole("Empresa"))
+                        {
+                            <a class="nav-link @clienteAtivo" asp-controller="Funcionario" asp-action="Listar">Funcionário</a>
+                        }
+                        <a class="nav-link @clienteAtivo" asp-controller="Cliente" asp-action="Listar">Cliente</a>
+                        <a class="nav-link @condutorAtivo" asp-controller="Condutor" asp-action="Listar">Condutor</a>
+                        <a class="nav-link @condutorAtivo" asp-controller="Condutor" asp-action="Listar">Condutor</a>
+                        <a class="nav-link @grupoAtivo" asp-controller="GrupoDeAutomoveis" asp-action="Listar">Grupo</a>
+                        <a class="nav-link @veiculoAtivo" asp-controller="Veiculo" asp-action="Listar">Veículo</a>
+                        <a class="nav-link @planoAtivo" asp-controller="PlanoDeCobranca" asp-action="Listar">Plano</a>
+                        <a class="nav-link @taxaAtivo" asp-controller="Taxa" asp-action="Listar">Taxa</a>
+                        <a class="nav-link @aluguelAtivo" asp-controller="Aluguel" asp-action="Listar">Aluguel</a>
+                        <a class="nav-link @configAtivo" asp-controller="Configuracao" asp-action="Detalhes"><i class="bi bi-gear"></i></a>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle"></i> @User.Identity!.Name
                             </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <form asp-controller="Usuario" asp-action="Logout">
+                                        <button class="dropdown-item text-center">
+                                            <i class="bi bi-box-arrow-right"></i>
+                                            Desconectar
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <li><a class="dropdown-item text-center text-secondary" asp-controller="Usuario" asp-action="Login">Login</a></li>
+                                    <li><a class="dropdown-item text-center text-secondary" asp-controller="Usuario" asp-action="Registrar">Registrar</a></li>
+                                }
+                            </ul>
                         </li>
                     </ul>
                 </div>

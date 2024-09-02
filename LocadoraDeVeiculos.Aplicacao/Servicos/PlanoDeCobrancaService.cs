@@ -79,13 +79,8 @@ public class PlanoDeCobrancaService(IRepositorioPlanoDeCobranca repositorioPlano
 
     public Result<List<PlanoDeCobranca>> SelecionarTodos(int usuarioId)
     {
-        /*        var registros = repositorioPlano
-                    .Filtrar(f => f.UsuarioId == usuarioId);
-
-                return Result.Ok(registros);*/
-
         var registros = repositorioPlano
-            .SelecionarTodos();
+            .Filtrar(f => f.UsuarioId == usuarioId);
 
         return Result.Ok(registros);
     }

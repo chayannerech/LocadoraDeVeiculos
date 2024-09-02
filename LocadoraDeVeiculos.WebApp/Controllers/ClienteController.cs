@@ -53,7 +53,7 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
             return View(CarregarInformacoes(inserirRegistroVm));
         }
 
-        //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
+        novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
         var resultado = servicoCliente.Inserir(novoRegistro);
 

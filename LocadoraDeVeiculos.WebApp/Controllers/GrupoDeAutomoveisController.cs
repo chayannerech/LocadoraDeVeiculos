@@ -44,7 +44,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
             return View(inserirRegistroVm);
         }
 
-        //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
+        novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
         var resultado = servicoGrupo.Inserir(novoRegistro);
 

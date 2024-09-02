@@ -51,13 +51,8 @@ public class TaxaService(IRepositorioTaxa repositorioTaxa)
 
     public Result<List<Taxa>> SelecionarTodos(int usuarioId)
     {
-        /*        var registros = repositorioTaxa
-                    .Filtrar(f => f.UsuarioId == usuarioId);
-
-                return Result.Ok(registros);*/
-
         var registros = repositorioTaxa
-            .Filtrar(f => f.Id != 0);
+            .Filtrar(f => f.UsuarioId == usuarioId);
 
         return Result.Ok(registros);
     }

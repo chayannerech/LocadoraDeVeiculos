@@ -60,7 +60,7 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
             return View(CarregarInformacoes(inserirRegistroVm));
         }
 
-        //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
+        novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
         var resultado = servicoVeiculo.Inserir(novoRegistro, inserirRegistroVm.GrupoId);
 

@@ -27,7 +27,7 @@
 
             <!-- Planos de Aluguel -->
             <div title="Planos" class="card col-lg-3 col-xl-2 px-0">
-                <img class="card-img-top " src="~/img/viagem2.jpg" alt="Imagem de aluguel de carro">
+                <img class="card-img-top " src="~/img/viagem5.jpg" alt="Imagem de aluguel de carro">
                 <div class="card-body">
                     <div class="d-flex align-items-center text-primary">
                         <i class="ms-2 me-0 bi bi-clipboard-data"></i>
@@ -54,10 +54,12 @@
     }
 
     <section class="row my-3 my-xl-5">
-        <div class="col-lg-6">
+        <!-- Imagem -->
+        <div class="col-lg-6 mb-5">
             <img class="img-fluid" src="~/img/viagem1.jpg" alt="Imagem promocional de aluguel de carro" />
             <p class="text-secondary" style="font-size: 10px">Imagem meramente ilustrativa. Não aconselhamos dirigir desta maneira</p>
         </div>
+        <!-- Texto e login -->
         <div class="col d-grid gap-1">
             <h2 class="display-6 fw-bold text-secondary">Seja bem-vindo à <br />Locadora de Veículos Afonso!</h2>
 
@@ -74,22 +76,20 @@
                 </div>
             }
         </div>
-
     </section>
 
     @if (User.Identity is not null && User.Identity.IsAuthenticated)
     {
-        <!-- Veículos Disponíveis -->
         <section class="px-lg-2">
             @if (!agrupamentosVm.Any())
             {
-                <h3 class="text-bg-primary fs-3 fw-semibold p-3 rounded-3">
-                    Nenhum veículo disponível no momento.
+                <h3 class="text-bg-secondary fs-5 p-2 text-center rounded-3">
+                    Nenhum veículo disponível no momento
                 </h3>
             }
             else
             {
-                <h3 class="display-4 text-primary fw-semibold">Veículos Disponíveis</h3>
+                <h3 class="display-5 text-black-50 fw-semibold">Veículos Disponíveis</h3>
                 <hr />
 
                 <partial name="../Veiculo/_Agrupar" model="agrupamentosVm"></partial>
@@ -97,11 +97,11 @@
         </section>
 
         <section class="card text-light mt-5 mb-3 d-none d-lg-block">
-            <img src="~/img/car-rental-promo.jpg" alt="Promoção de aluguel de carros" class="card-img">
+            <img src="~/img/viagem6.jpg" alt="Promoção de aluguel de carros" class="card-img">
             <div class="card-img-overlay px-2 px-lg-5">
-                <h3 class="display-2 fw-bolder mt-5">Novidades e Promoções!</h3>
+                <h3 class="display-5 fw-bolder mt-5">Novidades e Promoções!</h3>
 
-                <p class="fs-2 fw-bold mt-5">
+                <p class="fs-3 fw-bold mt-5">
                     Em breve, lançaremos novos planos de fidelidade para clientes frequentes e descontos especiais em aluguéis de longa duração. Fique de olho!
                 </p>
             </div>

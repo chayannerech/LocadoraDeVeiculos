@@ -1,17 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 namespace LocadoraDeVeiculos.WebApp.Models;
-
 public class RegistrarViewModel
 {
-    public RegistrarViewModel()
-    {
-        Tipos = [
-            new SelectListItem { Value = "Empresa", Text = "Empresa" },
-            new SelectListItem { Value = "Cliente", Text = "Cliente" }
-        ];
-    }
-
     [Required]
     public string? Usuario { get; set; }
 
@@ -30,14 +21,6 @@ public class RegistrarViewModel
     [DataType(DataType.Password)]
     [Compare("Senha", ErrorMessage = "As senhas não conferem")]
     public string? ConfirmarSenha { get; set; }
-
-
-    [Required]
-    public string? Tipo { get; set; }
-
-
-    [Required]
-    public IEnumerable<SelectListItem> Tipos { get; set; }
 }
 
 public class LoginViewModel

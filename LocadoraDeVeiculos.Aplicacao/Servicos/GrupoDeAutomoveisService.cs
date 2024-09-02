@@ -2,7 +2,6 @@
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.Dominio.Compartilhado.Extensions;
-
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioGrupo)
 {
@@ -51,13 +50,8 @@ public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioG
 
     public Result<List<GrupoDeAutomoveis>> SelecionarTodos(int usuarioId)
     {
-        /*        var registros = repositorioGrupo
-                    .Filtrar(f => f.UsuarioId == usuarioId);
-
-                return Result.Ok(registros);*/
-
         var registros = repositorioGrupo
-            .Filtrar(f => f.Id != 0);
+            .Filtrar(f => f.UsuarioId == usuarioId);
 
         return Result.Ok(registros);
     }
@@ -95,5 +89,5 @@ public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioG
     }
 
     public bool SemRegistros()
-    => repositorioGrupo.SelecionarTodos().Count == 0;
+        => repositorioGrupo.SelecionarTodos().Count == 0;
 }

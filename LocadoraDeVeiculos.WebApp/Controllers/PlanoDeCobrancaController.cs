@@ -8,7 +8,6 @@ using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-
 namespace LocadoraDePlanoDeCobranca.WebApp.Controllers;
 public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, GrupoDeAutomoveisService servicoGrupo, AluguelService servicoAluguel, IMapper mapeador) : WebControllerBase
 {
@@ -56,7 +55,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, Grup
             return View(CarregarInformacoes(inserirRegistroVm));
         }
 
-        //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
+        novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
         var resultado = servicoPlano.Inserir(novoRegistro, inserirRegistroVm.GrupoId);
 

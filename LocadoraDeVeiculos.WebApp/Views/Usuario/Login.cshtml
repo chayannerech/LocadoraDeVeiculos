@@ -14,11 +14,13 @@
                 <input asp-for="Usuario" class="form-control" />
                 <span asp-validation-for="Usuario" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Senha"></label>
                 <input asp-for="Senha" class="form-control" />
                 <span asp-validation-for="Senha" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <div class="checkbox">
                     <label asp-for="LembrarMe">
@@ -27,7 +29,15 @@
                     </label>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary mt-2">Login</button>
+
+            <div class="d-flex justify-content-center gap-3 mt-3">
+                <button type="submit" class="btn btn-secondary px-5" style="width: 170px">Login</button>
+
+                <a class="btn btn-outline-secondary" style="width: 170px" href="/">
+                    <i class="bi bi-arrow-return-left me-1"></i>
+                    Voltar
+                </a>
+            </div>
         </form>
     </div>
 </div>

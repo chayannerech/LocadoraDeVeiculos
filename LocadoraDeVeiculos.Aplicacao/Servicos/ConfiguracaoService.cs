@@ -27,4 +27,7 @@ public class ConfiguracaoService(IRepositorioConfiguracao repositorioConfiguraca
     }
     public Configuracao Selecionar()
         => repositorioConfiguracao.Selecionar();
+
+    public bool SemRegistros()
+        => repositorioConfiguracao.Selecionar().GNV == 0;
 }

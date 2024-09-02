@@ -3,10 +3,8 @@ using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloConfiguracao;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
-using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Win32;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 public class ConfiguracaoController(ConfiguracaoService servicoConfiguracao, IMapper mapeador) : WebControllerBase
 {
@@ -19,7 +17,7 @@ public class ConfiguracaoController(ConfiguracaoService servicoConfiguracao, IMa
 
         var novoRegistro = mapeador.Map<Configuracao>(inserirRegistroVm);
 
-        //novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
+        novoRegistro.UsuarioId = UsuarioId.GetValueOrDefault();
 
         var resultado = servicoConfiguracao.Inserir(novoRegistro);
 
