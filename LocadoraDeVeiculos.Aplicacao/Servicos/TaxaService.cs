@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using LocadoraDeVeiculos.Dominio.ModuloTaxa;
 using LocadoraDeVeiculos.Dominio.Compartilhado.Extensions;
+using Microsoft.Win32;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class TaxaService(IRepositorioTaxa repositorioTaxa)
 {
@@ -56,6 +57,9 @@ public class TaxaService(IRepositorioTaxa repositorioTaxa)
 
         return Result.Ok(registros);
     }
+
+    public Result<List<Taxa>> SelecionarTodos()
+        => Result.Ok(repositorioTaxa.SelecionarTodos());
 
     public bool SemRegistros()
         => repositorioTaxa.SelecionarTodos().Count == 0;

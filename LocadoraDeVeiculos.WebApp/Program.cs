@@ -32,7 +32,6 @@ public class Program
         #region Injecao de Dependencia de Servico
         builder.Services.AddDbContext<LocadoraDeVeiculosDbContext>();
 
-
         builder.Services.AddScoped<IRepositorioGrupoDeAutomoveis, RepositorioGrupoDeAutomoveisEmOrm>();
         builder.Services.AddScoped<IRepositorioVeiculo, RepositorioVeiculoEmOrm>();
         builder.Services.AddScoped<IRepositorioPlanoDeCobranca, RepositorioPlanoDeCobrancaEmOrm>();
@@ -42,7 +41,6 @@ public class Program
         builder.Services.AddScoped<IRepositorioConfiguracao, RepositorioConfiguracaoEmOrm>();
         builder.Services.AddScoped<IRepositorioAluguel, RepositorioAluguelEmOrm>();
 
-
         builder.Services.AddScoped<GrupoDeAutomoveisService>();
         builder.Services.AddScoped<VeiculoService>();
         builder.Services.AddScoped<PlanoDeCobrancaService>();
@@ -51,7 +49,6 @@ public class Program
         builder.Services.AddScoped<CondutorService>();
         builder.Services.AddScoped<ConfiguracaoService>();
         builder.Services.AddScoped<AluguelService>();
-
 
         builder.Services.AddAutoMapper( cfg => { cfg.AddMaps(Assembly.GetExecutingAssembly()); });
 

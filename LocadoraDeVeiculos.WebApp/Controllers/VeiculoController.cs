@@ -8,6 +8,7 @@ using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Win32;
@@ -17,6 +18,9 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
     public IActionResult Listar()
     {
         var resultado = servicoVeiculo.ObterVeiculosAgrupadosPorGrupo(UsuarioId.GetValueOrDefault());
+
+        if (!User.Identity!.IsAuthenticated)
+            resultado = servicoVeiculo.ObterVeiculosAgrupadosPorGrupo();
 
         if (ValidarFalhaLista(resultado))
             return RedirectToAction(nameof(Listar));
@@ -36,6 +40,7 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
     }
 
 
+    [Authorize(Roles = "Empresa, Funcionário")]
     public IActionResult Inserir()
     {
         if (servicoGrupo.SemRegistros())
@@ -73,6 +78,7 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
     }
 
 
+    [Authorize(Roles = "Empresa, Funcionário")]
     public IActionResult Editar(int id)
     {
         var resultado = servicoVeiculo.SelecionarPorId(id);
@@ -122,6 +128,8 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
         return RedirectToAction(nameof(Listar));
     }
 
+
+    [Authorize(Roles = "Empresa, Funcionário")]
     public IActionResult Excluir(int id)
     {
         var resultado = servicoVeiculo.SelecionarPorId(id);

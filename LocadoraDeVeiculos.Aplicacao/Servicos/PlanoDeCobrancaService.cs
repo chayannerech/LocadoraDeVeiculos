@@ -3,6 +3,7 @@ using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloUsuario;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
+using Microsoft.Win32;
 
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class PlanoDeCobrancaService(IRepositorioPlanoDeCobranca repositorioPlano, IRepositorioGrupoDeAutomoveis repositorioGrupo)
@@ -84,6 +85,9 @@ public class PlanoDeCobrancaService(IRepositorioPlanoDeCobranca repositorioPlano
 
         return Result.Ok(registros);
     }
+
+    public Result<List<PlanoDeCobranca>> SelecionarTodos()
+        => Result.Ok(repositorioPlano.SelecionarTodos());
 
     public Result<PlanoDeCobranca> SelecionarPorGrupoId(int grupoId)
     {

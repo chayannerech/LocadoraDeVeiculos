@@ -78,33 +78,29 @@
         </div>
     </section>
 
-    @if (User.Identity is not null && User.Identity.IsAuthenticated)
-    {
-        <section class="px-lg-2">
-            @if (!agrupamentosVm.Any())
-            {
-                <h3 class="text-bg-secondary fs-5 p-2 text-center rounded-3">
-                    Nenhum veículo disponível no momento
-                </h3>
-            }
-            else
-            {
-                <h3 class="display-5 text-black-50 fw-semibold">Veículos Disponíveis</h3>
-                <hr />
+    <section class="px-lg-2">
+        @if (!agrupamentosVm.Any())
+        {
+            <h3 class="text-bg-secondary fs-5 p-2 text-center rounded-3">
+                Nenhum veículo disponível no momento
+            </h3>
+        }
+        else
+        {
+            <h3 class="display-5 text-black-50 fw-semibold">Veículos Disponíveis</h3>
+            <hr />
 
-                <partial name="../Veiculo/_Agrupar" model="agrupamentosVm"></partial>
-            }
-        </section>
+            <partial name="../Veiculo/_Agrupar" model="agrupamentosVm"></partial>
+        }
+    </section>
+    <section class="card text-light mt-5 mb-3 d-none d-lg-block">
+        <img src="~/img/viagem6.jpg" alt="Promoção de aluguel de carros" class="card-img">
+        <div class="card-img-overlay px-2 px-lg-5">
+            <h3 class="display-5 fw-bolder mt-5">Novidades e Promoções!</h3>
 
-        <section class="card text-light mt-5 mb-3 d-none d-lg-block">
-            <img src="~/img/viagem6.jpg" alt="Promoção de aluguel de carros" class="card-img">
-            <div class="card-img-overlay px-2 px-lg-5">
-                <h3 class="display-5 fw-bolder mt-5">Novidades e Promoções!</h3>
-
-                <p class="fs-3 fw-bold mt-5">
-                    Em breve, lançaremos novos planos de fidelidade para clientes frequentes e descontos especiais em aluguéis de longa duração. Fique de olho!
-                </p>
-            </div>
-        </section>
-    }
+            <p class="fs-3 fw-bold mt-5">
+                Em breve, lançaremos novos planos de fidelidade para clientes frequentes e descontos especiais em aluguéis de longa duração. Fique de olho!
+            </p>
+        </div>
+    </section>
 </div>

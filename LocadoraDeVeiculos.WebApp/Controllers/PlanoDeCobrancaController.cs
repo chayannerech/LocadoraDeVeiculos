@@ -6,6 +6,7 @@ using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDePlanoDeCobranca.WebApp.Controllers;
@@ -14,6 +15,9 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, Grup
     public IActionResult Listar()
     {
         var resultado = servicoPlano.SelecionarTodos(UsuarioId.GetValueOrDefault());
+
+        if (!User.Identity!.IsAuthenticated)
+            resultado = servicoPlano.SelecionarTodos();
 
         if (ValidarFalhaLista(resultado))
             return RedirectToAction(nameof(Listar));
@@ -32,6 +36,8 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, Grup
         return View(listarRegistrosVm);
     }
 
+
+    [Authorize(Roles = "Empresa, Funcionário")]
     public IActionResult Inserir()
     {
         if (servicoGrupo.SemRegistros())
@@ -70,6 +76,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, Grup
     }
 
 
+    [Authorize(Roles = "Empresa, Funcionário")]
     public IActionResult Editar(int id)
     {
         var resultado = servicoPlano.SelecionarPorId(id);
@@ -118,6 +125,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, Grup
     }
 
 
+    [Authorize(Roles = "Empresa, Funcionário")]
     public IActionResult Excluir(int id)
     {
         var resultado = servicoPlano.SelecionarPorId(id);

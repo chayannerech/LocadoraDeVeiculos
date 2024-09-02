@@ -25,17 +25,20 @@
                             href="/Taxa/detalhes/@TaxaVm.Id">
                             <i class="bi bi-search"></i>
                         </a>
-                        <a
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            <a
                             title="Editar"
                             class="text-secondary fs-6"
                             href="/Taxa/editar/@TaxaVm.Id">
-                            <i class="bi bi-pencil-fill"></i>
-                        </a>
-                        <a
+                                <i class="bi bi-pencil-fill"></i>
+                            </a>
+                            <a
                             title="Excluir"
                             class="text-danger fs-6" href="/Taxa/excluir/@TaxaVm.Id">
-                            <i class="bi bi-trash-fill"></i>
-                        </a>
+                                <i class="bi bi-trash-fill"></i>
+                            </a>
+                        }
                     </div>
                 </div>
                 <div class="card-body d-grid">

@@ -7,9 +7,12 @@ using LocadoraDeVeiculos.Dominio.ModuloTaxa;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDeAluguel.WebApp.Controllers;
+
+[Authorize(Roles = "Empresa, Funcionário")]
 public class AluguelController(
         AluguelService servicoAluguel,
         CondutorService servicoCondutor,

@@ -25,12 +25,15 @@
                             <a title="Detalhes" class="text-secondary fs-6" href="/Veiculo/detalhes/@VeiculosVm.Id">
                                 <i class="bi bi-search"></i>
                             </a>
-                            <a title="Editar" class="text-secondary fs-6" href="/Veiculo/editar/@VeiculosVm.Id">
-                                <i class="bi bi-pencil-fill"></i>
-                            </a>
-                            <a title="Excluir" class="text-danger fs-6" href="/Veiculo/excluir/@VeiculosVm.Id">
-                                <i class="bi bi-trash-fill"></i>
-                            </a>
+                            @if (User.Identity!.IsAuthenticated)
+                            {
+                                <a title="Editar" class="text-secondary fs-6" href="/Veiculo/editar/@VeiculosVm.Id">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <a title="Excluir" class="text-danger fs-6" href="/Veiculo/excluir/@VeiculosVm.Id">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            }
                         </div>
                     </div>
                     <div class="card-body">

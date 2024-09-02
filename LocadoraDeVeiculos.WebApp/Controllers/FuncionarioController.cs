@@ -5,9 +5,12 @@ using LocadoraDeVeiculos.Dominio.ModuloFuncionario;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
+
+[Authorize(Roles = "Empresa")]
 public class FuncionarioController(FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase
 {
     public IActionResult Listar()

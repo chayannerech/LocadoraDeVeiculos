@@ -5,6 +5,7 @@ using LocadoraDeVeiculos.Dominio.ModuloTaxa;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAluguel, IMapper mapeador) : WebControllerBase
@@ -12,6 +13,9 @@ public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAlugu
     public IActionResult Listar()
     {
         var resultado = servicoTaxa.SelecionarTodos(UsuarioId.GetValueOrDefault());
+
+        if (!User.Identity!.IsAuthenticated)
+            resultado = servicoTaxa.SelecionarTodos();
 
         if (ValidarFalhaLista(resultado))
             return RedirectToAction(nameof(Listar));
@@ -29,6 +33,7 @@ public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAlugu
     }
 
 
+    [Authorize(Roles = "Empresa, Funcionário")]
     public IActionResult Inserir() => View();
     [HttpPost]
     public IActionResult Inserir(InserirTaxaViewModel inserirRegistroVm)
@@ -57,6 +62,7 @@ public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAlugu
     }
 
 
+    [Authorize(Roles = "Empresa, Funcionário")]
     public IActionResult Editar(int id)
     {
         var resultado = servicoTaxa.SelecionarPorId(id);
@@ -101,6 +107,7 @@ public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAlugu
     }
 
 
+    [Authorize(Roles = "Empresa, Funcionário")]
     public IActionResult Excluir(int id)
     {
         var resultado = servicoTaxa.SelecionarPorId(id);

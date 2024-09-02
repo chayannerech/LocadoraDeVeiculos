@@ -5,13 +5,17 @@ using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, VeiculoService servicoVeiculo, AluguelService servicoAluguel, PlanoDeCobrancaService servicoPlano, IMapper mapeador) : WebControllerBase
 {
     public IActionResult Listar()
     {
-        var resultado = servicoGrupo.SelecionarTodos(UsuarioId.GetValueOrDefault());
+       var resultado = servicoGrupo.SelecionarTodos(UsuarioId.GetValueOrDefault());
+
+        if (!User.Identity!.IsAuthenticated)
+            resultado = servicoGrupo.SelecionarTodos();            
 
         if (ValidarFalhaLista(resultado))
             return RedirectToAction(nameof(Listar));
@@ -29,6 +33,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
     }
 
 
+    [Authorize(Roles = "Empresa, Funcionário")]
     public IActionResult Inserir() => View();
     [HttpPost]
     public IActionResult Inserir(InserirGrupoDeAutomoveisViewModel inserirRegistroVm)
@@ -57,6 +62,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
     }
 
 
+    [Authorize(Roles = "Empresa, Funcionário")]
     public IActionResult Editar(int id)
     {
         var resultado = servicoGrupo.SelecionarPorId(id);
@@ -97,6 +103,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
     }
 
 
+    [Authorize(Roles = "Empresa, Funcionário")]
     public IActionResult Excluir(int id)
     {
         var resultado = servicoGrupo.SelecionarPorId(id);
@@ -139,7 +146,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
 
         var registro = resultado.Value;
 
-        ViewBag.Plano = servicoPlano.SelecionarPorGrupoId(id); ;
+        ViewBag.Plano = servicoPlano.SelecionarPorGrupoId(id).IsFailed ? null : servicoPlano.SelecionarPorGrupoId(id).Value;
 
         var detalhesRegistroVm = mapeador.Map<DetalhesGrupoDeAutomoveisViewModel>(registro);
 

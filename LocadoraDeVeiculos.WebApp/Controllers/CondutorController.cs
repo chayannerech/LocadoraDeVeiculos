@@ -5,9 +5,12 @@ using LocadoraDeVeiculos.Dominio.ModuloCondutor;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDeCondutor.WebApp.Controllers;
+
+[Authorize(Roles = "Empresa, Funcionário")]
 public class CondutorController(CondutorService servicoCondutor, ClienteService servicoCliente, AluguelService servicoAluguel, IMapper mapeador) : WebControllerBase
 {
     public IActionResult Listar()

@@ -56,6 +56,9 @@ public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioG
         return Result.Ok(registros);
     }
 
+    public Result<List<GrupoDeAutomoveis>> SelecionarTodos()
+        => Result.Ok(repositorioGrupo.SelecionarTodos());
+
     public void AdicionarValores(PlanoDeCobranca plano)
     {
         var grupoSelecionado = plano.GrupoDeAutomoveis;

@@ -4,8 +4,11 @@ using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloConfiguracao;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
+
+[Authorize(Roles = "Empresa, Funcionário")]
 public class ConfiguracaoController(ConfiguracaoService servicoConfiguracao, IMapper mapeador) : WebControllerBase
 {
     public IActionResult Inserir() => View();

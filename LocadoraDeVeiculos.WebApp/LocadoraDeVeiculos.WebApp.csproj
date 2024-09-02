@@ -7,12 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Views\Usuario\Logout.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="Views\Usuario\AcessoNegado.cshtml" />
-    <None Include="Views\Usuario\Logout.cshtml" />
     <None Include="Views\Usuario\Login.cshtml" />
     <None Include="Views\Usuario\Registrar.cshtml" />
   </ItemGroup>
