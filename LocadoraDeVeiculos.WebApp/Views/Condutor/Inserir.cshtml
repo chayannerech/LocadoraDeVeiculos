@@ -13,7 +13,7 @@
                     <label class="control-label fw-bold mb-1">Cliente</label>
                     <select class="form-select" asp-for="ClienteId" id="clienteSelect">
                         <option value="" selected disabled></option>
-                        @foreach (var cliente in Model.Clientes)
+                        @foreach (var cliente in Model.Clientes!)
                         {
                             <option value="@cliente.Id"
                                     data-nome="@cliente.Nome"
@@ -102,7 +102,7 @@
 
             function clearFields() {
                 fields.forEach(function (field) {
-                    $(field).val('').prop('disabled', false);
+                    $(field).val('');
                 });
             }
 
@@ -123,7 +123,6 @@
                     $('#check').prop('disabled', false);
                 } else {
                     $('#check').prop('disabled', true).prop('checked', false);
-                    clearFields();
                 }
             }
 

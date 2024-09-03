@@ -1,9 +1,5 @@
 ﻿using LocadoraDeVeiculos.Dominio.Compartilhado;
-using LocadoraDeVeiculos.Dominio.ModuloCliente;
-using LocadoraDeVeiculos.Dominio.ModuloCondutor;
-using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
-using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 namespace LocadoraDeVeiculos.Dominio.ModuloAluguel;
 public class Aluguel() : EntidadeBase
 {
@@ -28,16 +24,29 @@ public class Aluguel() : EntidadeBase
     public decimal ValorTotal { get; set; }
     public bool Ativo { get; set; }
 
+    public Aluguel(int condutorId, int clienteId, int grupoId, int veiculoId, DateTime dataSaida, DateTime dataRetornoPrevista, DateTime dataRetornoReal) : this()
+    {
+        CondutorId = condutorId;
+        ClienteId = clienteId;
+        GrupoId = grupoId;
+        VeiculoId = veiculoId;
+        DataSaida = dataSaida;
+        DataRetornoPrevista = dataRetornoPrevista;
+        DataRetornoReal = dataRetornoReal;
+    }
 
     public List<string> Validar()
     {
         List<string> erros = [];
 
-        VerificaNulo(ref erros, CondutorNome, "Condutor");
-        VerificaNulo(ref erros, ClienteNome, "Cliente");
-        VerificaNulo(ref erros, VeiculoPlaca, "Veiculo");
+        VerificaNulo(ref erros, CondutorId, "Condutor");
+        VerificaNulo(ref erros, ClienteId, "Cliente");
+        VerificaNulo(ref erros, VeiculoId, "Veiculo");
         VerificaDataInferior(ref erros, DataSaida, "O veículo deve ser retirado hoje ou após o dia de hoje");
         VerificaDataInferior(ref erros, DataRetornoPrevista, DataSaida, "O veículo deve ser devolvido após a data de retirada");        
+
+        if (DataRetornoPrevista > DateTime.MinValue)
+            VerificaDataInferior(ref erros, DataRetornoReal, DataSaida, "O veículo deve ser devolvido após a data de retirada");
 
         return erros;
     }

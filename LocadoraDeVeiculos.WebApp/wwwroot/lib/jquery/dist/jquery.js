@@ -1443,7 +1443,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	rbuggyQSA = rbuggyQSA.length && new RegExp( rbuggyQSA.join( "|" ) );
 	rbuggyMatches = rbuggyMatches.length && new RegExp( rbuggyMatches.join( "|" ) );
 
-	/* Contains
+	/* Grupoins
 	---------------------------------------------------------------------- */
 	hasCompare = rnative.test( docElem.compareDocumentPosition );
 
@@ -10212,7 +10212,7 @@ jQuery.ajaxSetup( {
 // Detect, normalize options and install callbacks for jsonp requests
 jQuery.ajaxPrefilter( "json jsonp", function( s, originalSettings, jqXHR ) {
 
-	var callbackName, overwritten, responseContainer,
+	var callbackName, overwritten, responseGrupoiner,
 		jsonProp = s.jsonp !== false && ( rjsonp.test( s.url ) ?
 			"url" :
 			typeof s.data === "string" &&
@@ -10238,10 +10238,10 @@ jQuery.ajaxPrefilter( "json jsonp", function( s, originalSettings, jqXHR ) {
 
 		// Use data converter to retrieve json after script execution
 		s.converters[ "script json" ] = function() {
-			if ( !responseContainer ) {
+			if ( !responseGrupoiner ) {
 				jQuery.error( callbackName + " was not called" );
 			}
-			return responseContainer[ 0 ];
+			return responseGrupoiner[ 0 ];
 		};
 
 		// Force json dataType
@@ -10250,7 +10250,7 @@ jQuery.ajaxPrefilter( "json jsonp", function( s, originalSettings, jqXHR ) {
 		// Install callback
 		overwritten = window[ callbackName ];
 		window[ callbackName ] = function() {
-			responseContainer = arguments;
+			responseGrupoiner = arguments;
 		};
 
 		// Clean-up function (fires after converters)
@@ -10276,11 +10276,11 @@ jQuery.ajaxPrefilter( "json jsonp", function( s, originalSettings, jqXHR ) {
 			}
 
 			// Call if it was a function and we have a response
-			if ( responseContainer && isFunction( overwritten ) ) {
-				overwritten( responseContainer[ 0 ] );
+			if ( responseGrupoiner && isFunction( overwritten ) ) {
+				overwritten( responseGrupoiner[ 0 ] );
 			}
 
-			responseContainer = overwritten = undefined;
+			responseGrupoiner = overwritten = undefined;
 		} );
 
 		// Delegate to script

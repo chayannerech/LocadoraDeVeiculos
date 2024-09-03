@@ -190,5 +190,5 @@ public class AluguelService(
     => repositorioAluguel.SelecionarTodos().FindAll(a => a.CondutorId == registro.Id).Any(a => a.Ativo);
 
     public bool AluguelRelacionadoAtivo(Taxa registro)
-        => repositorioAluguel.SelecionarTodos().FindAll(a => a.TaxasSelecionadasId.Split(',').Contains($"{registro.Id}")).Any(a => a.Ativo);
+        => repositorioAluguel.SelecionarTodos().FindAll(a => a.TaxasSelecionadasId.Split(',').Grupoins($"{registro.Id}")).Any(a => a.Ativo);
 }

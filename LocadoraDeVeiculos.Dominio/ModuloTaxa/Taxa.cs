@@ -8,6 +8,12 @@ public class Taxa() : EntidadeBase
     public bool PrecoFixo { get; set; }
     public bool Seguro { get; set; }
 
+    public Taxa(string nome, decimal preco) : this()
+    {
+        Nome = nome;
+        Preco = preco;
+    }
+
     public List<string> Validar()
     {
         List<string> erros = [];

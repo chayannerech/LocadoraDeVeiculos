@@ -96,7 +96,7 @@
                         </div>
                     </div>
 
-                    <div class="flex-shrink-0 d-none" id="veiculoImagemContainer">
+                    <div class="flex-shrink-0 d-none" id="veiculoImagemGrupoiner">
                         <img id="veiculoImagem" class="img-fluid" alt="Imagem do veículo selecionado" style="max-width: 150px; max-height: 100px; border: 1px solid #ced4da; border-radius: .25rem;">
                     </div>
                 </div>
@@ -426,9 +426,9 @@
 
                 if (imagemDataUrl) {
                     $('#veiculoImagem').attr('src', imagemDataUrl);
-                    $('#veiculoImagemContainer').removeClass('d-none');
+                    $('#veiculoImagemGrupoiner').removeClass('d-none');
                 } else {
-                    $('#veiculoImagemContainer').addClass('d-none');
+                    $('#veiculoImagemGrupoiner').addClass('d-none');
                 }
             }
 
@@ -500,7 +500,7 @@
             $('#grupoSelect').change(function () {
                 const grupoIdSelecionado = $(this).val();
                 filtrarVeiculosPorGrupo(grupoIdSelecionado);
-                $('#veiculoImagemContainer').addClass('d-none');
+                $('#veiculoImagemGrupoiner').addClass('d-none');
 
                 const grupoSelecionado = $('#grupoSelect option:selected');
                 const precoDiaria = parseFloat(grupoSelecionado.data('preco-diaria')) || 0;

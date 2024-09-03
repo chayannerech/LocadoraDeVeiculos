@@ -7,7 +7,6 @@ using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDeCondutor.WebApp.Controllers;
 
 [Authorize(Roles = "Empresa, Funcionário")]

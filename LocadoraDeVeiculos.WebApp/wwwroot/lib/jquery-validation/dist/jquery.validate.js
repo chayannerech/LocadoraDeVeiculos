@@ -288,8 +288,8 @@ $.extend( $.validator, {
 		errorElement: "label",
 		focusCleanup: false,
 		focusInvalid: true,
-		errorContainer: $( [] ),
-		errorLabelContainer: $( [] ),
+		errorGrupoiner: $( [] ),
+		errorLabelGrupoiner: $( [] ),
 		onsubmit: true,
 		ignore: ":hidden",
 		ignoreTitle: false,
@@ -392,9 +392,9 @@ $.extend( $.validator, {
 	prototype: {
 
 		init: function() {
-			this.labelContainer = $( this.settings.errorLabelContainer );
-			this.errorContext = this.labelContainer.length && this.labelContainer || $( this.currentForm );
-			this.containers = $( this.settings.errorContainer ).add( this.settings.errorLabelContainer );
+			this.labelGrupoiner = $( this.settings.errorLabelGrupoiner );
+			this.errorContext = this.labelGrupoiner.length && this.labelGrupoiner || $( this.currentForm );
+			this.containers = $( this.settings.errorGrupoiner ).add( this.settings.errorLabelGrupoiner );
 			this.submitted = {};
 			this.valueCache = {};
 			this.pendingRequest = 0;
@@ -977,8 +977,8 @@ $.extend( $.validator, {
 					// actually showing the wrapped element is handled elsewhere
 					place = error.hide().show().wrap( "<" + this.settings.wrapper + "/>" ).parent();
 				}
-				if ( this.labelContainer.length ) {
-					this.labelContainer.append( place );
+				if ( this.labelGrupoiner.length ) {
+					this.labelGrupoiner.append( place );
 				} else if ( this.settings.errorPlacement ) {
 					this.settings.errorPlacement.call( this, place, $( element ) );
 				} else {

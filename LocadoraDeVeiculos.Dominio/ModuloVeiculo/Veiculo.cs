@@ -15,6 +15,20 @@ public class Veiculo() : EntidadeBase
     public GrupoDeAutomoveis GrupoDeAutomoveis { get; set; }
     public bool Alugado { get; set; }
 
+    public Veiculo(string placa, string marca, string cor, string modelo, string tipoCombustivel, int capacidadeCombustivel, int ano, byte[] imagemEmBytes, string tipoDaImagem, GrupoDeAutomoveis grupoDeAutomoveis) : this()
+    {
+        Placa = placa;
+        Marca = marca;
+        Cor = cor;
+        Modelo = modelo;
+        TipoCombustivel = tipoCombustivel;
+        CapacidadeCombustivel = capacidadeCombustivel;
+        Ano = ano;
+        ImagemEmBytes = imagemEmBytes;
+        TipoDaImagem = tipoDaImagem;
+        GrupoDeAutomoveis = grupoDeAutomoveis;
+    }
+
     public List<string> Validar()
     {
         List<string> erros = [];
@@ -23,10 +37,11 @@ public class Veiculo() : EntidadeBase
         VerificaNulo(ref erros, Marca, "Marca");
         VerificaNulo(ref erros, Cor, "Cor");
         VerificaNulo(ref erros, Modelo, "Modelo");
-        VerificaNulo(ref erros, TipoCombustivel, "TipoCombustivel");
-        VerificaNulo(ref erros, CapacidadeCombustivel, "CapacidadeCombustivel");
+        VerificaNulo(ref erros, TipoCombustivel, "Tipo de Combustível");
+        VerificaNulo(ref erros, CapacidadeCombustivel, "Capacidade de Combustível");
         VerificaNulo(ref erros, Ano, "Ano");
         VerificaNulo(ref erros, ImagemEmBytes, "Foto");
+        VerificaNulo(ref erros, TipoDaImagem, "Foto");
         VerificaNulo(ref erros, GrupoDeAutomoveis, "Grupo de Automóveis");
         VerificaDataFutura(ref erros, Ano);
 
@@ -37,11 +52,11 @@ public class Veiculo() : EntidadeBase
     protected void VerificaNulo(ref List<string> erros, byte[] campoTestado, string mostraCampo)
     {
         if (campoTestado is null)
-            erros.Add($"\nO campo \"{mostraCampo}\" é obrigatório. Tente novamente ");
+            erros.Add($"O campo \"{mostraCampo}\" é obrigatório. Tente novamente ");
     }
     protected void VerificaDataFutura(ref List<string> erros, int campoTestado)
     {
         if (campoTestado > DateTime.Now.Year)
-            erros.Add($"\nO ano precisa ser inferior a data atual. Tente novamente ");
+            erros.Add($"O ano precisa ser inferior a data atual. Tente novamente ");
     }
 }

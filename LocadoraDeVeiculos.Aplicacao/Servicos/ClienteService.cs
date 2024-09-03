@@ -94,14 +94,10 @@ public class ClienteService(IRepositorioCliente repositorioCliente, IRepositorio
 
             if (rgExistentes.Any(c => c == novoRegistro.RG) && novoRegistro.RG != registroAtual!.RG)
                 itemRepetido = "rg";
-
-            return true;
         }
         else if (cnpjExistente.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual!.Documento)
-        {
             itemRepetido = "cnpj";
-            return true;
-        }
-        return false;
+
+        return itemRepetido != "";
     }
 }

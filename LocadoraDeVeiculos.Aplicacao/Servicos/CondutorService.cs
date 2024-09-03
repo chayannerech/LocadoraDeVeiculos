@@ -106,19 +106,14 @@ public class CondutorService(IRepositorioCondutor repositorioCondutor, IReposito
 
         var registroAtual = novoRegistro.Id == 0 ? new() : repositorioCondutor.SelecionarPorId(novoRegistro.Id);
 
+        itemRepetido = "";
+
         if (cpfsExistentes.Any(c => c.Equals(novoRegistro.CPF)) && novoRegistro.CPF != registroAtual!.CPF)
-        {
             itemRepetido = "cpf";
-            return true;
-        }
 
         if (cnhExistentes.Any(c => c.Equals(novoRegistro.CNH)) && novoRegistro.CNH != registroAtual!.CNH)
-        {
             itemRepetido = "cnh";
-            return true;
-        }
 
-        itemRepetido = "";
-        return false;
+        return itemRepetido != "";
     }
 }
