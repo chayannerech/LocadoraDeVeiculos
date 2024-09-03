@@ -7,11 +7,6 @@ public class InserirFuncionarioViewModel
     [MinLength(4, ErrorMessage = "O nome deve conter ao menos 4 caracteres")]
     public string? Nome { get; set; }
 
-    
-    [Required(ErrorMessage = "O login é obrigatório")]
-    [MinLength(6, ErrorMessage = "O login deve conter ao menos 6 caracteres")]
-    public string? Login { get; set; }
-
 
     [Required(ErrorMessage = "A data de admissão é obrigatória")]
     [DataMenorQueHoje(ErrorMessage = "A data de admissão deve ser inferior ao dia de hoje")]
@@ -19,7 +14,7 @@ public class InserirFuncionarioViewModel
 
 
     [Required(ErrorMessage = "O salário é obrigatório")]
-    [Range(1, 10000, ErrorMessage = "O salário deve ser maior que zero")]
+    [Range(1, 100000, ErrorMessage = "O salário deve ser maior que zero")]
     public decimal Salario { get; set; }
 
 
@@ -56,8 +51,12 @@ public class EditarFuncionarioViewModel
 
 
     [Required(ErrorMessage = "O salário é obrigatório")]
-    [Range(1, 10000, ErrorMessage = "O salário deve ser maior que zero")]
+    [Range(1, 100000, ErrorMessage = "O salário deve ser maior que zero")]
     public decimal Salario { get; set; }
+
+    [Required(ErrorMessage = "O email é obrigatório")]
+    [EmailAddress]
+    public string? Email { get; set; }
 }
 
 public class ListarFuncionarioViewModel
@@ -70,7 +69,6 @@ public class DetalhesFuncionarioViewModel
 {
     public int Id { get; set; }
     public string? Nome { get; set; }
-    public string? Login { get; set; }
     public string? Email { get; set; }
     public DateTime DataAdmissao { get; set; }
     public decimal Salario { get; set; }

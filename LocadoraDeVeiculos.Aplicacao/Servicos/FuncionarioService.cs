@@ -64,10 +64,10 @@ public class FuncionarioService(IRepositorioFuncionario repositorioFuncionario)
     public bool ValidarRegistroRepetido(Funcionario novoRegistro)
     {
         var registrosExistentes = repositorioFuncionario.SelecionarTodos();
-        var registroAtual = novoRegistro.Id == 0 ? new() { Login = "" } : repositorioFuncionario.SelecionarPorId(novoRegistro.Id)!;
+        var registroAtual = novoRegistro.Id == 0 ? new() { Nome = "" } : repositorioFuncionario.SelecionarPorId(novoRegistro.Id)!;
 
         return registrosExistentes.Exists(r =>
-            r.Login.Validation() == novoRegistro.Login.Validation() &&
-            r.Login.Validation() != registroAtual.Login.Validation());
+            r.Nome.Validation() == novoRegistro.Nome.Validation() &&
+            r.Nome.Validation() != registroAtual.Nome.Validation());
     }
 }

@@ -16,10 +16,6 @@ public class MapeadorFuncionarioEmOrm : IEntityTypeConfiguration<Funcionario>
             .IsRequired()
             .HasColumnType("varchar(200)");
 
-        fBuilder.Property(f => f.Login)
-            .IsRequired()
-            .HasColumnType("varchar(100)");
-
         fBuilder.Property(f => f.Email)
             .IsRequired()
             .HasColumnType("varchar(200)");
@@ -31,11 +27,6 @@ public class MapeadorFuncionarioEmOrm : IEntityTypeConfiguration<Funcionario>
         fBuilder.Property(a => a.Salario)
             .IsRequired()
             .HasColumnType("decimal(18,2)");
-
-        fBuilder.Property(f => f.Senha)
-            .IsRequired()
-            .HasColumnType("varchar(64)");
-
 
         fBuilder.Property(s => s.UsuarioId)
             .IsRequired()

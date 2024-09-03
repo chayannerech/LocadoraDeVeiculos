@@ -9,7 +9,6 @@ using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 
 [Authorize(Roles = "Empresa")]
@@ -58,7 +57,7 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
 
         var usuario = new Usuario()
         {
-            UserName = inserirRegistroVm.Login,
+            UserName = inserirRegistroVm.Nome!.Replace(" ", ""),
             Email = inserirRegistroVm.Email
         };
 
@@ -101,24 +100,33 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
         return View(editarRegistroVm);
     }    
     [HttpPost]
-    public IActionResult Editar(EditarFuncionarioViewModel editarRegistroVm)
+    public async Task<IActionResult> Editar(EditarFuncionarioViewModel editarRegistroVm)
     {
         if (!ModelState.IsValid)
              return View(editarRegistroVm);
 
-        var registroAtual = servicoFuncionario.SelecionarPorId(editarRegistroVm.Id).Value;
         var registro = mapeador.Map<Funcionario>(editarRegistroVm);
-
-        registro.Email = registroAtual.Email;
-        registro.Login = registroAtual.Login;
-        registro.Senha = registroAtual.Senha;
+        var loginAtual = servicoFuncionario.SelecionarPorId(editarRegistroVm.Id).Value.Nome.Replace(" ", "");
 
         var resultado = servicoFuncionario.Editar(registro);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"{registro}\" foi editado com sucesso!");
+        var usuario = await userManager.FindByNameAsync(loginAtual);
+
+        if (ValidarUsuario(usuario, registro))
+            return RedirectToAction(nameof(Listar));
+
+        usuario!.UserName = editarRegistroVm.Nome!.Replace(" ", "");
+        usuario!.Email = editarRegistroVm.Email;
+
+        var result = await userManager.UpdateAsync(usuario);
+
+        if (result.Succeeded)
+            ApresentarMensagemSucesso($"O registro \"{registro}\" foi editado com sucesso!");
+        else
+            ApresentarMensagemFalha("O registro do funcionário foi editado, mas o login não pôde ser alterado");
 
         return RedirectToAction(nameof(Listar));
     }
@@ -141,29 +149,25 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
     public async Task<IActionResult> Excluir(DetalhesFuncionarioViewModel detalhesRegistroVm)
     {
         var registro = servicoFuncionario.SelecionarPorId(detalhesRegistroVm.Id).Value;
+        var usuario = await userManager.FindByNameAsync(registro.Nome.Replace(" ", ""));
+
         var resultado = servicoFuncionario.Excluir(detalhesRegistroVm.Id);
-        var usuario = await userManager.GetUserAsync(User);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        if (usuario is null)
-            return RedirectToAction("Login", "Usuario");
-
-        var result = await userManager.DeleteAsync(usuario);
-
-        if (result.Succeeded) 
-        { 
-            await signInManager.SignOutAsync();
-            ApresentarMensagemSucesso($"O registro \"{registro.Nome}\" foi excluído com sucesso!");
+        if (ValidarUsuario(usuario, registro))
             return RedirectToAction(nameof(Listar));
-        }
+
+        var result = await userManager.DeleteAsync(usuario!);
+
+        if (result.Succeeded)
+            ApresentarMensagemSucesso($"O registro \"{registro.Nome}\" e o login associado foram excluídos com sucesso!");
         else
-            ApresentarMensagemFalha("Não foi possível excluir este funcionário. Seu login continua ativo!");
+            ApresentarMensagemFalha("O registro do funcionário foi excluído, mas o login não pôde ser removido");
 
         return RedirectToAction(nameof(Listar));
     }
-
 
     public IActionResult Detalhes(int id)
     {
@@ -186,6 +190,15 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
         if (resultado.IsFailed)
         {
             ApresentarMensagemFalha(resultado.ToResult());
+            return true;
+        }
+        return false;
+    }
+    protected bool ValidarUsuario(Usuario? usuario, Funcionario funcionario)
+    {
+        if (usuario is null)
+        {
+            ApresentarMensagemSucesso($"O registro \"{funcionario}\" foi editado com sucesso, mas o login não foi encontrado");
             return true;
         }
         return false;
