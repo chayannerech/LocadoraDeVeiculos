@@ -140,12 +140,13 @@ public class CondutorController(CondutorService servicoCondutor, ClienteService 
     [HttpPost]
     public IActionResult Excluir(DetalhesCondutorViewModel detalhesRegistroVm)
     {
+        var registro = servicoCondutor.SelecionarPorId(detalhesRegistroVm.Id).Value;
         var resultado = servicoCondutor.Excluir(detalhesRegistroVm.Id);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"{servicoCondutor.SelecionarPorId(detalhesRegistroVm.Id).Value.Nome}\" foi excluído com sucesso!");
+        ApresentarMensagemSucesso($"O registro \"{registro.Nome}\" foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }

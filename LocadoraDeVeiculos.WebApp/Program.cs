@@ -3,6 +3,7 @@ using LocadoraDeVeiculos.Dominio.ModuloAluguel;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloCondutor;
 using LocadoraDeVeiculos.Dominio.ModuloConfiguracaoe;
+using LocadoraDeVeiculos.Dominio.ModuloFuncionario;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloTaxa;
@@ -13,6 +14,7 @@ using LocadoraDeVeiculos.Infra.Orm.ModuloAluguel;
 using LocadoraDeVeiculos.Infra.Orm.ModuloCliente;
 using LocadoraDeVeiculos.Infra.Orm.ModuloCondutor;
 using LocadoraDeVeiculos.Infra.Orm.ModuloConfiguracao;
+using LocadoraDeVeiculos.Infra.Orm.ModuloFuncionario;
 using LocadoraDeVeiculos.Infra.Orm.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Infra.Orm.ModuloPlanoDeCobrancas;
 using LocadoraDeVeiculos.Infra.Orm.ModuloTaxa;
@@ -40,6 +42,7 @@ public class Program
         builder.Services.AddScoped<IRepositorioCondutor, RepositorioCondutorEmOrm>();
         builder.Services.AddScoped<IRepositorioConfiguracao, RepositorioConfiguracaoEmOrm>();
         builder.Services.AddScoped<IRepositorioAluguel, RepositorioAluguelEmOrm>();
+        builder.Services.AddScoped<IRepositorioFuncionario, RepositorioFuncionarioEmOrm>();
 
         builder.Services.AddScoped<GrupoDeAutomoveisService>();
         builder.Services.AddScoped<VeiculoService>();
@@ -49,6 +52,7 @@ public class Program
         builder.Services.AddScoped<CondutorService>();
         builder.Services.AddScoped<ConfiguracaoService>();
         builder.Services.AddScoped<AluguelService>();
+        builder.Services.AddScoped<FuncionarioService>();
 
         builder.Services.AddAutoMapper( cfg => { cfg.AddMaps(Assembly.GetExecutingAssembly()); });
 

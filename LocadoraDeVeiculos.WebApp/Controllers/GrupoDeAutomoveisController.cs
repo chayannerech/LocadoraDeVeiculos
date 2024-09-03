@@ -126,12 +126,13 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
     [HttpPost]
     public IActionResult Excluir(DetalhesGrupoDeAutomoveisViewModel detalhesRegistroVm)
     {
+        var registro = servicoGrupo.SelecionarPorId(detalhesRegistroVm.Id).Value;
         var resultado = servicoGrupo.Excluir(detalhesRegistroVm.Id);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"{servicoGrupo.SelecionarPorId(detalhesRegistroVm.Id).Value.Nome}\" foi excluído com sucesso!");
+        ApresentarMensagemSucesso($"O registro \"{registro.Nome}\" foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }

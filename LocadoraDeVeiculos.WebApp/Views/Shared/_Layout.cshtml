@@ -10,6 +10,7 @@
     var taxaAtivo = caminho.StartsWith("/Taxa") ? "nav-link active fw-semibold" : "nav-link";
     var configAtivo = caminho.StartsWith("/Configuracao") ? "nav-link active fw-semibold" : "nav-link";
     var aluguelAtivo = caminho.StartsWith("/Aluguel") ? "nav-link active fw-semibold" : "nav-link";
+    var funcionarioAtivo = caminho.StartsWith("/Funcionario") ? "nav-link active fw-semibold" : "nav-link";
 
     MensagemViewModel? mensagem = ViewBag.Mensagem ?? null;
 }
@@ -78,6 +79,14 @@
                 font-weight: 600;
                 color: #999;
             }
+
+            .dropdown-item:focus,
+            .dropdown-item:hover,
+            .dropdown-item:active {
+                color: inherit !important;
+                background-color: transparent !important;
+            }
+    </style>
     </style>
 </head>
 <body>
@@ -116,10 +125,10 @@
                         }
 
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
                                 <i class="bi bi-person-circle"></i> @User.Identity!.Name
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <ul class="dropdown-menu dropdown-menu-end">
                                 @if (User.Identity.IsAuthenticated)
                                 {
                                     <form asp-controller="Usuario" asp-action="Logout">

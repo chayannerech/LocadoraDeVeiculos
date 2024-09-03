@@ -95,4 +95,13 @@ public abstract class WebControllerBase : Controller
             Mensagem = mensagem
         });
     }
+    protected void ApresentarMensagemFalha(string mensagem)
+    {
+        TempData.SerializarMensagemViewModel(new MensagemViewModel
+        {
+            Titulo = "Falha",
+            Mensagem = mensagem
+        });
+    }
+
 }

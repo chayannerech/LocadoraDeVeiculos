@@ -2,16 +2,18 @@
 using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloFuncionario;
+using LocadoraDeVeiculos.Dominio.ModuloUsuario;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 
 [Authorize(Roles = "Empresa")]
-public class FuncionarioController(FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase
+public class FuncionarioController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager, RoleManager<Perfil> roleManager, FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase
 {
     public IActionResult Listar()
     {
@@ -32,12 +34,12 @@ public class FuncionarioController(FuncionarioService servicoFuncionario, IMappe
         return View(listarFuncionarioVm);
     }
 
-    public IActionResult Inserir() => View(CarregarInformacoes(new InserirFuncionarioViewModel()));
+    public IActionResult Inserir() => View();
     [HttpPost]
-    public IActionResult Inserir(InserirFuncionarioViewModel inserirRegistroVm)
+    public async Task<IActionResult> Inserir(InserirFuncionarioViewModel inserirRegistroVm)
     {
         if (!ModelState.IsValid)
-             return View(CarregarInformacoes(inserirRegistroVm));
+             return View(inserirRegistroVm);
 
         var novoRegistro = mapeador.Map<Funcionario>(inserirRegistroVm);
 
@@ -54,11 +56,36 @@ public class FuncionarioController(FuncionarioService servicoFuncionario, IMappe
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"{novoRegistro}\" foi inserido com sucesso!");
+        var usuario = new Usuario()
+        {
+            UserName = inserirRegistroVm.Login,
+            Email = inserirRegistroVm.Email
+        };
+
+        var resultadoCriacaoUsuario = await userManager.CreateAsync(usuario, inserirRegistroVm.Senha!);
+        var resultadoCriacaoTipoUsuario = await roleManager.FindByNameAsync("Funcionario");
+
+        if (resultadoCriacaoTipoUsuario is null)
+        {
+            var cargo = new Perfil()
+            {
+                Name = "Funcionario",
+                NormalizedName = "FUNCIONARIO",
+                ConcurrencyStamp = Guid.NewGuid().ToString()
+            };
+
+            await roleManager.CreateAsync(cargo);
+        }
+
+        await userManager.AddToRoleAsync(usuario, "Funcionario");
+
+        if (resultadoCriacaoUsuario.Errors.Any())
+            ApresentarMensagemFalha("Não foi possível cadastrar este funcionário");
+        else
+            ApresentarMensagemSucesso($"O registro \"{novoRegistro}\" foi inserido com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
-
 
     public IActionResult Editar(int id)
     {
@@ -71,15 +98,20 @@ public class FuncionarioController(FuncionarioService servicoFuncionario, IMappe
 
         var editarRegistroVm = mapeador.Map<EditarFuncionarioViewModel>(registro);
 
-        return View(CarregarInformacoes(editarRegistroVm));
+        return View(editarRegistroVm);
     }    
     [HttpPost]
     public IActionResult Editar(EditarFuncionarioViewModel editarRegistroVm)
     {
         if (!ModelState.IsValid)
-             return View(CarregarInformacoes(editarRegistroVm));
+             return View(editarRegistroVm);
 
+        var registroAtual = servicoFuncionario.SelecionarPorId(editarRegistroVm.Id).Value;
         var registro = mapeador.Map<Funcionario>(editarRegistroVm);
+
+        registro.Email = registroAtual.Email;
+        registro.Login = registroAtual.Login;
+        registro.Senha = registroAtual.Senha;
 
         var resultado = servicoFuncionario.Editar(registro);
 
@@ -106,14 +138,28 @@ public class FuncionarioController(FuncionarioService servicoFuncionario, IMappe
         return View(detalhesRegistroVm);
     }
     [HttpPost]
-    public IActionResult Excluir(DetalhesFuncionarioViewModel detalhesRegistroVm)
+    public async Task<IActionResult> Excluir(DetalhesFuncionarioViewModel detalhesRegistroVm)
     {
+        var registro = servicoFuncionario.SelecionarPorId(detalhesRegistroVm.Id).Value;
         var resultado = servicoFuncionario.Excluir(detalhesRegistroVm.Id);
+        var usuario = await userManager.GetUserAsync(User);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"{servicoFuncionario.SelecionarPorId(detalhesRegistroVm.Id).Value.Nome}\" foi excluído com sucesso!");
+        if (usuario is null)
+            return RedirectToAction("Login", "Usuario");
+
+        var result = await userManager.DeleteAsync(usuario);
+
+        if (result.Succeeded) 
+        { 
+            await signInManager.SignOutAsync();
+            ApresentarMensagemSucesso($"O registro \"{registro.Nome}\" foi excluído com sucesso!");
+            return RedirectToAction(nameof(Listar));
+        }
+        else
+            ApresentarMensagemFalha("Não foi possível excluir este funcionário. Seu login continua ativo!");
 
         return RedirectToAction(nameof(Listar));
     }
@@ -129,19 +175,12 @@ public class FuncionarioController(FuncionarioService servicoFuncionario, IMappe
         var registro = resultado.Value;
 
         var detalhesRegistroVm = mapeador.Map<DetalhesFuncionarioViewModel>(registro);
+        detalhesRegistroVm.Email = registro.Email;
 
         return View(detalhesRegistroVm);
     }
 
     #region
-    private InserirFuncionarioViewModel? CarregarInformacoes(InserirFuncionarioViewModel inserirRegistroVm)
-    {
-        return inserirRegistroVm;
-    }
-    private EditarFuncionarioViewModel? CarregarInformacoes(EditarFuncionarioViewModel editarRegistroVm)
-    {
-        return editarRegistroVm;
-    }
     protected bool ValidarFalha(Result<Funcionario> resultado)
     {
         if (resultado.IsFailed)

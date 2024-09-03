@@ -30,7 +30,14 @@
                 <input asp-for="ConfirmarSenha" class="form-control" />
                 <span asp-validation-for="ConfirmarSenha" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-secondary mt-3 mb-5">Registrar</button>
+            <div class="d-flex justify-content-center gap-3 mt-3">
+                <button type="submit" class="btn btn-secondary px-5" style="width: 170px">Registrar</button>
+
+                <a class="btn btn-outline-secondary" style="width: 170px" href="/">
+                    <i class="bi bi-arrow-return-left me-1"></i>
+                    Voltar
+                </a>
+            </div>
         </form>
     </div>
 </div>

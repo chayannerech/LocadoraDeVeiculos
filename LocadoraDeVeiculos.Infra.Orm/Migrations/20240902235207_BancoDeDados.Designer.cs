@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 {
     [DbContext(typeof(LocadoraDeVeiculosDbContext))]
-    [Migration("20240901233336_BancoDeDados")]
+    [Migration("20240902235207_BancoDeDados")]
     partial class BancoDeDados
     {
         /// <inheritdoc />
@@ -246,6 +246,13 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("DataAdmissao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("varchar(200)");
+
                     b.Property<string>("Login")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
@@ -253,6 +260,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("varchar(200)");
+
+                    b.Property<decimal>("Salario")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Senha")
                         .IsRequired()

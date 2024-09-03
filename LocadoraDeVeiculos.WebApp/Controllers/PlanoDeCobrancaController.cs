@@ -148,7 +148,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, Grup
     [HttpPost]
     public IActionResult Excluir(DetalhesPlanoDeCobrancaViewModel detalhesRegistroVm)
     {
-        var nome = servicoGrupo.SelecionarPorId(detalhesRegistroVm.Id).Value.Nome;
+        var registro = servicoGrupo.SelecionarPorId(detalhesRegistroVm.Id).Value;
         servicoGrupo.ExcluirValores(servicoPlano.SelecionarPorId(detalhesRegistroVm.Id).Value);
 
         var resultado = servicoPlano.Excluir(detalhesRegistroVm.Id);
@@ -156,7 +156,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, Grup
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"Plano para o grupo: {nome}\" foi excluído com sucesso!");
+        ApresentarMensagemSucesso($"O registro \"Plano para o grupo: {registro.Nome}\" foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }

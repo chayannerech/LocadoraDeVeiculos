@@ -7,7 +7,7 @@
 }
 
 <div class="col">
-    @if (User.IsInRole("Empresa"))
+    @if (User.Identity!.IsAuthenticated)
     {
         <section class="row row-cols-lg-5 justify-content-start align-items-stretch gap-3 px-lg-2">
 
@@ -27,7 +27,7 @@
 
             <!-- Planos de Aluguel -->
             <div title="Planos" class="card col-lg-3 col-xl-2 px-0">
-                <img class="card-img-top " src="~/img/viagem5.jpg" alt="Imagem de aluguel de carro">
+                <img class="card-img-top " src="~/img/viagem2.jpg" alt="Imagem de aluguel de carro">
                 <div class="card-body">
                     <div class="d-flex align-items-center text-primary">
                         <i class="ms-2 me-0 bi bi-clipboard-data"></i>
@@ -53,24 +53,24 @@
         </section>
     }
 
-    <section class="row my-3 my-xl-5">
+    <section class="row my-3 my-xl-4">
         <!-- Imagem -->
         <div class="col-lg-6 mb-5">
             <img class="img-fluid" src="~/img/viagem1.jpg" alt="Imagem promocional de aluguel de carro" />
             <p class="text-secondary" style="font-size: 10px">Imagem meramente ilustrativa. Não aconselhamos dirigir desta maneira</p>
         </div>
         <!-- Texto e login -->
-        <div class="col d-grid gap-1">
-            <h2 class="display-6 fw-bold text-secondary">Seja bem-vindo à <br />Locadora de Veículos Afonso!</h2>
+        <div class="col d-grid">
+            <h2 class="display-6 fw-bold text-secondary mb-0">Seja bem-vindo à <br />Locadora de Veículos Afonso!</h2>
 
-            <p class="fs-5 fw-semibold">
+            <p class="fs-5 fw-semibold my-0">
                 <span class="fs-5 fw-semibold text-secondary">Descubra a liberdade de alugar um carro conosco</span> <br /><br />
                 Oferecemos uma ampla variedade de veículos, desde compactos econômicos até SUVs luxuosos, tudo com planos flexíveis e serviços personalizados para atender às suas necessidades
             </p>
 
             @if (User.Identity is null || (User.Identity is not null && !User.Identity.IsAuthenticated))
             {
-                <div class="d-flex justify-content-center gap-3 align-items-center mt-3">
+                <div class="d-flex justify-content-center gap-3 align-items-center mb-5">
                     <a asp-controller="Usuario" asp-action="Login" class="btn btn-outline-secondary" style="width: 160px">Login</a>
                     <a asp-controller="Usuario" asp-action="Registrar" class="btn btn-secondary" style="width: 160px">Registrar</a>
                 </div>

@@ -130,12 +130,13 @@ public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAlugu
     [HttpPost]
     public IActionResult Excluir(DetalhesTaxaViewModel detalhesTaxaViewModel)
     {
+        var registro = servicoTaxa.SelecionarPorId(detalhesTaxaViewModel.Id).Value;
         var resultado = servicoTaxa.Excluir(detalhesTaxaViewModel.Id);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        ApresentarMensagemSucesso($"O registro \"{servicoTaxa.SelecionarPorId(detalhesTaxaViewModel.Id).Value.Nome}\" foi excluído com sucesso!");
+        ApresentarMensagemSucesso($"O registro \"{registro.Nome}\" foi excluído com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
