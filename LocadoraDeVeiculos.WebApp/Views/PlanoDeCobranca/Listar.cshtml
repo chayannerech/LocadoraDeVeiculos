@@ -1,0 +1,55 @@
+﻿@using LocadoraDeVeiculos.WebApp.Models
+@model IEnumerable<ListarPlanoDeCobrancaViewModel>
+
+@{
+    ViewBag.Title = "Planos Disponíveis";
+}
+
+<div class="col">
+    <a class="btn btn-outline-secondary px-4 mt-2" href="/PlanoDeCobranca/inserir">
+        <i class="bi bi-plus-circle"></i>
+        Inserir novo registro
+    </a>
+
+    <div class="row gap-2 my-3 my-xl-5">
+        @foreach (var PlanoDeCobrancaVm in Model)
+        {
+            <div class="card col-lg-5 col-xl-4">
+                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                    <h6 class="m-0">Id: @PlanoDeCobrancaVm.Id</h6>
+
+                    <div class="text-end d-flex align-items-center gap-2">
+                        <a
+                            title="Detalhes"
+                            class="text-secondary fs-6"
+                            href="/PlanoDeCobranca/detalhes/@PlanoDeCobrancaVm.Id">
+                            <i class="bi bi-search"></i>
+                        </a>
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            <a
+                            title="Editar"
+                            class="text-secondary fs-6"
+                            href="/PlanoDeCobranca/editar/@PlanoDeCobrancaVm.Id">
+                                <i class="bi bi-pencil-fill"></i>
+                            </a>
+                            <a
+                            title="Excluir"
+                            class="text-danger fs-6" href="/PlanoDeCobranca/excluir/@PlanoDeCobrancaVm.Id">
+                                <i class="bi bi-trash-fill"></i>
+                            </a>
+                        }
+                    </div>
+                </div>
+                <div class="card-body d-grid">
+                    <h5 class="card-title">Grupo: @PlanoDeCobrancaVm.GrupoNome</h5>
+                    <div class="card-body">
+                        <h6>Preço da diária: @PlanoDeCobrancaVm.PrecoDiaria R$</h6>
+                        <h6>Preço da diária controlada: @PlanoDeCobrancaVm.PrecoDiariaControlada R$</h6>
+                        <h6>Preço livre: @PlanoDeCobrancaVm.PrecoLivre R$</h6>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

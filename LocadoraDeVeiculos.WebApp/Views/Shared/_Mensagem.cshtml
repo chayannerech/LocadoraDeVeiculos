@@ -1,0 +1,30 @@
+﻿@using LocadoraDeVeiculos.WebApp.Models
+@model MensagemViewModel?
+
+<style>
+    .alert{
+        padding: 0.38rem 1rem;
+    }
+
+    .alert-dismissible .btn-close {
+        padding: 0.72rem 1rem;
+    }
+</style>
+
+@if (Model is not null)
+{
+    var corAlerta = Model.Titulo == "Sucesso" ? "alert-success" : "alert-danger";
+    var iconeSelecionado = Model.Titulo == "Sucesso" ? "bi-check-circle-fill" : "bi-info-circle-fill";
+
+    if (Model.Titulo == "Vazio")
+    {
+        corAlerta = "alert alert-primary";
+        iconeSelecionado = "bi bi-chat";
+    }
+
+    <div class="alert @corAlerta alert-dismissible fade show" role="alert">
+        <i class="bi @iconeSelecionado"></i>
+        <strong>@Model.Titulo:</strong> @Model.Mensagem
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}

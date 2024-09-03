@@ -1,0 +1,94 @@
+﻿@using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca
+@using LocadoraDeVeiculos.WebApp.Models
+@model EditarPlanoDeCobrancaViewModel
+
+@{
+    ViewBag.Title = "Editar plano de cobrança";
+    List<string> categorias = new(Enum.GetNames(typeof(CategoriaDePlanoEnum)));
+}
+
+<style>
+    .nav-link {
+        color: #999;
+    }
+</style>
+
+<div class="col">
+    <div class="row gap-3 my-3 my-xl-5">
+        <form asp-action="Editar">
+            <div class="col-lg-6 d-grid mb-4">
+                <label class="control-label fw-bold mb-1">Grupo de Automóveis</label>
+                <select class="form-select mb-1" asp-for="GrupoId" asp-items="Model.Grupos">
+                    <option value="" selected disabled></option>
+                </select>
+                <span class="text-danger fs-6" asp-validation-for="GrupoId"></span>
+            </div>
+
+            <div class="col-lg-6 d-grid gap-3">
+                <div class="my-3 my-xl-2">
+                    <label class="control-label fw-bold mb-1">Configuração de planos</label>      
+                    <ul class="nav nav-tabs mb-3" role="tablist">
+                        @for (int i = 0; i < categorias.Count; i++)
+                        {
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link @(i == 0 ? "active" : "")" id="@categorias[i]-tab" data-bs-toggle="tab" data-bs-target="#@categorias[i]" type="button" role="tab" aria-controls="@categorias[i]" aria-selected="true">@categorias[i]</button>
+                            </li>
+                        }
+                    </ul>
+                    <div class="tab-content px-3">
+                        <div class="tab-pane fade show active" id="Diário" role="tabpanel" aria-labelledby="Diário-tab">
+                            <div>
+                                <label class="control-label fw-bold mb-1 mt-2">Preço da diária</label>
+                                <input type="number" class="form-control mb-1" asp-for="PrecoDiaria" />
+                                <span class="text-danger fs-6" asp-validation-for="PrecoDiaria"></span>
+                            </div>
+                            <div>
+                                <label class="control-label fw-bold mb-1 mt-2">Preço por quilômetro</label>
+                                <input type="number" class="form-control mb-1" asp-for="PrecoKm" />
+                                <span class="text-danger fs-6" asp-validation-for="PrecoKm"></span>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="Controlado" role="tabpanel" aria-labelledby="Controlado-tab">
+                            <div>
+                                <label class="control-label fw-bold mb-1 mt-2">Quilometragem disponível</label>
+                                <input type="number" class="form-control mb-1" asp-for="KmDisponivel" />
+                                <span class="text-danger fs-6" asp-validation-for="KmDisponivel"></span>
+                            </div>
+                            <div>
+                                <label class="control-label fw-bold mb-1 mt-2">Preço da diária</label>
+                                <input type="number" class="form-control mb-1" asp-for="PrecoDiariaControlada" />
+                                <span class="text-danger fs-6" asp-validation-for="PrecoDiariaControlada"></span>
+                            </div>
+                            <div>
+                                <label class="control-label fw-bold mb-1 mt-2">Preço por quilômetro extrapolado</label>
+                                <input type="number" class="form-control mb-1" asp-for="PrecoExtrapolado" />
+                                <span class="text-danger fs-6" asp-validation-for="PrecoExtrapolado"></span>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="Livre" role="tabpanel" aria-labelledby="Livre-tab">
+                            <div>
+                                <label class="control-label fw-bold mb-1 mt-2">Preço</label>
+                                <input type="number" class="form-control mb-1" asp-for="PrecoLivre" />
+                                <span class="text-danger fs-6" asp-validation-for="PrecoLivre"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-center gap-3 mt-5 mb-5">
+                            <button class="btn btn-secondary px-5" style="width: 170px">
+                                <i class="bi bi-floppy-fill me-1"></i>
+                                Gravar
+                            </button>
+
+                            <a class="btn btn-outline-secondary px-5" style="width: 170px" href="/PlanoDeCobranca/listar">
+                                <i class="bi bi-arrow-return-left me-1"></i>
+                                Voltar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,62 @@
+﻿@using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca
+@using LocadoraDeVeiculos.WebApp.Models
+@model DetalhesAluguelViewModel
+
+@{
+    var data = (Model.DataRetornoPrevista < Model.DataRetornoReal) ? "text-danger" : "";
+    var dataRetorno = Model.Ativo ? "Ainda alugado" : @Model.DataRetornoReal.ToShortDateString();
+    var situacao = Model.Ativo ? "Ativo" : "Encerrado";
+}
+
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-7">
+            <dl class="row">
+                <dt class="col-sm-5">Situação:</dt>
+                <dd class="col-sm-7">@situacao</dd>
+
+                <dt class="col-sm-5">Cliente:</dt>
+                <dd class="col-sm-7">@Model.ClienteNome</dd>
+
+                <dt class="col-sm-5">Condutor:</dt>
+                <dd class="col-sm-7">@Model.CondutorNome</dd>
+
+                <dt class="col-sm-5">Grupo de automóveis:</dt>
+                <dd class="col-sm-7">@Model.GrupoNome</dd>
+
+                <dt class="col-sm-5">Veículo placa:</dt>
+                <dd class="col-sm-7">@Model.VeiculoPlaca</dd>
+
+                <dt class="col-sm-5">Plano:</dt>
+                <dd class="col-sm-7">@Model.CategoriaPlano</dd>
+
+                <dt class="col-sm-5">Data de saída:</dt>
+                <dd class="col-sm-7">@Model.DataSaida.ToShortDateString()</dd>
+
+                <dt class="col-sm-5">Data de devolução (prevista):</dt>
+                <dd class="col-sm-7">@Model.DataRetornoPrevista.ToShortDateString()</dd>
+
+                <dt class="col-sm-5">Data de devolução:</dt>
+                <dd class="col-sm-7 @data">@dataRetorno</dd>
+
+                <dt class="col-sm-5">Valor total:</dt>
+                <dd class="col-sm-7 @data">@Model.ValorTotal</dd>
+            </dl>
+        </div>
+
+        <div class="col-md-4">
+            <dt class="mb-1">Imagem do veículo:</dt>
+            @if (Model.ImagemEmBytes != null && Model.TipoDaImagem != null)
+            {
+                <img src="data:@Model.TipoDaImagem;base64,@Convert.ToBase64String(Model.ImagemEmBytes)"
+                     alt="Foto do veículo"
+                     class="img-fluid"
+                     style="max-width:80%; height:auto;" />
+            }
+            else
+            {
+                <p>Imagem não disponível.</p>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,28 @@
+﻿@using LocadoraDeVeiculos.WebApp.Models
+@model DetalhesCondutorViewModel
+
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-7">
+            <dl class="row">
+                <dt class="col-sm-4">Condutor:</dt>
+                <dd class="col-sm-6 text-start">@Model.Nome</dd>
+
+                <dt class="col-sm-4">Cliente:</dt>
+                <dd class="col-sm-7">@Model.NomeCliente</dd>
+
+                <dt class="col-sm-4">Email:</dt>
+                <dd class="col-sm-7">@Model.Email</dd>
+
+                <dt class="col-sm-4">Telefone:</dt>
+                <dd class="col-sm-7">@Model.Telefone</dd>
+
+                <dt class="col-sm-4">CPF:</dt>
+                <dd class="col-sm-7">@Model.CPF</dd>
+
+                <dt class="col-sm-4">CNH:</dt>
+                <dd class="col-sm-7">@Model.CNH - válida até @Model.ValidadeCNH.ToShortDateString()</dd>
+            </dl>
+        </div>
+    </div>
+</div>

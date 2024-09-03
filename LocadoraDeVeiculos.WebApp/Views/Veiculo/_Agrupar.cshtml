@@ -1,0 +1,57 @@
+﻿@using LocadoraDeVeiculos.WebApp.Models
+@model IEnumerable<AgrupamentoVeiculosPorGrupoViewModel>
+
+<style>
+    .display-5 {
+        font-size: 35px;
+        margin-top: 40px;
+    }
+</style>
+
+@foreach (var agrupamento in Model)
+{
+    <div class="row gap-1 my-3 my-xl-5">
+        <h4 class="fw-semibold text-secondary">@agrupamento.Grupo</h4>
+        <hr />
+
+        <div class="row gap-4 mt-2">
+            @foreach (var VeiculosVm in agrupamento.Veiculos)
+            {
+                <div class="card col-md-6 col-lg-5 col-xl-4 shadow-sm rounded-3">
+                    <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                        <h6 class="m-0">Id: @VeiculosVm.Id</h6>
+
+                        <div class="text-end d-flex align-items-center gap-2">
+                            <a title="Detalhes" class="text-secondary fs-6" href="/Veiculo/detalhes/@VeiculosVm.Id">
+                                <i class="bi bi-search"></i>
+                            </a>
+                            @if (User.Identity!.IsAuthenticated)
+                            {
+                                <a title="Editar" class="text-secondary fs-6" href="/Veiculo/editar/@VeiculosVm.Id">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <a title="Excluir" class="text-danger fs-6" href="/Veiculo/excluir/@VeiculosVm.Id">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-title">Placa: <strong class="fs-5">[@VeiculosVm.Placa]</strong></p>
+                        <hr />
+                        <div class="row" style="font-size: 15px">
+                            <div class="col-7">
+                                <p class="card-subtitle mb-2"><strong>Modelo:</strong> @VeiculosVm.Modelo</p>
+                                <p class="card-subtitle mb-0"><strong>Combustível:</strong> @VeiculosVm.TipoCombustivel</p>
+                            </div>
+                            <div class="col-5">
+                                <p class="card-subtitle mb-2"><strong>Marca:</strong> @VeiculosVm.Marca</p>
+                                <p class="card-subtitle mb-2"><strong>Cor:</strong> @VeiculosVm.Cor</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

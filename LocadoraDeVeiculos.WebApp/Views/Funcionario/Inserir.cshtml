@@ -1,0 +1,89 @@
+﻿@using LocadoraDeVeiculos.WebApp.Models
+@model InserirFuncionarioViewModel
+
+@{
+    ViewBag.Title = "Inserir novo funcionário";
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <form class="d-grid" method="post">
+            <div class="form-group">
+                <label class="control-label fw-bold mb-1 mt-3" asp-for="Nome"></label>
+                <input asp-for="Nome" class="form-control" />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mt-4 mb-1">Data de Admissão</label>
+                <input type="date" class="form-control mb-1" asp-for="DataAdmissao" id="admissao" />
+                <span class="text-danger fs-6" asp-validation-for="DataAdmissao"></span>
+                <div id="admissaoWarning" class="text-danger fs-6" style="display: none;">
+                    O funcionário deve ter sido admitido em uma data inferior à hoje
+                </div>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mb-1 mt-4">Salário</label>
+                <input type="number" class="form-control mb-1" asp-for="Salario" />
+                <span class="text-danger fs-6" asp-validation-for="Salario"></span>
+            </div>
+
+            <div>
+                <label class="control-label fw-bold mb-1 mt-4" asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <label class="control-label fw-bold mt-4 mb-1">Dados de Login</label>
+            <div style="border: 1px solid #ced4da; border-radius: .25rem; padding: .375rem;">
+                <div class="form-group mx-3 mt-3">
+                    <label asp-for="Senha"></label>
+                    <input asp-for="Senha" class="form-control" />
+                    <span asp-validation-for="Senha" class="text-danger"></span>
+                </div>
+                <div class="form-group mx-3 my-3">
+                    <label asp-for="ConfirmarSenha"></label>
+                    <input asp-for="ConfirmarSenha" class="form-control" />
+                    <span asp-validation-for="ConfirmarSenha" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 my-5">
+                <button type="submit" class="btn btn-secondary px-5" style="width: 170px">Registrar</button>
+
+                <a class="btn btn-outline-secondary" style="width: 170px" href="/Funcionario/listar">
+                    <i class="bi bi-arrow-return-left me-1"></i>
+                    Voltar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        function verificarDataSaida() {
+            const admissaoSelecionada = $('#admissao').val();
+            const dataAdmissao = new Date(admissaoSelecionada);
+            const dataAtual = new Date();
+
+            dataAtual.setDate(dataAtual.getDate() - 1);
+
+            dataAtual.setHours(0, 0, 0, 0);
+            dataAdmissao.setHours(0, 0, 0, 0);
+
+            if (dataAdmissao > dataAtual) {
+                $('#admissao').addClass('is-invalid');
+                $('#admissaoWarning').show();
+            } else {
+                $('#admissao').removeClass('is-invalid');
+                $('#admissaoWarning').hide();
+            }
+        }
+
+        $('#admissao').change(function () {
+            verificarDataSaida();
+        });
+    });
+</script>

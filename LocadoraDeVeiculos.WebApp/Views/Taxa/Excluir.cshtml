@@ -1,0 +1,21 @@
+﻿@using LocadoraDeVeiculos.WebApp.Models
+@model DetalhesTaxaViewModel
+
+@{
+    ViewBag.Title = "Excluir Taxa ou Serviço";
+}
+
+<div class="col">
+    <partial name="_Informacoes" model="Model"></partial>
+
+    <form class="d-grid gap-2 d-md-block" asp-action="Excluir">
+        <button class="btn btn-danger" style="width: 160px">
+            <i class="bi bi-trash-fill me-1"></i>
+            Confirmar
+        </button>
+        <a class="btn btn-outline-secondary px-5" style="width: 160px" href="/Taxa/listar">
+            <i class="bi bi-arrow-return-left me-1"></i>
+            Voltar
+        </a>
+    </form>
+</div>

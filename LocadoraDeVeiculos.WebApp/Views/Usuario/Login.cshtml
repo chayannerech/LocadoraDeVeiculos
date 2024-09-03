@@ -1,0 +1,43 @@
+﻿@using LocadoraDeVeiculos.WebApp.Models
+@model LoginViewModel
+
+@{
+    ViewBag.Title = "Login de Usuário";
+}
+
+<div class="row">
+    <div class="col-lg-6">
+        <form class="d-grid gap-3" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Usuario"></label>
+                <input asp-for="Usuario" class="form-control" />
+                <span asp-validation-for="Usuario" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Senha"></label>
+                <input asp-for="Senha" class="form-control" />
+                <span asp-validation-for="Senha" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox">
+                    <label asp-for="LembrarMe">
+                        <input asp-for="LembrarMe" />
+                        @Html.DisplayNameFor(m => m.LembrarMe)
+                    </label>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 mt-3">
+                <button type="submit" class="btn btn-secondary px-5" style="width: 170px">Login</button>
+
+                <a class="btn btn-outline-secondary" style="width: 170px" href="/">
+                    <i class="bi bi-arrow-return-left me-1"></i>
+                    Voltar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

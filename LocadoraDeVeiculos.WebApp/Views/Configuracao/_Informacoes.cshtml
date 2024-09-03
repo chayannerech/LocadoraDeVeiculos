@@ -1,0 +1,53 @@
+﻿@using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca
+@using LocadoraDeVeiculos.WebApp.Models
+@model DetalhesClienteViewModel
+
+@{
+    var tipoCliente = Model.PessoaFisica ? "Pessoa física" : "Pessoa jurídica";
+    var pessoaFisica = Model.PessoaFisica ? "" : "d-none";
+    var pessoaJuridica = Model.PessoaFisica ? "d-none" : "";
+}
+
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-7">
+            <dl class="row">
+                <dt class="col-sm-5">Nome:</dt>
+                <dd class="col-sm-7">@Model.Nome</dd>
+
+                <dt class="col-sm-5">Email:</dt>
+                <dd class="col-sm-7">@Model.Email</dd>
+
+                <dt class="col-sm-5">Telefone:</dt>
+                <dd class="col-sm-7">@Model.Telefone</dd>
+
+                <div class="col-12">
+                    <h5 class="text-secondary mt-4">@tipoCliente</h5>
+                    <hr class="mt-1 mb-3" />
+                </div>
+                <dt class="col-sm-5 @pessoaFisica">CPF:</dt>
+                <dt class="col-sm-5 @pessoaJuridica">CNPJ:</dt>
+                <dd class="col-sm-7">@Model.Documento</dd>
+
+                <dt class="col-sm-5 @pessoaFisica">RG:</dt>
+                <dd class="col-sm-7 @pessoaFisica">@Model.RG</dd>
+
+                <dt class="col-sm-5 @pessoaFisica">CNH:</dt>
+                <dd class="col-sm-7 @pessoaFisica">@Model.CNH</dd>
+
+                <div class="col-12">
+                    <h5 class="text-secondary mt-4">Endereço</h5>
+                    <hr class="mt-1 mb-3" />
+                </div>
+                <dt class="col-sm-5">Rua:</dt>
+                <dd class="col-sm-7">@Model.Rua, Nº @Model.Numero</dd>
+
+                <dt class="col-sm-5">Bairro:</dt>
+                <dd class="col-sm-7">@Model.Bairro</dd>
+
+                <dt class="col-sm-5">Cidade:</dt>
+                <dd class="col-sm-7">@Model.Cidade/@Model.Estado</dd>
+            </dl>
+        </div>
+    </div>
+</div>
