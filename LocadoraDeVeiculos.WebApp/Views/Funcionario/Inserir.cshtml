@@ -19,7 +19,7 @@
                 <input type="date" class="form-control mb-1" asp-for="DataAdmissao" id="admissao" />
                 <span class="text-danger fs-6" asp-validation-for="DataAdmissao"></span>
                 <div id="admissaoWarning" class="text-danger fs-6" style="display: none;">
-                    O funcionário deve ter sido admitido em uma data inferior à hoje
+                    O funcionário já deve ter sido admitido
                 </div>
             </div>
 
@@ -29,14 +29,18 @@
                 <span class="text-danger fs-6" asp-validation-for="Salario"></span>
             </div>
 
-            <div>
-                <label class="control-label fw-bold mb-1 mt-4" asp-for="Email"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-
             <label class="control-label fw-bold mt-4 mb-1">Dados de Login</label>
             <div style="border: 1px solid #ced4da; border-radius: .25rem; padding: .375rem;">
+                <div class="form-group mx-3 mt-3">
+                    <label asp-for="Login"></label>
+                    <input asp-for="Login" class="form-control" />
+                    <span asp-validation-for="Login" class="text-danger"></span>
+                </div>
+                <div class="form-group mx-3 mt-3">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
                 <div class="form-group mx-3 mt-3">
                     <label asp-for="Senha"></label>
                     <input asp-for="Senha" class="form-control" />
@@ -50,7 +54,7 @@
             </div>
 
             <div class="d-flex justify-content-center gap-3 my-5">
-                <button type="submit" class="btn btn-secondary px-5" style="width: 170px">Registrar</button>
+                <button type="submit" class="btn btn-secondary px-5" style="width: 170px">Concluir</button>
 
                 <a class="btn btn-outline-secondary" style="width: 170px" href="/Funcionario/listar">
                     <i class="bi bi-arrow-return-left me-1"></i>
@@ -61,15 +65,17 @@
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Certifique-se de incluir o jQuery -->
 <script>
     $(document).ready(function () {
         function verificarDataSaida() {
             const admissaoSelecionada = $('#admissao').val();
+            if (!admissaoSelecionada) return;  // Verifica se a data foi selecionada
+
             const dataAdmissao = new Date(admissaoSelecionada);
             const dataAtual = new Date();
 
             dataAtual.setDate(dataAtual.getDate() - 1);
-
             dataAtual.setHours(0, 0, 0, 0);
             dataAdmissao.setHours(0, 0, 0, 0);
 

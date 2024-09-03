@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 {
     [DbContext(typeof(LocadoraDeVeiculosDbContext))]
-    [Migration("20240903044200_BancoDeDados")]
+    [Migration("20240903165912_BancoDeDados")]
     partial class BancoDeDados
     {
         /// <inheritdoc />
@@ -249,7 +249,7 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<DateTime>("DataAdmissao")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("Login")
                         .IsRequired()
                         .HasColumnType("varchar(200)");
 

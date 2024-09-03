@@ -16,7 +16,7 @@ public class MapeadorFuncionarioEmOrm : IEntityTypeConfiguration<Funcionario>
             .IsRequired()
             .HasColumnType("varchar(200)");
 
-        fBuilder.Property(f => f.Email)
+        fBuilder.Property(f => f.Login)
             .IsRequired()
             .HasColumnType("varchar(200)");
 

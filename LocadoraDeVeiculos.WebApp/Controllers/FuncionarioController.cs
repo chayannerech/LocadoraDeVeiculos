@@ -23,7 +23,9 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
 
         var registros = resultado.Value;
 
-        if (servicoFuncionario.SemRegistros())
+        ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
+
+        if (servicoFuncionario.SemRegistros() && ViewBag.Mensagem is null)
             ApresentarMensagemSemRegistros();
 
         var listarFuncionarioVm = mapeador.Map<IEnumerable<ListarFuncionarioViewModel>>(registros);
@@ -57,7 +59,7 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
 
         var usuario = new Usuario()
         {
-            UserName = inserirRegistroVm.Nome!.Replace(" ", ""),
+            UserName = inserirRegistroVm.Login,
             Email = inserirRegistroVm.Email
         };
 
@@ -86,7 +88,7 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
         return RedirectToAction(nameof(Listar));
     }
 
-    public IActionResult Editar(int id)
+    public async Task<IActionResult> Editar(int id)
     {
         var resultado = servicoFuncionario.SelecionarPorId(id);
 
@@ -95,7 +97,14 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
 
         var registro = resultado.Value;
 
+        var usuario = await userManager.FindByNameAsync(registro.Login);
+
+        if (ValidarUsuario(usuario, registro, "identificado"))
+            return RedirectToAction(nameof(Listar));
+
         var editarRegistroVm = mapeador.Map<EditarFuncionarioViewModel>(registro);
+
+        editarRegistroVm.Email = usuario!.Email;
 
         return View(editarRegistroVm);
     }    
@@ -106,7 +115,7 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
              return View(editarRegistroVm);
 
         var registro = mapeador.Map<Funcionario>(editarRegistroVm);
-        var loginAtual = servicoFuncionario.SelecionarPorId(editarRegistroVm.Id).Value.Nome.Replace(" ", "");
+        var loginAtual = servicoFuncionario.SelecionarPorId(editarRegistroVm.Id).Value.Login;
 
         var resultado = servicoFuncionario.Editar(registro);
 
@@ -115,10 +124,10 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
 
         var usuario = await userManager.FindByNameAsync(loginAtual);
 
-        if (ValidarUsuario(usuario, registro))
+        if (ValidarUsuario(usuario, registro, "editado"))
             return RedirectToAction(nameof(Listar));
 
-        usuario!.UserName = editarRegistroVm.Nome!.Replace(" ", "");
+        usuario!.UserName = editarRegistroVm.Login;
         usuario!.Email = editarRegistroVm.Email;
 
         var result = await userManager.UpdateAsync(usuario);
@@ -132,7 +141,7 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
     }
 
 
-    public IActionResult Excluir(int id)
+    public async Task<IActionResult> Excluir(int id)
     {
         var resultado = servicoFuncionario.SelecionarPorId(id);
 
@@ -141,7 +150,13 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
 
         var registro = resultado.Value;
 
+        var usuario = await userManager.FindByNameAsync(registro.Login);
+
+        if (ValidarUsuario(usuario, registro, "identificado"))
+            return RedirectToAction(nameof(Listar));
+
         var detalhesRegistroVm = mapeador.Map<DetalhesFuncionarioViewModel>(registro);
+        detalhesRegistroVm.Email = usuario!.Email;
 
         return View(detalhesRegistroVm);
     }
@@ -149,14 +164,14 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
     public async Task<IActionResult> Excluir(DetalhesFuncionarioViewModel detalhesRegistroVm)
     {
         var registro = servicoFuncionario.SelecionarPorId(detalhesRegistroVm.Id).Value;
-        var usuario = await userManager.FindByNameAsync(registro.Nome.Replace(" ", ""));
+        var usuario = await userManager.FindByNameAsync(registro.Login);
 
         var resultado = servicoFuncionario.Excluir(detalhesRegistroVm.Id);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        if (ValidarUsuario(usuario, registro))
+        if (ValidarUsuario(usuario, registro, "excluído"))
             return RedirectToAction(nameof(Listar));
 
         var result = await userManager.DeleteAsync(usuario!);
@@ -169,7 +184,7 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
         return RedirectToAction(nameof(Listar));
     }
 
-    public IActionResult Detalhes(int id)
+    public async Task<IActionResult> Detalhes(int id)
     {
         var resultado = servicoFuncionario.SelecionarPorId(id);
 
@@ -178,8 +193,13 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
 
         var registro = resultado.Value;
 
+        var usuario = await userManager.FindByNameAsync(registro.Login);
+
+        if (ValidarUsuario(usuario, registro, "identificado"))
+            return RedirectToAction(nameof(Listar));
+
         var detalhesRegistroVm = mapeador.Map<DetalhesFuncionarioViewModel>(registro);
-        detalhesRegistroVm.Email = registro.Email;
+        detalhesRegistroVm.Email = usuario!.Email;
 
         return View(detalhesRegistroVm);
     }
@@ -194,11 +214,11 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
         }
         return false;
     }
-    protected bool ValidarUsuario(Usuario? usuario, Funcionario funcionario)
+    protected bool ValidarUsuario(Usuario? usuario, Funcionario funcionario, string acao)
     {
         if (usuario is null)
         {
-            ApresentarMensagemSucesso($"O registro \"{funcionario}\" foi editado com sucesso, mas o login não foi encontrado");
+            ApresentarMensagemSucesso($"O registro \"{funcionario}\" foi {acao} com sucesso, mas o login não foi encontrado");
             return true;
         }
         return false;

@@ -252,7 +252,7 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     Nome = table.Column<string>(type: "varchar(200)", nullable: false),
                     DataAdmissao = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Salario = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Email = table.Column<string>(type: "varchar(200)", nullable: false),
+                    Login = table.Column<string>(type: "varchar(200)", nullable: false),
                     Usuario_Id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

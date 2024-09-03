@@ -19,9 +19,9 @@ public class FuncionarioService(IRepositorioFuncionario repositorioFuncionario)
             return Result.Fail("O funcionário não foi encontrado!");
 
         registro.Nome = registroAtualizado.Nome;
+        registro.Login = registroAtualizado.Login;
         registro.DataAdmissao = registroAtualizado.DataAdmissao;
         registro.Salario = registroAtualizado.Salario;
-        registro.Email = registroAtualizado.Email;
 
         repositorioFuncionario.Editar(registro);
 

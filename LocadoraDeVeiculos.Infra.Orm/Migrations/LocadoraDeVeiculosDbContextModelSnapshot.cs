@@ -246,7 +246,7 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<DateTime>("DataAdmissao")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("Login")
                         .IsRequired()
                         .HasColumnType("varchar(200)");
 
