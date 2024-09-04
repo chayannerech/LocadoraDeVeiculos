@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeCondutor.WebApp.Controllers;
 
-[Authorize(Roles = "Empresa, Funcionário")]
-public class CondutorController(CondutorService servicoCondutor, ClienteService servicoCliente, AluguelService servicoAluguel, IMapper mapeador) : WebControllerBase
+[Authorize(Roles = "Empresa, Funcionario")]
+public class CondutorController(CondutorService servicoCondutor, ClienteService servicoCliente, AluguelService servicoAluguel, FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase(servicoFuncionario)
 {
     public IActionResult Listar()
     {
@@ -36,7 +36,7 @@ public class CondutorController(CondutorService servicoCondutor, ClienteService 
 
     public IActionResult Inserir()
     {
-        if (servicoCliente.SemRegistros())
+        if (servicoCliente.SemRegistros(UsuarioId))
         {
             ApresentarMensagemSemDependencias("Clientes");
             return RedirectToAction(nameof(Listar));

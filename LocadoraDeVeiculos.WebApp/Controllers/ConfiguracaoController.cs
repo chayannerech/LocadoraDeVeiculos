@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 
-[Authorize(Roles = "Empresa, Funcionário")]
-public class ConfiguracaoController(ConfiguracaoService servicoConfiguracao, IMapper mapeador) : WebControllerBase
+[Authorize(Roles = "Empresa, Funcionario")]
+public class ConfiguracaoController(ConfiguracaoService servicoConfiguracao, FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase(servicoFuncionario)
 {
     public IActionResult Inserir() => View();
     [HttpPost]

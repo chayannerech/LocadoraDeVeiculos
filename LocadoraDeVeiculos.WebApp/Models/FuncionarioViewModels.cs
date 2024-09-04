@@ -67,7 +67,7 @@ public class LoginValidoAttribute : ValidationAttribute
     {
         if (value is string data)
         {
-            if (!data.ToCharArray().Grupoins(' '))
+            if (!data.ToCharArray().Contains(' '))
                 return ValidationResult.Success!;
             else
                 return new ValidationResult(ErrorMessage ?? "O Login não deve conter espaços");

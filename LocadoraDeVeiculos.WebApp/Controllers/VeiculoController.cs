@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
-using LocadoraDeVeiculos.Dominio.Compartilhado;
-using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculo;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
@@ -11,9 +9,8 @@ using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Win32;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
-public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisService servicoGrupo, AluguelService servicoAluguel, IMapper mapeador) : WebControllerBase
+public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisService servicoGrupo, AluguelService servicoAluguel, FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase(servicoFuncionario)
 {
     public IActionResult Listar()
     {
@@ -40,7 +37,7 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Inserir()
     {
         if (servicoGrupo.SemRegistros())
@@ -78,7 +75,7 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Editar(int id)
     {
         var resultado = servicoVeiculo.SelecionarPorId(id);
@@ -129,7 +126,7 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Excluir(int id)
     {
         var resultado = servicoVeiculo.SelecionarPorId(id);

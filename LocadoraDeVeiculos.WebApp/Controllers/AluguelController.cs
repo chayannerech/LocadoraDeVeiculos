@@ -10,9 +10,10 @@ using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 namespace LocadoraDeAluguel.WebApp.Controllers;
 
-[Authorize(Roles = "Empresa, Funcionário")]
+[Authorize(Roles = "Empresa, Funcionario")]
 public class AluguelController(
         AluguelService servicoAluguel,
         CondutorService servicoCondutor,
@@ -22,7 +23,8 @@ public class AluguelController(
         VeiculoService servicoVeiculo,
         TaxaService servicoTaxa,
         ConfiguracaoService servicoConfiguracao,
-        IMapper mapeador) : WebControllerBase
+        FuncionarioService servicoFuncionario,
+        IMapper mapeador) : WebControllerBase(servicoFuncionario)
 {
     public IActionResult Listar()
     {
@@ -358,9 +360,9 @@ public class AluguelController(
     }
     private bool SemDependencias()
     {
-        if (servicoCliente.SemRegistros() || servicoCondutor.SemRegistros() || servicoGrupo.SemRegistros() || servicoVeiculo.SemRegistros() || servicoPlano.SemRegistros() || servicoConfiguracao.SemRegistros())
+        if (servicoCliente.SemRegistros(UsuarioId) || servicoCondutor.SemRegistros() || servicoGrupo.SemRegistros() || servicoVeiculo.SemRegistros() || servicoPlano.SemRegistros() || servicoConfiguracao.SemRegistros())
         {
-            if (servicoCliente.SemRegistros())
+            if (servicoCliente.SemRegistros(UsuarioId))
                 ApresentarMensagemSemDependencias("Clientes");
 
             if (servicoCondutor.SemRegistros())

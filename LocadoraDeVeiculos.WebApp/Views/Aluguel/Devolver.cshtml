@@ -332,7 +332,7 @@
                     const precoDiariaControlada = parseFloat(planoData.data('precodiariacontrolada'));
                     valorPlano = precoDiariaControlada * dias;
                 } else if (planoSelecionado === "livre") {
-                    valorPlano = parseFloat(planoData.data('precolivre'));
+                    valorPlano = parseFloat(planoData.data('precolivre')) * dias;
                 }
 
                 $('#valorPlano').val(valorPlano.toFixed(2));

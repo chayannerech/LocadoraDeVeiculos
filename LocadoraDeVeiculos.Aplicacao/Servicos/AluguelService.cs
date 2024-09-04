@@ -11,6 +11,7 @@ public class AluguelService(
         IRepositorioAluguel repositorioAluguel, 
         IRepositorioCondutor repositorioCondutor, 
         IRepositorioCliente repositorioCliente,
+        IRepositorioTaxa repositorioTaxa,
         IRepositorioGrupoDeAutomoveis repositorioGrupo,
         IRepositorioVeiculo repositorioVeiculo)
 {
@@ -36,6 +37,8 @@ public class AluguelService(
         registro.VeiculoId = veiculoSelecionado.Id;
         registro.VeiculoPlaca = veiculoSelecionado.Placa;
         registro.Ativo = true;
+
+        List<Taxa> taxas = [];
 
         var erros = registro.Validar();
         if (erros.Count != 0)
@@ -190,5 +193,5 @@ public class AluguelService(
     => repositorioAluguel.SelecionarTodos().FindAll(a => a.CondutorId == registro.Id).Any(a => a.Ativo);
 
     public bool AluguelRelacionadoAtivo(Taxa registro)
-        => repositorioAluguel.SelecionarTodos().FindAll(a => a.TaxasSelecionadasId.Split(',').Grupoins($"{registro.Id}")).Any(a => a.Ativo);
+        => repositorioAluguel.SelecionarTodos().FindAll(a => a.TaxasSelecionadasId.Split(',').Contains($"{registro.Id}")).Any(a => a.Ativo);
 }

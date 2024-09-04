@@ -402,7 +402,7 @@
                     valorTotal = valorTotal + (dias * precoDiariaControlada);
                 } else if (planoSelecionado === "livre") {
                     const precoLivre = parseFloat(grupoSelecionado.data('preco-livre')) || 0;
-                    valorTotal = valorTotal + precoLivre;
+                    valorTotal = valorTotal + (precoLivre * dias);
                 }
 
                 $('.taxa-checkbox:checked').each(function () {

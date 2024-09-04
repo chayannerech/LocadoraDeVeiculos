@@ -8,7 +8,7 @@ using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
-public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAluguel, IMapper mapeador) : WebControllerBase
+public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAluguel, FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase(servicoFuncionario)
 {
     public IActionResult Listar()
     {
@@ -33,7 +33,7 @@ public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAlugu
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Inserir() => View();
     [HttpPost]
     public IActionResult Inserir(InserirTaxaViewModel inserirRegistroVm)
@@ -62,7 +62,7 @@ public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAlugu
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Editar(int id)
     {
         var resultado = servicoTaxa.SelecionarPorId(id);
@@ -107,7 +107,7 @@ public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAlugu
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Excluir(int id)
     {
         var resultado = servicoTaxa.SelecionarPorId(id);

@@ -8,10 +8,11 @@ public class Taxa() : EntidadeBase
     public bool PrecoFixo { get; set; }
     public bool Seguro { get; set; }
 
-    public Taxa(string nome, decimal preco) : this()
+    public Taxa(string nome, decimal preco, bool precoFixo) : this()
     {
         Nome = nome;
         Preco = preco;
+        PrecoFixo = precoFixo;
     }
 
     public List<string> Validar()

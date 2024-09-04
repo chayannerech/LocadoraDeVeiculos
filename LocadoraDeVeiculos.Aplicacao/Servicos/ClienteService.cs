@@ -64,8 +64,8 @@ public class ClienteService(IRepositorioCliente repositorioCliente, IRepositorio
         return Result.Ok(registros);
     }
 
-    public bool SemRegistros()
-        => repositorioCliente.SelecionarTodos().Count == 0;
+    public bool SemRegistros(int? usuarioId)
+        => repositorioCliente.Filtrar(f => f.UsuarioId == usuarioId).Count == 0;
 
     public bool ValidarRegistroRepetido(Cliente novoRegistro, out string itemRepetido)
     {

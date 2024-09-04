@@ -1,18 +1,28 @@
 ﻿using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
-using LocadoraDeVeiculos.Dominio.Compartilhado;
-using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 namespace LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
-public abstract class WebControllerBase : Controller
+public abstract class WebControllerBase(FuncionarioService servicoFuncionario) : Controller
 {
     protected int? UsuarioId
     {
         get
         {
+            if (User.IsInRole("Funcionario"))
+            {
+                var funcionarioLogin = User
+                    .FindFirst(ClaimTypes.NameIdentifier)!
+                    .Subject!
+                    .Name!.ToString();
+
+                var funcionario = servicoFuncionario.SelecionarPorLogin(funcionarioLogin).Value;
+
+                return funcionario.UsuarioId;
+            }
+
             var usuarioAutenticado = User.FindFirst(ClaimTypes.NameIdentifier);
 
             if (usuarioAutenticado is null)

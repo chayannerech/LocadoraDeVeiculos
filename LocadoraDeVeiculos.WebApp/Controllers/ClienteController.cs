@@ -2,20 +2,19 @@
 using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
-using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 
-[Authorize(Roles = "Empresa, Funcionário")]
-public class ClienteController(ClienteService servicoCliente, CondutorService servicoCondutor, AluguelService servicoAluguel, IMapper mapeador) : WebControllerBase
+[Authorize(Roles = "Empresa, Funcionario")]
+public class ClienteController(ClienteService servicoCliente, CondutorService servicoCondutor, AluguelService servicoAluguel, FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase(servicoFuncionario)
 {
     public IActionResult Listar()
-
     {
         var resultado = servicoCliente.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
@@ -24,7 +23,7 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
 
         var registros = resultado.Value;
 
-        if (servicoCliente.SemRegistros())
+        if (servicoCliente.SemRegistros(UsuarioId.GetValueOrDefault()))
             ApresentarMensagemSemRegistros();
 
         var listarClienteVm = mapeador.Map<IEnumerable<ListarClienteViewModel>>(registros);

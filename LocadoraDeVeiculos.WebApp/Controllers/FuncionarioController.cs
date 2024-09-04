@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 
 [Authorize(Roles = "Empresa")]
-public class FuncionarioController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager, RoleManager<Perfil> roleManager, FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase
+public class FuncionarioController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager, RoleManager<Perfil> roleManager, FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase(servicoFuncionario)
 {
     public IActionResult Listar()
     {

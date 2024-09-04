@@ -50,6 +50,16 @@ public class FuncionarioService(IRepositorioFuncionario repositorioFuncionario)
         return Result.Ok(registro);
     }
 
+    public Result<Funcionario> SelecionarPorLogin(string registroLogin)
+    {
+        var registro = repositorioFuncionario.SelecionarTodos().Find(f => f.Login == registroLogin);
+
+        if (registro is null)
+            return Result.Fail("O funcionário não foi encontrado!");
+
+        return Result.Ok(registro);
+    }
+
     public Result<List<Funcionario>> SelecionarTodos(int usuarioId)
     {
         var registros = repositorioFuncionario
@@ -67,7 +77,7 @@ public class FuncionarioService(IRepositorioFuncionario repositorioFuncionario)
         var registroAtual = novoRegistro.Id == 0 ? new() { Nome = "" } : repositorioFuncionario.SelecionarPorId(novoRegistro.Id)!;
 
         return registrosExistentes.Exists(r =>
-            r.Nome.Validation() == novoRegistro.Nome.Validation() &&
-            r.Nome.Validation() != registroAtual.Nome.Validation());
+            r.Login == novoRegistro.Login &&
+            r.Login != registroAtual.Login);
     }
 }

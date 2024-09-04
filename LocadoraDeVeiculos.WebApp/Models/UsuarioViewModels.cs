@@ -3,6 +3,7 @@ namespace LocadoraDeVeiculos.WebApp.Models;
 public class RegistrarViewModel
 {
     [Required]
+    [LoginValido]
     public string? Usuario { get; set; }
 
 

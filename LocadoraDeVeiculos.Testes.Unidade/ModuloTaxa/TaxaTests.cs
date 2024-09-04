@@ -8,7 +8,7 @@ namespace LocadoraDeVeiculos.Testes.Unidade.ModuloTaxa
         [TestMethod]
         public void Deve_Validar_Taxa_Corretamente()
         {
-            var registroInvalido = new Taxa("", 0);
+            var registroInvalido = new Taxa("", 0, false);
 
             List<string> errosEsperados =
             [

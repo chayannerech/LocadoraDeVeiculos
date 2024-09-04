@@ -8,7 +8,7 @@ using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
-public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, VeiculoService servicoVeiculo, AluguelService servicoAluguel, PlanoDeCobrancaService servicoPlano, IMapper mapeador) : WebControllerBase
+public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, VeiculoService servicoVeiculo, AluguelService servicoAluguel, PlanoDeCobrancaService servicoPlano, FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase(servicoFuncionario)
 {
     public IActionResult Listar()
     {
@@ -33,7 +33,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Inserir() => View();
     [HttpPost]
     public IActionResult Inserir(InserirGrupoDeAutomoveisViewModel inserirRegistroVm)
@@ -62,7 +62,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Editar(int id)
     {
         var resultado = servicoGrupo.SelecionarPorId(id);
@@ -103,7 +103,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Excluir(int id)
     {
         var resultado = servicoGrupo.SelecionarPorId(id);
