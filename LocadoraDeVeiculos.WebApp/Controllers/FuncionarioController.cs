@@ -12,7 +12,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 
 [Authorize(Roles = "Empresa")]
-public class FuncionarioController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager, RoleManager<Perfil> roleManager, FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase(servicoFuncionario)
+public class FuncionarioController(
+    UserManager<Usuario> userManager, 
+    RoleManager<Perfil> roleManager, 
+    FuncionarioService servicoFuncionario, 
+    AluguelService servicoAluguel,
+    IMapper mapeador) : WebControllerBase(servicoFuncionario)
 {
     public IActionResult Listar()
     {
@@ -25,7 +30,7 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
 
         ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 
-        if (servicoFuncionario.SemRegistros() && ViewBag.Mensagem is null)
+        if (servicoFuncionario.SemRegistros(UsuarioId.GetValueOrDefault()) && ViewBag.Mensagem is null)
             ApresentarMensagemSemRegistros();
 
         var listarFuncionarioVm = mapeador.Map<IEnumerable<ListarFuncionarioViewModel>>(registros);
@@ -44,7 +49,7 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
 
         var novoRegistro = mapeador.Map<Funcionario>(inserirRegistroVm);
 
-        if (servicoFuncionario.ValidarRegistroRepetido(novoRegistro))
+        if (servicoFuncionario.ValidarRegistroRepetido(novoRegistro, UsuarioId.GetValueOrDefault()))
         {
             ApresentarMensagemRegistroExistente("Já existe um cadastro com este login");
             return View(inserirRegistroVm);
@@ -150,6 +155,12 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
 
         var registro = resultado.Value;
 
+        if (servicoAluguel.AluguelRelacionadoAtivo(registro))
+        {
+            ApresentarMensagemImpossivelExcluir("Existe um aluguel ativo relacionado");
+            return RedirectToAction(nameof(Listar));
+        }
+
         var usuario = await userManager.FindByNameAsync(registro.Login);
 
         if (ValidarUsuario(usuario, registro, "identificado"))
@@ -166,7 +177,7 @@ public class FuncionarioController(UserManager<Usuario> userManager, SignInManag
         var registro = servicoFuncionario.SelecionarPorId(detalhesRegistroVm.Id).Value;
         var usuario = await userManager.FindByNameAsync(registro.Login);
 
-        var resultado = servicoFuncionario.Excluir(detalhesRegistroVm.Id);
+        var resultado = servicoFuncionario.Desativar(detalhesRegistroVm.Id);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));

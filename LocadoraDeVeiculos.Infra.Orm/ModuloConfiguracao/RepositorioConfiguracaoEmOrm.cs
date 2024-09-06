@@ -11,7 +11,6 @@ public class RepositorioConfiguracaoEmOrm(LocadoraDeVeiculosDbContext _dbContext
 
         _dbContext.SaveChanges();
     }
-
     public void Editar(Configuracao entidade)
     {
         ObterRegistros().Update(entidade);
@@ -22,11 +21,10 @@ public class RepositorioConfiguracaoEmOrm(LocadoraDeVeiculosDbContext _dbContext
     protected DbSet<Configuracao> ObterRegistros() 
         => _dbContext.Configuracoes;
 
-    public List<Configuracao> Filtrar(Func<Configuracao, bool> predicate)
+    public Configuracao? Selecionar(int usuarioId)
         => ObterRegistros()
-            .Where(predicate)
-            .ToList();
-
-    public virtual Configuracao? Selecionar()
-        => ObterRegistros().ToList().Count == 0 ? new() : ObterRegistros().ToList()[0];
+            .Where(c => c.UsuarioId == usuarioId)
+            .ToList().Count == 0 ? null : ObterRegistros()
+            .Where(c => c.UsuarioId == usuarioId)
+            .ToList().First();
 }

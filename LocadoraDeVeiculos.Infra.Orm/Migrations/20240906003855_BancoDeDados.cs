@@ -159,39 +159,6 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TBAluguel",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CondutorNome = table.Column<string>(type: "varchar(200)", nullable: false),
-                    CondutorId = table.Column<int>(type: "int", nullable: false),
-                    ClienteNome = table.Column<string>(type: "varchar(200)", nullable: false),
-                    ClienteId = table.Column<int>(type: "int", nullable: false),
-                    GrupoNome = table.Column<string>(type: "varchar(200)", nullable: false),
-                    GrupoId = table.Column<int>(type: "int", nullable: false),
-                    CategoriaPlano = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    VeiculoId = table.Column<int>(type: "int", nullable: false),
-                    VeiculoPlaca = table.Column<string>(type: "varchar(10)", nullable: false),
-                    DataSaida = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DataRetornoPrevista = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DataRetornoReal = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TaxasSelecionadasId = table.Column<string>(type: "varchar(10)", nullable: false),
-                    ValorTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Ativo = table.Column<bool>(type: "bit", nullable: false),
-                    Usuario_Id = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TBAluguel", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TBAluguel_AspNetUsers_Usuario_Id",
-                        column: x => x.Usuario_Id,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TBCliente",
                 columns: table => new
                 {
@@ -209,7 +176,8 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     Bairro = table.Column<string>(type: "varchar(200)", nullable: false),
                     Rua = table.Column<string>(type: "varchar(200)", nullable: false),
                     Numero = table.Column<int>(type: "int", nullable: false),
-                    Usuario_Id = table.Column<int>(type: "int", nullable: false)
+                    Usuario_Id = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -253,7 +221,8 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     DataAdmissao = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Salario = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Login = table.Column<string>(type: "varchar(200)", nullable: false),
-                    Usuario_Id = table.Column<int>(type: "int", nullable: false)
+                    Usuario_Id = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -275,7 +244,8 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     PrecoDiaria = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PrecoDiariaControlada = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PrecoLivre = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Usuario_Id = table.Column<int>(type: "int", nullable: false)
+                    Usuario_Id = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -297,7 +267,8 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     Preco = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PrecoFixo = table.Column<bool>(type: "bit", nullable: false),
                     Seguro = table.Column<bool>(type: "bit", nullable: false),
-                    Usuario_Id = table.Column<int>(type: "int", nullable: false)
+                    Usuario_Id = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -322,7 +293,8 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     CPF = table.Column<string>(type: "varchar(15)", nullable: false),
                     CNH = table.Column<string>(type: "varchar(15)", nullable: false),
                     ValidadeCNH = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Usuario_Id = table.Column<int>(type: "int", nullable: false)
+                    Usuario_Id = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -353,7 +325,8 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     PrecoDiariaControlada = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PrecoExtrapolado = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PrecoLivre = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Usuario_Id = table.Column<int>(type: "int", nullable: false)
+                    Usuario_Id = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -384,11 +357,13 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     TipoCombustivel = table.Column<string>(type: "varchar(50)", nullable: false),
                     CapacidadeCombustivel = table.Column<int>(type: "int", nullable: false),
                     Ano = table.Column<int>(type: "int", nullable: false),
+                    KmRodados = table.Column<int>(type: "int", nullable: false),
                     ImagemEmBytes = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
                     TipoDaImagem = table.Column<string>(type: "nvarchar(255)", nullable: false),
                     Grupo_Id = table.Column<int>(type: "int", nullable: false),
                     Alugado = table.Column<bool>(type: "bit", nullable: false),
-                    Usuario_Id = table.Column<int>(type: "int", nullable: false)
+                    Usuario_Id = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -404,6 +379,86 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         principalTable: "TBGrupoDeAutomoveis",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TBAluguel",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Condutor_Id = table.Column<int>(type: "int", nullable: false),
+                    Cliente_Id = table.Column<int>(type: "int", nullable: false),
+                    Grupo_Id = table.Column<int>(type: "int", nullable: false),
+                    Plano_Id = table.Column<int>(type: "int", nullable: false),
+                    CategoriaPlano = table.Column<int>(type: "int", nullable: false),
+                    Veiculo_Id = table.Column<int>(type: "int", nullable: false),
+                    Funcionario_Id = table.Column<int>(type: "int", nullable: false),
+                    Entrada = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DataSaida = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataRetornoPrevista = table.Column<DateTime>(type: "datetime", nullable: false),
+                    TaxasSelecionadasId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AluguelAtivo = table.Column<bool>(type: "bit", nullable: false),
+                    ValorTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DataRetornoReal = table.Column<DateTime>(type: "datetime", nullable: false),
+                    KmInicial = table.Column<int>(type: "int", nullable: false),
+                    KmFinal = table.Column<int>(type: "int", nullable: false),
+                    TanqueCheio = table.Column<bool>(type: "bit", nullable: false),
+                    Configuracao_Id = table.Column<int>(type: "int", nullable: false),
+                    UsuarioId = table.Column<int>(type: "int", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TBAluguel", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TBAluguel_AspNetUsers_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TBAluguel_TBCliente_Cliente_Id",
+                        column: x => x.Cliente_Id,
+                        principalTable: "TBCliente",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TBAluguel_TBCondutor_Condutor_Id",
+                        column: x => x.Condutor_Id,
+                        principalTable: "TBCondutor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TBAluguel_TBConfiguracao_Configuracao_Id",
+                        column: x => x.Configuracao_Id,
+                        principalTable: "TBConfiguracao",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TBAluguel_TBFuncionario_Funcionario_Id",
+                        column: x => x.Funcionario_Id,
+                        principalTable: "TBFuncionario",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TBAluguel_TBGrupoDeAutomoveis_Grupo_Id",
+                        column: x => x.Grupo_Id,
+                        principalTable: "TBGrupoDeAutomoveis",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TBAluguel_TBPlanoDeCobranca_Plano_Id",
+                        column: x => x.Plano_Id,
+                        principalTable: "TBPlanoDeCobranca",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TBAluguel_TBVeiculos_Veiculo_Id",
+                        column: x => x.Veiculo_Id,
+                        principalTable: "TBVeiculos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -446,9 +501,44 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TBAluguel_Usuario_Id",
+                name: "IX_TBAluguel_Cliente_Id",
                 table: "TBAluguel",
-                column: "Usuario_Id");
+                column: "Cliente_Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TBAluguel_Condutor_Id",
+                table: "TBAluguel",
+                column: "Condutor_Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TBAluguel_Configuracao_Id",
+                table: "TBAluguel",
+                column: "Configuracao_Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TBAluguel_Funcionario_Id",
+                table: "TBAluguel",
+                column: "Funcionario_Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TBAluguel_Grupo_Id",
+                table: "TBAluguel",
+                column: "Grupo_Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TBAluguel_Plano_Id",
+                table: "TBAluguel",
+                column: "Plano_Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TBAluguel_UsuarioId",
+                table: "TBAluguel",
+                column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TBAluguel_Veiculo_Id",
+                table: "TBAluguel",
+                column: "Veiculo_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TBCliente_Usuario_Id",
@@ -528,6 +618,12 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                 name: "TBAluguel");
 
             migrationBuilder.DropTable(
+                name: "TBTaxa");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
                 name: "TBCondutor");
 
             migrationBuilder.DropTable(
@@ -540,13 +636,7 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                 name: "TBPlanoDeCobranca");
 
             migrationBuilder.DropTable(
-                name: "TBTaxa");
-
-            migrationBuilder.DropTable(
                 name: "TBVeiculos");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "TBCliente");

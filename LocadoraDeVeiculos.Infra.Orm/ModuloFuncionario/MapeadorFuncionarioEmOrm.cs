@@ -28,6 +28,9 @@ public class MapeadorFuncionarioEmOrm : IEntityTypeConfiguration<Funcionario>
             .IsRequired()
             .HasColumnType("decimal(18,2)");
 
+        fBuilder.Property(f => f.Ativo)
+            .HasColumnType("bit");
+
         fBuilder.Property(s => s.UsuarioId)
             .IsRequired()
             .HasColumnType("int")

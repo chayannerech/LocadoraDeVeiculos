@@ -5,6 +5,7 @@ public abstract class EntidadeBase
     public int Id { get; set; }
     public int UsuarioId { get; set; }
     public Usuario? Usuario { get; set; }
+    public bool Ativo { get; set; } = true;
 
 
     protected void VerificaNulo(ref List<string> erros, string campoTestado, string mostraCampo)

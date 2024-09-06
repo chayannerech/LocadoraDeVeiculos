@@ -22,7 +22,7 @@ public class HomeController(
     public ViewResult Index()
     {
         var resultadoAgrupamentos =
-            servicoVeiculo.ObterVeiculosAgrupadosPorGrupo();
+            servicoVeiculo.ObterVeiculosAgrupadosPorGrupo(UsuarioId.GetValueOrDefault());
 
         var agrupamentos = resultadoAgrupamentos.Value;
 

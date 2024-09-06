@@ -1,5 +1,8 @@
 ﻿using LocadoraDeVeiculos.Dominio.Compartilhado;
+using LocadoraDeVeiculos.Dominio.ModuloCliente;
+using LocadoraDeVeiculos.Dominio.ModuloCondutor;
 using LocadoraDeVeiculos.Dominio.ModuloConfiguracao;
+using LocadoraDeVeiculos.Dominio.ModuloFuncionario;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloTaxa;
@@ -7,108 +10,112 @@ using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 namespace LocadoraDeVeiculos.Dominio.ModuloAluguel;
 public class Aluguel() : EntidadeBase
 {
-    public string CondutorNome { get; set; }
-    public int CondutorId { get; set; }
-
-    public string ClienteNome { get; set; }
-    public int ClienteId { get; set; }
-
-    public string GrupoNome { get; set; }
-    public int GrupoId { get; set; }
-
+    #region Propriedades de Retirada
+    public Condutor Condutor { get; set; }
+    public Cliente Cliente { get; set; }
+    public GrupoDeAutomoveis Grupo { get; set; }
+    public PlanoDeCobranca Plano { get; set; }
     public CategoriaDePlanoEnum CategoriaPlano { get; set; }
-
-    public int VeiculoId { get; set; }
-    public string VeiculoPlaca { get; set; }
-
+    public Veiculo Veiculo { get; set; }
+    public Funcionario Funcionario { get; set; }
+    public decimal Entrada { get; set; } = 1000;
     public DateTime DataSaida { get; set; }
     public DateTime DataRetornoPrevista { get; set; }
-    public DateTime DataRetornoReal { get; set; }
     public string TaxasSelecionadasId { get; set; }
+    public List<Taxa> Taxas { get; set; }
+    public bool AluguelAtivo { get; set; } = true;
     public decimal ValorTotal { get; set; }
-    public bool Ativo { get; set; }
+    #endregion
 
-    public Aluguel(int condutorId, int clienteId, int grupoId, int veiculoId, DateTime dataSaida, DateTime dataRetornoPrevista, DateTime dataRetornoReal) : this()
+    #region Propriedades de Devolução
+    public DateTime DataRetornoReal { get; set; } = DateTime.Now;
+    public int KmInicial { get; set; }
+    public int KmFinal { get; set; }
+    public bool TanqueCheio { get; set; }
+    public Configuracao Configuracao { get; set; }
+    #endregion
+
+    public Aluguel(Condutor condutor, Cliente cliente, GrupoDeAutomoveis grupo, PlanoDeCobranca plano, CategoriaDePlanoEnum categoriaPlano, Veiculo veiculo, int entrada, DateTime dataSaida, DateTime dataRetornoPrevista, string taxasSelecionadasId, DateTime dataRetornoReal, int kmInicial, int kmFinal) : this()
     {
-        CondutorId = condutorId;
-        ClienteId = clienteId;
-        GrupoId = grupoId;
-        VeiculoId = veiculoId;
+        Condutor = condutor;
+        Cliente = cliente;
+        Grupo = grupo;
+        Plano = plano;
+        CategoriaPlano = categoriaPlano;
+        Veiculo = veiculo;
+        Entrada = entrada;
         DataSaida = dataSaida;
         DataRetornoPrevista = dataRetornoPrevista;
+        TaxasSelecionadasId = taxasSelecionadasId;
         DataRetornoReal = dataRetornoReal;
+        KmInicial = kmInicial;
+        KmFinal = kmFinal;
     }
 
-    public decimal CalcularValorTotalRetirada(GrupoDeAutomoveis grupo, CategoriaDePlanoEnum categoria, List<Taxa> taxas, int diasDeAluguel, decimal entrada)
+
+    public decimal CalcularValorTotalRetirada()
     {
-        var valorTotal = entrada;
+        var valorTotal = Entrada;
+        var diasPrevistos = (DataRetornoPrevista - DataSaida).Days;
 
-        if (categoria == CategoriaDePlanoEnum.Diário)
-            valorTotal += grupo.PrecoDiaria * diasDeAluguel;
-        else if (categoria == CategoriaDePlanoEnum.Controlado)
-            valorTotal += grupo.PrecoDiariaControlada * diasDeAluguel;
+        if (CategoriaPlano == CategoriaDePlanoEnum.Diário)
+            valorTotal += Plano.PrecoDiaria * diasPrevistos;
+        else if (CategoriaPlano == CategoriaDePlanoEnum.Controlado)
+            valorTotal += Plano.PrecoDiariaControlada * diasPrevistos;
         else
-            valorTotal += grupo.PrecoLivre * diasDeAluguel;
+            valorTotal += Plano.PrecoLivre * diasPrevistos;
 
-        foreach (var taxa in taxas)
+        foreach (var taxa in Taxas)
             if (taxa.PrecoFixo)
                 valorTotal += taxa.Preco;
             else
-                valorTotal += taxa.Preco * diasDeAluguel;
+                valorTotal += taxa.Preco * diasPrevistos;
 
         return valorTotal;
     }
 
-    public decimal CalcularValorTotalDevolucao(
-        PlanoDeCobranca plano, 
-        CategoriaDePlanoEnum categoria,
-        List<Taxa> taxas, int diasPlanejados, 
-        decimal entrada,
-        int diasReais, 
-        int kmInicial, 
-        int kmAtual, 
-        bool tanqueCheio,
-        Veiculo veiculo,
-        Configuracao configuracao)
+    public decimal CalcularValorTotalDevolucao()
     {
-        var valorTotal = entrada;
-        var km = kmAtual - kmInicial;
+        var valorTotal = Entrada;
+        var kmRodados = KmFinal - KmInicial;
+        var diasPrevistos = (DataRetornoPrevista - DataSaida).Days;
+        var diasReais = (DataRetornoReal - DataSaida).Days;
 
-        if (categoria == CategoriaDePlanoEnum.Diário)
+        if (CategoriaPlano == CategoriaDePlanoEnum.Diário)
         {
-            valorTotal += plano.PrecoDiaria * diasReais;
-            valorTotal += plano.PrecoKm * km;
+            valorTotal += Plano.PrecoDiaria * diasReais;
+            valorTotal += Plano.PrecoKm * kmRodados;
         }
-        else if (categoria == CategoriaDePlanoEnum.Controlado)
+        else if (CategoriaPlano == CategoriaDePlanoEnum.Controlado)
         {
-            valorTotal += plano.PrecoDiariaControlada * diasReais;
-            if (km > plano.KmDisponivel)
-                valorTotal += (km - plano.KmDisponivel) * plano.PrecoExtrapolado;
+            valorTotal += Plano.PrecoDiariaControlada * diasReais;
+            if (kmRodados > Plano.KmDisponivel)
+                valorTotal += (kmRodados - Plano.KmDisponivel) * Plano.PrecoExtrapolado;
         }
         else
-            valorTotal += plano.PrecoLivre * diasReais;
+            valorTotal += Plano.PrecoLivre * diasReais;
 
-        foreach (var taxa in taxas)
+        foreach (var taxa in Taxas)
             if (taxa.PrecoFixo)
                 valorTotal += taxa.Preco;
             else
                 valorTotal += taxa.Preco * diasReais;
 
-        if (!tanqueCheio)
+        if (!TanqueCheio)
         {
-            var capacidadeTanque = veiculo.CapacidadeCombustivel;
+            var capacidadeTanque = Veiculo.CapacidadeCombustivel;
 
-            if (veiculo.TipoCombustivel == "Gasolina")
-                valorTotal += configuracao.Gasolina * capacidadeTanque;
-            else if (veiculo.TipoCombustivel == "Etanol")
-                valorTotal += configuracao.Etanol * capacidadeTanque;
-            else if (veiculo.TipoCombustivel == "GNV")
-                valorTotal += configuracao.GNV * capacidadeTanque;
+            if (Veiculo.TipoCombustivel == "Gasolina")
+                valorTotal += Configuracao.Gasolina * capacidadeTanque;
+            else if (Veiculo.TipoCombustivel == "Etanol")
+                valorTotal += Configuracao.Etanol * capacidadeTanque;
+            else if (Veiculo.TipoCombustivel == "GNV")
+                valorTotal += Configuracao.GNV * capacidadeTanque;
             else
-                valorTotal += configuracao.Diesel * capacidadeTanque;
+                valorTotal += Configuracao.Diesel * capacidadeTanque;
         }
 
-        if (diasReais > diasPlanejados)
+        if (diasReais > diasPrevistos)
             valorTotal += valorTotal * 0.1m;
 
         return valorTotal;
@@ -119,17 +126,14 @@ public class Aluguel() : EntidadeBase
     {
         List<string> erros = [];
 
-        VerificaNulo(ref erros, CondutorId, "Condutor");
-        VerificaNulo(ref erros, ClienteId, "Cliente");
-        VerificaNulo(ref erros, VeiculoId, "Veiculo");
+        VerificaNulo(ref erros, Condutor, "Condutor");
+        VerificaNulo(ref erros, Cliente, "Cliente");
+        VerificaNulo(ref erros, Veiculo, "Veiculo");
         VerificaDataInferior(ref erros, DataSaida, "O veículo deve ser retirado hoje ou após o dia de hoje");
         VerificaDataInferior(ref erros, DataRetornoPrevista, DataSaida, "O veículo deve ser devolvido após a data de retirada");        
-
-        if (DataRetornoReal > DateTime.MinValue)
-            VerificaDataInferior(ref erros, DataRetornoReal, DataSaida, "O veículo deve ser devolvido após a data de retirada");
 
         return erros;
     }
 
-    public override string ToString() => $"Aluguel do veículo placa {VeiculoPlaca} do dia {DataSaida.ToShortDateString()} ao dia {DataRetornoPrevista.ToShortDateString()}";
+    public override string ToString() => $"Aluguel do {Veiculo} do dia {DataSaida.ToShortDateString()} ao dia {DataRetornoPrevista.ToShortDateString()}";
 }

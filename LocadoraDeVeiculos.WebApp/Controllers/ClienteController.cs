@@ -8,7 +8,6 @@ using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Security.Claims;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 
 [Authorize(Roles = "Empresa, Funcionario")]
@@ -49,7 +48,7 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
 
         var novoRegistro = mapeador.Map<Cliente>(inserirRegistroVm);
 
-        if (servicoCliente.ValidarRegistroRepetido(novoRegistro, out string itemRepetido))
+        if (servicoCliente.ValidarRegistroRepetido(novoRegistro, out string itemRepetido, UsuarioId.GetValueOrDefault()))
         {
             EnviarMensagemDeRegistroRepetido(itemRepetido);
             return View(CarregarInformacoes(inserirRegistroVm));
@@ -103,7 +102,7 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
 
         var registro = mapeador.Map<Cliente>(editarRegistroVm);
 
-        if (servicoCliente.ValidarRegistroRepetido(registro, out string itemRepetido))
+        if (servicoCliente.ValidarRegistroRepetido(registro, out string itemRepetido, UsuarioId.GetValueOrDefault()))
         {
             EnviarMensagemDeRegistroRepetido(itemRepetido);
             return View(CarregarInformacoes(editarRegistroVm));
@@ -113,8 +112,6 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
-
-        servicoAluguel.AtualizarClienteDoAluguel(registro);
 
         ApresentarMensagemSucesso($"O registro \"{registro}\" foi editado com sucesso!");
 
@@ -151,7 +148,7 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
     public IActionResult Excluir(DetalhesClienteViewModel detalhesRegistroVm)
     {
         var registro = servicoCliente.SelecionarPorId(detalhesRegistroVm.Id).Value;
-        var resultado = servicoCliente.Excluir(detalhesRegistroVm.Id);
+        var resultado = servicoCliente.Desativar(detalhesRegistroVm.Id);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));

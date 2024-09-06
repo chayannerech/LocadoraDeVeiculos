@@ -10,6 +10,7 @@ public class Veiculo() : EntidadeBase
     public string TipoCombustivel { get; set; }
     public int CapacidadeCombustivel { get; set; }
     public int Ano { get; set; }
+    public int KmRodados { get; set; }
     public byte[] ImagemEmBytes { get; set; }
     public string TipoDaImagem { get; set; }
     public GrupoDeAutomoveis GrupoDeAutomoveis { get; set; }

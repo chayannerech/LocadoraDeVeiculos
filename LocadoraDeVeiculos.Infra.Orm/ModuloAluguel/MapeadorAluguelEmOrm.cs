@@ -12,72 +12,86 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
             .IsRequired()
             .ValueGeneratedOnAdd();
 
-        aBuilder.Property(a => a.CondutorNome)
-            .IsRequired()
-            .HasColumnType("varchar(200)");
-
-        aBuilder.Property(a => a.CondutorId)
-            .IsRequired()
-            .HasColumnType("int");
-
-        aBuilder.Property(a => a.ClienteNome)
-            .IsRequired()
-            .HasColumnType("varchar(200)");
-
-        aBuilder.Property(a => a.ClienteId)
-            .IsRequired()
-            .HasColumnType("int");
-
-        aBuilder.Property(a => a.CategoriaPlano)
-            .HasConversion<string>()
+        #region Dependências
+        aBuilder.HasOne(a => a.Condutor)
+            .WithMany()
+            .HasForeignKey("Condutor_Id")
             .IsRequired();
 
-        aBuilder.Property(a => a.GrupoNome)
-            .IsRequired()
-            .HasColumnType("varchar(200)");
+        aBuilder.HasOne(a => a.Cliente)
+            .WithMany()
+            .HasForeignKey("Cliente_Id")
+            .IsRequired();
 
-        aBuilder.Property(a => a.GrupoId)
-            .IsRequired()
-            .HasColumnType("int");
+        aBuilder.HasOne(a => a.Grupo)
+            .WithMany()
+            .HasForeignKey("Grupo_Id")
+            .IsRequired();
 
-        aBuilder.Property(a => a.VeiculoId)
-            .IsRequired()
-            .HasColumnType("int");
+        aBuilder.HasOne(a => a.Plano)
+            .WithMany()
+            .HasForeignKey("Plano_Id")
+            .IsRequired();
 
-        aBuilder.Property(a => a.VeiculoPlaca)
-            .IsRequired()
-            .HasColumnType("varchar(10)");
+        aBuilder.HasOne(a => a.Veiculo)
+            .WithMany()
+            .HasForeignKey("Veiculo_Id")
+            .IsRequired();
 
-        aBuilder.Property(c => c.DataSaida)
-            .IsRequired()
-            .HasColumnType("datetime2");
+        aBuilder.HasOne(a => a.Configuracao)
+            .WithMany()
+            .HasForeignKey("Configuracao_Id")
+            .IsRequired();
 
-        aBuilder.Property(c => c.DataRetornoPrevista)
-            .IsRequired()
-            .HasColumnType("datetime2");
+        aBuilder.HasOne(a => a.Funcionario)
+            .WithMany()
+            .HasForeignKey("Funcionario_Id")
+            .IsRequired();
 
-        aBuilder.Property(c => c.DataRetornoReal)
-            .HasColumnType("datetime2");
+        aBuilder.Ignore(a => a.Taxas);
+        #endregion
 
-        aBuilder.Property(c => c.Ativo)
-            .IsRequired()
-            .HasColumnType("bit");
+        #region Retirada
+        aBuilder.Property(a => a.Entrada)
+            .HasColumnType("decimal(18,2)")
+            .IsRequired();
 
         aBuilder.Property(a => a.ValorTotal)
-            .IsRequired()
-            .HasColumnType("decimal(18,2)");
+            .HasColumnType("decimal(18,2)")
+            .IsRequired();
+
+        aBuilder.Property(a => a.DataSaida)            
+            .HasColumnType("datetime2")
+            .IsRequired();
+
+        aBuilder.Property(a => a.DataRetornoPrevista)
+            .HasColumnType("datetime")
+            .IsRequired();
+
+        aBuilder.Property(a => a.DataRetornoReal)
+            .HasColumnType("datetime")
+            .IsRequired();
 
         aBuilder.Property(a => a.TaxasSelecionadasId)
-            .HasColumnType("varchar(10)");
+            .HasColumnType("nvarchar(max)")
+            .IsRequired();
 
-        aBuilder.Property(s => s.UsuarioId)
-            .IsRequired()
+        aBuilder.Property(a => a.Ativo)
+            .HasColumnType("bit");
+        #endregion
+
+        #region Devolução
+        aBuilder.Property(a => a.KmInicial).
+            HasColumnType("int")
+            .IsRequired();
+
+        aBuilder.Property(a => a.KmFinal)
             .HasColumnType("int")
-            .HasColumnName("Usuario_Id");
+            .IsRequired();
 
-        aBuilder.HasOne(g => g.Usuario)
-            .WithMany()
-            .HasForeignKey(s => s.UsuarioId)
-            .OnDelete(DeleteBehavior.NoAction);
+        aBuilder.Property(a => a.TanqueCheio)
+            .HasColumnType("bit")
+            .IsRequired();
+        #endregion
     }
 }

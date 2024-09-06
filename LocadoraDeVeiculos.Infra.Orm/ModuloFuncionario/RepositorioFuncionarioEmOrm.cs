@@ -8,9 +8,4 @@ public class RepositorioFuncionarioEmOrm : RepositorioBaseEmOrm<Funcionario>, IR
 
     protected override DbSet<Funcionario> ObterRegistros()
         => _dbContext.Funcionarios;
-
-    public List<Funcionario> Filtrar(Func<Funcionario, bool> predicate)
-        => _dbContext.Funcionarios
-            .Where(predicate)
-            .ToList();
 }

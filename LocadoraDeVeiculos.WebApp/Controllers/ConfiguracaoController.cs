@@ -35,7 +35,7 @@ public class ConfiguracaoController(ConfiguracaoService servicoConfiguracao, Fun
 
     public IActionResult Editar(int id)
     {
-        var resultado = servicoConfiguracao.Selecionar();
+        var resultado = servicoConfiguracao.Selecionar(UsuarioId.GetValueOrDefault());
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Detalhes));
@@ -63,7 +63,7 @@ public class ConfiguracaoController(ConfiguracaoService servicoConfiguracao, Fun
 
     public IActionResult Detalhes(int id)
     {
-        var resultado = servicoConfiguracao.Selecionar();
+        var resultado = servicoConfiguracao.Selecionar(UsuarioId.GetValueOrDefault());
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Detalhes));

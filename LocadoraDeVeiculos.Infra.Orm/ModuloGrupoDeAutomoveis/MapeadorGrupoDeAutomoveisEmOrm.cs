@@ -25,6 +25,9 @@ public class MapeadorGrupoDeAutomoveisEmOrm : IEntityTypeConfiguration<GrupoDeAu
         gBuilder.Property(p => p.PrecoLivre)
             .HasColumnType("decimal(18,2)");
 
+        gBuilder.Property(p => p.Ativo)
+            .HasColumnType("bit");
+
         gBuilder.Property(s => s.UsuarioId)
             .IsRequired()
             .HasColumnType("int")

@@ -15,7 +15,7 @@
         @foreach (var AluguelVm in Model)
         {
             var data = (AluguelVm.DataRetornoPrevista < AluguelVm.DataRetornoReal) ? "text-danger" : "";
-            var situacao = AluguelVm.Ativo ? "Ativo" : "Encerrado";
+            var situacao = AluguelVm.AluguelAtivo ? "Ativo" : "Encerrado";
 
             <div class="card col-lg-5 col-xl-4">
                 <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
@@ -46,13 +46,13 @@
                     <p class="card-subtitle">Plano: @AluguelVm.CategoriaPlano</p>
                     <p class="card-subtitle">Data de saída: @AluguelVm.DataSaida.ToString("dd/MM")</p>
                     <p class="card-subtitle">Data de devolução prevista: @AluguelVm.DataRetornoPrevista.ToString("dd/MM")</p>
-                    @if (!AluguelVm.Ativo)
+                    @if (!AluguelVm.AluguelAtivo)
                     {
                         <p class="card-subtitle @data">Data de devolução efetuada: @AluguelVm.DataRetornoReal.ToString("dd/MM")</p>
                     }
                     <p class="card-subtitle">Valor: @AluguelVm.ValorTotal R$</p>
 
-                    @if (AluguelVm.Ativo)
+                    @if (AluguelVm.AluguelAtivo)
                     {
                         <div class="mt-3 d-flex justify-content-end">
                             <a href="/Aluguel/devolver/@AluguelVm.Id" class="btn btn-secondary btn-sm">

@@ -42,6 +42,9 @@ public class MapeadorCondutorEmOrm : IEntityTypeConfiguration<Condutor>
             .IsRequired()
             .HasColumnType("datetime2");
 
+        cBuilder.Property(c => c.Ativo)
+            .HasColumnType("bit");
+
         cBuilder.Property(s => s.UsuarioId)
             .IsRequired()
             .HasColumnType("int")

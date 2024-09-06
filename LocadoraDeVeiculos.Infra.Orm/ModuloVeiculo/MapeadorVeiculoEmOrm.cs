@@ -40,6 +40,10 @@ public class MapeadorVeiculoEmOrm : IEntityTypeConfiguration<Veiculo>
             .IsRequired()
             .HasColumnType("int");
 
+        vBuilder.Property(v => v.KmRodados)
+            .IsRequired()
+            .HasColumnType("int");
+
         vBuilder.Property(v => v.ImagemEmBytes)
             .IsRequired()
             .HasColumnType("varbinary(max)");
@@ -56,6 +60,9 @@ public class MapeadorVeiculoEmOrm : IEntityTypeConfiguration<Veiculo>
 
         vBuilder.Property(v => v.Alugado)
             .IsRequired()
+            .HasColumnType("bit");
+
+        vBuilder.Property(v => v.Ativo)
             .HasColumnType("bit");
 
         vBuilder.Property(s => s.UsuarioId)

@@ -1,31 +1,30 @@
 ﻿using LocadoraDeVeiculos.Dominio.ModuloCondutor;
-using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.Infra.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 namespace LocadoraDeVeiculos.Infra.Orm.ModuloCondutor;
-
 public class RepositorioCondutorEmOrm : RepositorioBaseEmOrm<Condutor>, IRepositorioCondutor
 {
     public RepositorioCondutorEmOrm(LocadoraDeVeiculosDbContext dbContext) : base(dbContext) { }
 
-    protected override DbSet<Condutor> ObterRegistros() 
+    protected override DbSet<Condutor> ObterRegistros()
         => _dbContext.Condutores;
 
-    public Condutor? SelecionarPorId(int id)
-    {
-        return _dbContext.Condutores
+    public override Condutor? SelecionarPorId(int id)
+        => ObterRegistros()
+            .Where(c => c.Ativo)
             .Include(c => c.Cliente)
-            .FirstOrDefault(s => s.Id == id);
-    }
+            .FirstOrDefault(c => c.Id == id);
 
-    public List<Condutor> SelecionarTodos()
-        => [.. _dbContext.Condutores
+    public override List<Condutor> SelecionarTodos()
+        => [.. ObterRegistros()
+            .Where(c => c.Ativo)
             .Include(c => c.Cliente)
             .AsNoTracking()];
 
-    public List<Condutor> Filtrar(Func<Condutor, bool> predicate)
+    public override List<Condutor> Filtrar(Func<Condutor, bool> predicate)
         => ObterRegistros()
-            .Include(c => c.Cliente)
+            .Include(e => e.Cliente)
+            .Where(e => e.Ativo)
             .Where(predicate)
             .ToList();
 }

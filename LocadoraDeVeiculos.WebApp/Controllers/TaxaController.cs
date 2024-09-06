@@ -22,8 +22,15 @@ public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAlugu
 
         var registros = resultado.Value;
 
-        if (servicoTaxa.SemRegistros())
-            ApresentarMensagemSemRegistros();
+        if (!User.Identity!.IsAuthenticated)
+        {
+            ViewBag.Inserir = false;
+            if (servicoTaxa.SemRegistros())
+                ApresentarMensagemSemRegistros();
+        }
+        else
+            if (servicoTaxa.SemRegistros(UsuarioId.GetValueOrDefault()))
+                ApresentarMensagemSemRegistros();
 
         var listarTaxaVm = mapeador.Map<IEnumerable<ListarTaxaViewModel>>(registros);
 
@@ -43,7 +50,7 @@ public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAlugu
 
         var novoRegistro = mapeador.Map<Taxa>(inserirRegistroVm);
 
-        if (servicoTaxa.ValidarRegistroRepetido(novoRegistro))
+        if (servicoTaxa.ValidarRegistroRepetido(novoRegistro, UsuarioId.GetValueOrDefault()))
         {
             ApresentarMensagemRegistroExistente("Já existe um cadastro com esse nome");
             return View(inserirRegistroVm);
@@ -90,7 +97,7 @@ public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAlugu
 
         var registro = mapeador.Map<Taxa>(editarRegistroVm);
 
-        if (servicoTaxa.ValidarRegistroRepetido(registro))
+        if (servicoTaxa.ValidarRegistroRepetido(registro, UsuarioId.GetValueOrDefault()))
         {
             ApresentarMensagemRegistroExistente("Já existe um cadastro com esse nome");
             return View(editarRegistroVm);
@@ -119,7 +126,7 @@ public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAlugu
 
         if (servicoAluguel.AluguelRelacionadoAtivo(registro))
         {
-            ApresentarMensagemImpossivelEditar("Existe um aluguel ativo relacionado");
+            ApresentarMensagemImpossivelExcluir("Existe um aluguel ativo relacionado");
             return RedirectToAction(nameof(Listar));
         }
 
@@ -131,7 +138,7 @@ public class TaxaController(TaxaService servicoTaxa, AluguelService servicoAlugu
     public IActionResult Excluir(DetalhesTaxaViewModel detalhesTaxaViewModel)
     {
         var registro = servicoTaxa.SelecionarPorId(detalhesTaxaViewModel.Id).Value;
-        var resultado = servicoTaxa.Excluir(detalhesTaxaViewModel.Id);
+        var resultado = servicoTaxa.Desativar(detalhesTaxaViewModel.Id);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));

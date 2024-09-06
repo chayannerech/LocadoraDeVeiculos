@@ -42,6 +42,9 @@ public class MapeadorPlanoDeCobrancaEmOrm : IEntityTypeConfiguration<PlanoDeCobr
             .IsRequired()
             .HasColumnType("decimal(18,2)");
 
+        pBuilder.Property(p => p.Ativo)
+            .HasColumnType("bit");
+
         pBuilder.Property(s => s.UsuarioId)
             .IsRequired()
             .HasColumnType("int")

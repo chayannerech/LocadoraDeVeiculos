@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 {
     [DbContext(typeof(LocadoraDeVeiculosDbContext))]
-    [Migration("20240903165912_BancoDeDados")]
+    [Migration("20240906003855_BancoDeDados")]
     partial class BancoDeDados
     {
         /// <inheritdoc />
@@ -33,64 +33,84 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("AluguelAtivo")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("Ativo")
                         .HasColumnType("bit");
 
-                    b.Property<string>("CategoriaPlano")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ClienteId")
+                    b.Property<int>("CategoriaPlano")
                         .HasColumnType("int");
 
-                    b.Property<string>("ClienteNome")
-                        .IsRequired()
-                        .HasColumnType("varchar(200)");
-
-                    b.Property<int>("CondutorId")
+                    b.Property<int>("Cliente_Id")
                         .HasColumnType("int");
 
-                    b.Property<string>("CondutorNome")
-                        .IsRequired()
-                        .HasColumnType("varchar(200)");
+                    b.Property<int>("Condutor_Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Configuracao_Id")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DataRetornoPrevista")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
                     b.Property<DateTime>("DataRetornoReal")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("datetime");
 
                     b.Property<DateTime>("DataSaida")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("GrupoId")
+                    b.Property<decimal>("Entrada")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Funcionario_Id")
                         .HasColumnType("int");
 
-                    b.Property<string>("GrupoNome")
-                        .IsRequired()
-                        .HasColumnType("varchar(200)");
+                    b.Property<int>("Grupo_Id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("KmFinal")
+                        .HasColumnType("int");
+
+                    b.Property<int>("KmInicial")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Plano_Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("TanqueCheio")
+                        .HasColumnType("bit");
 
                     b.Property<string>("TaxasSelecionadasId")
                         .IsRequired()
-                        .HasColumnType("varchar(10)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UsuarioId")
-                        .HasColumnType("int")
-                        .HasColumnName("Usuario_Id");
+                        .HasColumnType("int");
 
                     b.Property<decimal>("ValorTotal")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("VeiculoId")
+                    b.Property<int>("Veiculo_Id")
                         .HasColumnType("int");
-
-                    b.Property<string>("VeiculoPlaca")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Cliente_Id");
+
+                    b.HasIndex("Condutor_Id");
+
+                    b.HasIndex("Configuracao_Id");
+
+                    b.HasIndex("Funcionario_Id");
+
+                    b.HasIndex("Grupo_Id");
+
+                    b.HasIndex("Plano_Id");
+
                     b.HasIndex("UsuarioId");
+
+                    b.HasIndex("Veiculo_Id");
 
                     b.ToTable("TBAluguel", (string)null);
                 });
@@ -102,6 +122,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Bairro")
                         .IsRequired()
@@ -167,6 +190,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
 
                     b.Property<string>("CNH")
                         .IsRequired()
@@ -246,6 +272,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("DataAdmissao")
                         .HasColumnType("datetime2");
 
@@ -279,6 +308,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("varchar(200)");
@@ -310,6 +342,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Grupo_Id")
                         .HasColumnType("int");
@@ -352,6 +387,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -489,6 +527,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<int>("Ano")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
+
                     b.Property<int>("CapacidadeCombustivel")
                         .HasColumnType("int");
 
@@ -502,6 +543,9 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
                     b.Property<byte[]>("ImagemEmBytes")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
+
+                    b.Property<int>("KmRodados")
+                        .HasColumnType("int");
 
                     b.Property<string>("Marca")
                         .IsRequired()
@@ -641,13 +685,69 @@ namespace LocadoraDeVeiculos.Infra.Orm.Migrations
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloAluguel.Aluguel", b =>
                 {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloCliente.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("Cliente_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloCondutor.Condutor", "Condutor")
+                        .WithMany()
+                        .HasForeignKey("Condutor_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloConfiguracao.Configuracao", "Configuracao")
+                        .WithMany()
+                        .HasForeignKey("Configuracao_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloFuncionario.Funcionario", "Funcionario")
+                        .WithMany()
+                        .HasForeignKey("Funcionario_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis.GrupoDeAutomoveis", "Grupo")
+                        .WithMany()
+                        .HasForeignKey("Grupo_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca.PlanoDeCobranca", "Plano")
+                        .WithMany()
+                        .HasForeignKey("Plano_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("LocadoraDeVeiculos.Dominio.ModuloUsuario.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloVeiculos.Veiculo", "Veiculo")
+                        .WithMany()
+                        .HasForeignKey("Veiculo_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Condutor");
+
+                    b.Navigation("Configuracao");
+
+                    b.Navigation("Funcionario");
+
+                    b.Navigation("Grupo");
+
+                    b.Navigation("Plano");
+
                     b.Navigation("Usuario");
+
+                    b.Navigation("Veiculo");
                 });
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloCliente.Cliente", b =>

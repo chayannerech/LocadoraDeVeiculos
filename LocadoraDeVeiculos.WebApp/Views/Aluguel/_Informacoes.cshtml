@@ -3,9 +3,9 @@
 @model DetalhesAluguelViewModel
 
 @{
-    var data = (Model.DataRetornoPrevista < Model.DataRetornoReal) ? "text-danger" : "";
-    var dataRetorno = Model.Ativo ? "Ainda alugado" : @Model.DataRetornoReal.ToShortDateString();
-    var situacao = Model.Ativo ? "Ativo" : "Encerrado";
+    var formatacaoParaAtraso = (Model.DataRetornoPrevista < Model.DataRetornoReal) ? "text-danger" : "";
+    var dataRetorno = Model.AluguelAtivo ? "Ainda alugado" : @Model.DataRetornoReal.ToShortDateString();
+    var situacao = Model.AluguelAtivo ? "Ativo" : "Encerrado";
 }
 
 <div class="container my-4">
@@ -36,11 +36,17 @@
                 <dt class="col-sm-5">Data de devolução (prevista):</dt>
                 <dd class="col-sm-7">@Model.DataRetornoPrevista.ToShortDateString()</dd>
 
-                <dt class="col-sm-5">Data de devolução:</dt>
-                <dd class="col-sm-7 @data">@dataRetorno</dd>
+                <dt class="col-sm-5 @formatacaoParaAtraso">Data de devolução:</dt>
+                <dd class="col-sm-7 @formatacaoParaAtraso">@dataRetorno</dd>
+
+                @if (formatacaoParaAtraso == "text-danger")
+                {
+                    <dt class="col-sm-5 @formatacaoParaAtraso">Multa:</dt>
+                    <dd class="col-sm-7 @formatacaoParaAtraso">@(Model.ValorTotal / 11)</dd>
+                }
 
                 <dt class="col-sm-5">Valor total:</dt>
-                <dd class="col-sm-7 @data">@Model.ValorTotal</dd>
+                <dd class="col-sm-7">@Model.ValorTotal</dd>
             </dl>
         </div>
 

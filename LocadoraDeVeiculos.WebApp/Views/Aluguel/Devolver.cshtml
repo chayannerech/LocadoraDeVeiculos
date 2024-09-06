@@ -177,14 +177,13 @@
                     <div class="d-flex flex-row gap-2 align-items-center">
                         <div class="flex-fill ms-3 mt-3">
                             <label class="control-label fw-bold mb-1">Km Inicial</label>
-                            <input type="number" class="form-control mb-1" asp-for="KmInicial" id="kmInicial" />
-                            <span class="text-danger fs-6" asp-validation-for="KmInicial"></span>
+                            <input type="number" class="form-control mb-1" asp-for="KmInicial" id="kmInicial" disabled/>
                         </div>
 
                         <div class="flex-fill mx-3 mt-3">
                             <label class="control-label fw-bold mb-1">Km Atual</label>
-                            <input type="number" class="form-control mb-1" asp-for="KmAtual" id="kmAtual" />
-                            <span class="text-danger fs-6" asp-validation-for="KmAtual"></span>
+                            <input type="number" class="form-control mb-1" asp-for="KmFinal" id="kmAtual" />
+                            <span class="text-danger fs-6" asp-validation-for="KmFinal"></span>
                             <div id="kmWarning" class="text-danger align-content-center fs-6" style="display: none;">
                                 A quilometragem atual deve ser superior à inicial
                             </div>
@@ -245,7 +244,7 @@
                     <i class="bi bi-arrow-return-left me-1"></i>
                     Voltar
                 </a>
-                </divclass>
+            </div>
         </form>
     </div>
 </div>
@@ -464,6 +463,7 @@
             const veiculoSelecionado = $('#veiculoSelect option:selected');
             const imagemDataUrl = veiculoSelecionado.data('imagem');
             const dias = parseInt($('#diasPrevistos').val(), 10);
+            const dataRetorno = $('#retorno').val();
 
             $('#veiculoImagem').attr('src', imagemDataUrl);
 
@@ -481,6 +481,9 @@
                 atualizarTudo();
             });
 
+            if (dataRetorno) {
+                verificarDataRetorno();
+            }
             calcularValoresTaxas(dias);
             calcularValorPlano(dias);
             mostrarPlanoInfo();

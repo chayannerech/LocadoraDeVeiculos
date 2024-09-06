@@ -5,7 +5,7 @@
     ViewBag.Title = "Preço dos combustíveis";
 }
 
-@if(Model.Gasolina == 0){
+@if(Model is null){
     <div class="text-center">
         <h4 class="text-secondary fw-bold mt-4">Sem configurações</h4>
         <p class="fs-6 mt-2">Os preços ainda não estão configurados</p>

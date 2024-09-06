@@ -40,10 +40,17 @@
                 <span class="text-danger fs-6" asp-validation-for="Cor"></span>
             </div>
 
-            <div>
-                <label class="control-label fw-bold mb-1 mt-2">Ano</label>
-                <input type="number" class="form-control mb-1" asp-for="Ano" />
-                <span class="text-danger fs-6" asp-validation-for="Ano"></span>
+            <div class="d-flex flex-row gap-3 mt-2">
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">Ano</label>
+                    <input type="number" class="form-control mb-1" asp-for="Ano" />
+                    <span class="text-danger fs-6" asp-validation-for="Ano"></span>
+                </div>
+                <div class="flex-fill">
+                    <label class="control-label fw-bold mb-1">Km rodados</label>
+                    <input type="number" class="form-control mb-1" asp-for="KmRodados" />
+                    <span class="text-danger fs-6" asp-validation-for="KmRodados"></span>
+                </div>
             </div>
 
             <div>

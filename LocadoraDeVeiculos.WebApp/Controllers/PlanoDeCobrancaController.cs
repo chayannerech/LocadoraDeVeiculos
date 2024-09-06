@@ -25,8 +25,15 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, Grup
 
         ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 
-        if (servicoPlano.SemRegistros() && ViewBag.Mensagem is null)
-            ApresentarMensagemSemRegistros();
+        if (!User.Identity!.IsAuthenticated)
+        {
+            ViewBag.Inserir = false;
+            if (servicoPlano.SemRegistros() && ViewBag.Mensagem is null)
+                ApresentarMensagemSemRegistros();
+        }
+        else
+            if (servicoPlano.SemRegistros(UsuarioId.GetValueOrDefault()) && ViewBag.Mensagem is null)
+                ApresentarMensagemSemRegistros();
 
         var listarRegistrosVm = mapeador.Map<IEnumerable<ListarPlanoDeCobrancaViewModel>>(registros);
 
@@ -39,7 +46,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, Grup
     [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Inserir()
     {
-        if (servicoGrupo.SemRegistros())
+        if (servicoGrupo.SemRegistros(UsuarioId.GetValueOrDefault()))
         {
             ApresentarMensagemSemDependencias("Grupos de Automóveis");
             return RedirectToAction(nameof(Listar));
@@ -54,7 +61,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, Grup
 
         var novoRegistro = mapeador.Map<PlanoDeCobranca>(inserirRegistroVm);
 
-        if (servicoPlano.ValidarRegistroRepetido(novoRegistro, inserirRegistroVm.GrupoId))
+        if (servicoPlano.ValidarRegistroRepetido(novoRegistro, inserirRegistroVm.GrupoId, UsuarioId.GetValueOrDefault()))
         {
             ApresentarMensagemRegistroExistente("Este grupo de automóveis já possui um plano de cobrança");
             return View(CarregarInformacoes(inserirRegistroVm));
@@ -105,7 +112,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, Grup
 
         var registro = mapeador.Map<PlanoDeCobranca>(editarRegistroVm);
 
-        if (servicoPlano.ValidarRegistroRepetido(registro, editarRegistroVm.GrupoId))
+        if (servicoPlano.ValidarRegistroRepetido(registro, editarRegistroVm.GrupoId, UsuarioId.GetValueOrDefault()))
         {
             ApresentarMensagemRegistroExistente("Este grupo de automóveis já possui um plano de cobrança");
             return View(CarregarInformacoes(editarRegistroVm));
@@ -136,7 +143,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, Grup
 
         if (servicoAluguel.AluguelRelacionadoAtivo(registro))
         {
-            ApresentarMensagemImpossivelEditar("Existe um aluguel ativo relacionado");
+            ApresentarMensagemImpossivelExcluir("Existe um aluguel ativo relacionado");
             return RedirectToAction(nameof(Listar));
         }
 
@@ -150,7 +157,7 @@ public class PlanoDeCobrancaController(PlanoDeCobrancaService servicoPlano, Grup
         var registro = servicoGrupo.SelecionarPorId(detalhesRegistroVm.Id).Value;
         servicoGrupo.ExcluirValores(servicoPlano.SelecionarPorId(detalhesRegistroVm.Id).Value);
 
-        var resultado = servicoPlano.Excluir(detalhesRegistroVm.Id);
+        var resultado = servicoPlano.Desativar(detalhesRegistroVm.Id);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));

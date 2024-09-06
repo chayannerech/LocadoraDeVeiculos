@@ -16,10 +16,13 @@ public class ListarAluguelViewModel
     public DateTime DataRetornoPrevista { get; set; }
     public DateTime DataRetornoReal { get; set; }
     public decimal ValorTotal { get; set; }
-    public bool Ativo { get; set; }
+    public bool AluguelAtivo { get; set; }
+    public Condutor? Condutor { get; set; }
+    public Veiculo? Veiculo { get; set; }
 
-    public string? CondutorNome { get; set; }
-    public string? VeiculoPlaca { get; set; }
+
+    public string? CondutorNome { get => Condutor is null ? "" : Condutor.Nome; }
+    public string? VeiculoPlaca { get => Veiculo is null ? "" : Veiculo.Placa; }
 }
 
 public class InserirAluguelViewModel
@@ -68,7 +71,6 @@ public class InserirAluguelViewModel
     public IEnumerable<Veiculo>? Veiculos { get; set; }
     public IEnumerable<SelectListItem>? Categorias { get; set; }
     public IEnumerable<Taxa>? Taxas { get; set; }
-    public IEnumerable<Taxa>? Seguros { get; set; }
 }
 
 public class EditarAluguelViewModel : InserirAluguelViewModel
@@ -79,18 +81,23 @@ public class EditarAluguelViewModel : InserirAluguelViewModel
 public class DetalhesAluguelViewModel
 {
     public int Id { get; set; }
-    public string? CondutorNome { get; set; }
-    public string? ClienteNome { get; set; }
-    public string? GrupoNome { get; set; }
-    public int VeiculoId { get; set; }
-    public string? VeiculoPlaca { get; set; }
-    public byte[]? ImagemEmBytes { get; set; }
-    public string? TipoDaImagem { get; set; }
+    public Condutor? Condutor { get; set; }
+    public Veiculo? Veiculo { get; set; }
+    public Cliente? Cliente { get; set; }
+    public GrupoDeAutomoveis? Grupo { get; set; }
+
+    public string? CondutorNome { get => Condutor is null ? "" : Condutor.Nome; }
+    public string? VeiculoPlaca { get => Veiculo is null ? "" : Veiculo.Placa; }
+    public string? ClienteNome { get => Cliente is null ? "" : Cliente.Nome; }
+    public string? GrupoNome { get => Grupo is null ? "" : Grupo.Nome; }
+
+    public byte[]? ImagemEmBytes { get => Veiculo is null ? [] : Veiculo.ImagemEmBytes; }
+    public string? TipoDaImagem { get => Veiculo is null ? "" : Veiculo.TipoDaImagem; }
     public CategoriaDePlanoEnum CategoriaPlano { get; set; }
     public DateTime DataSaida { get; set; }
     public DateTime DataRetornoPrevista { get; set; }
     public DateTime DataRetornoReal { get; set; }
-    public bool Ativo { get; set; }
+    public bool AluguelAtivo { get; set; }
     public decimal ValorTotal { get; set; }
 }
 
@@ -109,17 +116,13 @@ public class DevolverAluguelViewModel
     public DateTime DataRetornoPrevista { get; set; }
     public string? TaxasSelecionadasId { get; set; }
     public Configuracao? Configuracao { get; set; }
-
-
-    [Required(ErrorMessage = "A quilometragem inicial é obrigatória")]
-    [Range(1, 50000, ErrorMessage = "O valor deve ser maior que zero")]
     public int? KmInicial {  get; set; }
 
 
     [Required(ErrorMessage = "A quilometragem atual é obrigatória")]
     [Range(1, 50000, ErrorMessage = "O valor deve ser maior que zero")]
     [KmMaior(ErrorMessage = "O km atual deve ser superior ao km inicial")]
-    public int? KmAtual {  get; set; }
+    public int? KmFinal {  get; set; }
 
 
     [Required(ErrorMessage = "A data de devolução é obrigatória")]
@@ -165,7 +168,7 @@ public class KmMaiorAttribute : ValidationAttribute
     {
         var model = (DevolverAluguelViewModel)validationContext.ObjectInstance;
 
-        if (model.KmAtual <= model.KmInicial)
+        if (model.KmFinal <= model.KmInicial)
             return new ValidationResult("O km atual deve ser superior ao km inicial");
 
         return ValidationResult.Success;

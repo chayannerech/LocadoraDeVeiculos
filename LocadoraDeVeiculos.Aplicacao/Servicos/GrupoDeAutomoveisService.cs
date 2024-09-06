@@ -2,6 +2,7 @@
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.Dominio.Compartilhado.Extensions;
+using LocadoraDeVeiculos.Dominio.ModuloCliente;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioGrupo)
 {
@@ -43,21 +44,16 @@ public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioG
         var registro = repositorioGrupo.SelecionarPorId(registroId);
 
         if (registro is null)
-            return Result.Fail("O grupo de automóveis não foi encontrado!");
+            return Result.Fail("O grupo não foi encontrado!");
 
         return Result.Ok(registro);
     }
 
     public Result<List<GrupoDeAutomoveis>> SelecionarTodos(int usuarioId)
-    {
-        var registros = repositorioGrupo
-            .Filtrar(f => f.UsuarioId == usuarioId);
-
-        return Result.Ok(registros);
-    }
+        => Result.Ok(repositorioGrupo.Filtrar(g => g.UsuarioId == usuarioId));
 
     public Result<List<GrupoDeAutomoveis>> SelecionarTodos()
-        => Result.Ok(repositorioGrupo.SelecionarTodos());
+        => Result.Ok(repositorioGrupo.Filtrar(g => g.Ativo));
 
     public void AdicionarValores(PlanoDeCobranca plano)
     {
@@ -81,9 +77,9 @@ public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioG
         repositorioGrupo.Editar(grupoSelecionado);
     }
 
-    public bool ValidarRegistroRepetido(GrupoDeAutomoveis novoRegistro)
+    public bool ValidarRegistroRepetido(GrupoDeAutomoveis novoRegistro, int usuarioId)
     {
-        var registrosExistentes = repositorioGrupo.SelecionarTodos();
+        var registrosExistentes = repositorioGrupo.Filtrar(g => g.UsuarioId == usuarioId);
         var registroAtual = novoRegistro.Id == 0 ? new() { Nome = "" } : repositorioGrupo.SelecionarPorId(novoRegistro.Id)!;
 
         return registrosExistentes.Exists(r =>
@@ -91,6 +87,22 @@ public class GrupoDeAutomoveisService(IRepositorioGrupoDeAutomoveis repositorioG
             r.Nome.Validation() != registroAtual.Nome.Validation());
     }
 
+    public bool SemRegistros(int? usuarioId)
+        => !repositorioGrupo.SelecionarTodos().Any(f => f.UsuarioId == usuarioId);
+
     public bool SemRegistros()
         => repositorioGrupo.SelecionarTodos().Count == 0;
+
+    public Result<GrupoDeAutomoveis> Desativar(int id)
+    {
+        var registro = repositorioGrupo.SelecionarPorId(id);
+
+        if (registro is null)
+            return Result.Fail("O grupo não foi encontrado!");
+        registro.Ativo = false;
+
+        repositorioGrupo.Editar(registro);
+
+        return Result.Ok();
+    }
 }
