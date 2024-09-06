@@ -5,6 +5,7 @@ using LocadoraDeVeiculos.Dominio.ModuloAluguel;
 using LocadoraDeVeiculos.Dominio.ModuloFuncionario;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloTaxa;
+using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
@@ -63,11 +64,11 @@ public class AluguelController(
     [HttpPost]
     public IActionResult Inserir(InserirAluguelViewModel inserirRegistroVm)
     {
+        if (inserirRegistroVm.CategoriaPlano == CategoriaDePlanoEnum.Diário)
+            ModelState.Remove(nameof(inserirRegistroVm.CategoriaPlano));
+
         if (!ModelState.IsValid)
-        {
-            if (inserirRegistroVm.CategoriaPlano != CategoriaDePlanoEnum.Diário)
-                return View(CarregarInformacoes(inserirRegistroVm));
-        }
+            return View(CarregarInformacoes(inserirRegistroVm));
 
         inserirRegistroVm.TaxasSelecionadasId ??= "";
 
@@ -108,11 +109,11 @@ public class AluguelController(
     [HttpPost]
     public IActionResult Editar(EditarAluguelViewModel editarRegistroVm)
     {
+        if (editarRegistroVm.CategoriaPlano == CategoriaDePlanoEnum.Diário)
+            ModelState.Remove(nameof(editarRegistroVm.CategoriaPlano));
+
         if (!ModelState.IsValid)
-        {
-            if (editarRegistroVm.CategoriaPlano != CategoriaDePlanoEnum.Diário)
             return View(CarregarInformacoes(editarRegistroVm));
-        }
 
         servicoVeiculo.LiberarVeiculo(editarRegistroVm.VeiculoId);
 
@@ -188,17 +189,16 @@ public class AluguelController(
         if (!ModelState.IsValid)
             return View(CarregarInformacoes(devolverRegistroVm));
 
-        var resultado = servicoAluguel.Devolver(devolverRegistroVm.Id, devolverRegistroVm.ValorTotal, devolverRegistroVm.DataRetornoReal);
+        var registro = servicoAluguel.SelecionarPorId(devolverRegistroVm.Id).Value;
+        var resultado = servicoAluguel.Devolver(registro, devolverRegistroVm.DataRetornoReal, devolverRegistroVm.TanqueCheio);
 
-        servicoVeiculo.LiberarVeiculo(servicoAluguel.SelecionarPorId(devolverRegistroVm.Id).Value.Veiculo.Id);
-        servicoVeiculo.AtualizarKmRodados(servicoAluguel.SelecionarPorId(devolverRegistroVm.Id).Value.Veiculo.Id, devolverRegistroVm.KmFinal);
+        servicoVeiculo.LiberarVeiculo(registro.Veiculo.Id);
+        servicoVeiculo.AtualizarKmRodados(registro.Veiculo.Id, devolverRegistroVm.KmFinal);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        var nome = servicoAluguel.SelecionarPorId(devolverRegistroVm.Id).Value;
-
-        ApresentarMensagemSucesso($"O registro \"{nome}\" foi devolvido com sucesso!");
+        ApresentarMensagemSucesso($"O registro \"{registro}\" foi devolvido com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }

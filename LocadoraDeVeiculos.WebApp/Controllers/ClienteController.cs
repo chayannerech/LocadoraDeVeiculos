@@ -2,6 +2,7 @@
 using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
+using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
@@ -36,15 +37,10 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
     [HttpPost]
     public IActionResult Inserir(InserirClienteViewModel inserirRegistroVm)
     {
+        AjustarDocumentosPessoaJuridica(inserirRegistroVm);
+
         if (!ModelState.IsValid)
-        {
-            if(inserirRegistroVm.PessoaFisica is false)
-            {
-                inserirRegistroVm.CNH = "";
-                inserirRegistroVm.RG = "";
-            }
-            else return View(CarregarInformacoes(inserirRegistroVm));
-        }
+            return View(CarregarInformacoes(inserirRegistroVm));
 
         var novoRegistro = mapeador.Map<Cliente>(inserirRegistroVm);
 
@@ -89,16 +85,10 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
     [HttpPost]
     public IActionResult Editar(EditarClienteViewModel editarRegistroVm)
     {
+        AjustarDocumentosPessoaJuridica(editarRegistroVm);
+
         if (!ModelState.IsValid)
-        {
-            if (editarRegistroVm.Documento is not null)
-            {
-                editarRegistroVm.CNH = "";
-                editarRegistroVm.RG = "";
-            }
-            else
-                return View(CarregarInformacoes(editarRegistroVm));
-        }
+            return View(CarregarInformacoes(editarRegistroVm));
 
         var registro = mapeador.Map<Cliente>(editarRegistroVm);
 
@@ -117,7 +107,6 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
 
         return RedirectToAction(nameof(Listar));
     }
-
 
     public IActionResult Excluir(int id)
     {
@@ -216,6 +205,28 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
             ApresentarMensagemRegistroExistente("Já existe um cadastro com esse RG");
         if (itemRepetido == "cnh")
             ApresentarMensagemRegistroExistente("Já existe um cadastro com essa CNH");
+    }
+    private void AjustarDocumentosPessoaJuridica(InserirClienteViewModel inserir)
+    {
+        if (inserir.PessoaFisica is false)
+        {
+            inserir.CNH = "";
+            inserir.RG = "";
+
+            ModelState.Remove(nameof(inserir.CNH));
+            ModelState.Remove(nameof(inserir.RG));
+        }
+    }
+    private void AjustarDocumentosPessoaJuridica(EditarClienteViewModel editarRegistroVm)
+    {
+        if (editarRegistroVm.PessoaFisica is false)
+        {
+            editarRegistroVm.CNH = "";
+            editarRegistroVm.RG = "";
+
+            ModelState.Remove(nameof(editarRegistroVm.CNH));
+            ModelState.Remove(nameof(editarRegistroVm.RG));
+        }
     }
     #endregion
 }

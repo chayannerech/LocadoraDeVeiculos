@@ -1,4 +1,5 @@
 ﻿using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
+using LocadoraDeVeiculos.Dominio.ModuloVeiculo;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 namespace LocadoraDeVeiculos.WebApp.Models;
@@ -31,7 +32,7 @@ public class PropriedadesVeiculosViewModel
 
 
     [Required(ErrorMessage = "O tipo de combustível é obrigatório")]
-    public string TipoCombustivel { get; set; }
+    public TipoDeCombustivelEnum TipoCombustivel { get; set; }
 
 
     [Required(ErrorMessage = "A capacidade de combustível é obrigatória")]
@@ -97,7 +98,7 @@ public class ListarVeiculosViewModel
     public string Marca { get; set; }
     public string Cor { get; set; }
     public string Modelo { get; set; }
-    public string TipoCombustivel { get; set; }
+    public TipoDeCombustivelEnum TipoCombustivel { get; set; }
     public DateTime Ano { get; set; }
 }
 
@@ -116,7 +117,7 @@ public class DetalhesVeiculosViewModel
     public string Marca { get; set; }
     public string Cor { get; set; }
     public string Modelo { get; set; }
-    public string TipoCombustivel { get; set; }
+    public TipoDeCombustivelEnum TipoCombustivel { get; set; }
     public int CapacidadeCombustivel { get; set; }
     public int Ano { get; set; }
     public int KmRodados { get; set; }

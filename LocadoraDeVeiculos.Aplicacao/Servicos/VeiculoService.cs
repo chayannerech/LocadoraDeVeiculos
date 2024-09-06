@@ -138,7 +138,7 @@ public class VeiculoService(IRepositorioVeiculo repositorioVeiculo, IRepositorio
         return Result.Ok();
     }
 
-    public void AtualizarKmRodados(int id, int? kmAtualizado)
+    public void AtualizarKmRodados(int id, int kmAtualizado)
     {
         var veiculoSelecionado = repositorioVeiculo.SelecionarPorId(id);
         veiculoSelecionado!.KmRodados = kmAtualizado;

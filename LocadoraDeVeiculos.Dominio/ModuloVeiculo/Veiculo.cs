@@ -1,5 +1,6 @@
 ﻿using LocadoraDeVeiculos.Dominio.Compartilhado;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
+using LocadoraDeVeiculos.Dominio.ModuloVeiculo;
 namespace LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 public class Veiculo() : EntidadeBase
 {
@@ -7,7 +8,7 @@ public class Veiculo() : EntidadeBase
     public string Marca { get; set; }
     public string Cor { get; set; }
     public string Modelo { get; set; }
-    public string TipoCombustivel { get; set; }
+    public TipoDeCombustivelEnum TipoCombustivel { get; set; }
     public int CapacidadeCombustivel { get; set; }
     public int Ano { get; set; }
     public int KmRodados { get; set; }
@@ -16,7 +17,7 @@ public class Veiculo() : EntidadeBase
     public GrupoDeAutomoveis GrupoDeAutomoveis { get; set; }
     public bool Alugado { get; set; }
 
-    public Veiculo(string placa, string marca, string cor, string modelo, string tipoCombustivel, int capacidadeCombustivel, int ano, byte[] imagemEmBytes, string tipoDaImagem, GrupoDeAutomoveis grupoDeAutomoveis) : this()
+    public Veiculo(string placa, string marca, string cor, string modelo, TipoDeCombustivelEnum tipoCombustivel, int capacidadeCombustivel, int ano, byte[] imagemEmBytes, string tipoDaImagem, GrupoDeAutomoveis grupoDeAutomoveis, int kmRodados) : this()
     {
         Placa = placa;
         Marca = marca;
@@ -28,6 +29,7 @@ public class Veiculo() : EntidadeBase
         ImagemEmBytes = imagemEmBytes;
         TipoDaImagem = tipoDaImagem;
         GrupoDeAutomoveis = grupoDeAutomoveis;
+        KmRodados = kmRodados;
     }
 
     public List<string> Validar()
@@ -38,7 +40,6 @@ public class Veiculo() : EntidadeBase
         VerificaNulo(ref erros, Marca, "Marca");
         VerificaNulo(ref erros, Cor, "Cor");
         VerificaNulo(ref erros, Modelo, "Modelo");
-        VerificaNulo(ref erros, TipoCombustivel, "Tipo de Combustível");
         VerificaNulo(ref erros, CapacidadeCombustivel, "Capacidade de Combustível");
         VerificaNulo(ref erros, Ano, "Ano");
         VerificaNulo(ref erros, ImagemEmBytes, "Foto");

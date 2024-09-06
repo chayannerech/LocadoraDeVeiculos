@@ -6,6 +6,7 @@ using LocadoraDeVeiculos.Dominio.ModuloFuncionario;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloTaxa;
+using LocadoraDeVeiculos.Dominio.ModuloVeiculo;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 namespace LocadoraDeVeiculos.Dominio.ModuloAluguel;
 public class Aluguel() : EntidadeBase
@@ -28,14 +29,14 @@ public class Aluguel() : EntidadeBase
     #endregion
 
     #region Propriedades de Devolução
-    public DateTime DataRetornoReal { get; set; } = DateTime.Now;
+    public DateTime DataRetornoReal { get; set; } = new DateTime(1950, 1, 1);
     public int KmInicial { get; set; }
     public int KmFinal { get; set; }
     public bool TanqueCheio { get; set; }
     public Configuracao Configuracao { get; set; }
     #endregion
 
-    public Aluguel(Condutor condutor, Cliente cliente, GrupoDeAutomoveis grupo, PlanoDeCobranca plano, CategoriaDePlanoEnum categoriaPlano, Veiculo veiculo, int entrada, DateTime dataSaida, DateTime dataRetornoPrevista, string taxasSelecionadasId, DateTime dataRetornoReal, int kmInicial, int kmFinal) : this()
+    public Aluguel(Condutor condutor, Cliente cliente, GrupoDeAutomoveis grupo, PlanoDeCobranca plano, CategoriaDePlanoEnum categoriaPlano, Veiculo veiculo, int entrada, DateTime dataSaida, DateTime dataRetornoPrevista, string taxasSelecionadasId, DateTime dataRetornoReal, int kmInicial, int kmFinal, bool tanqueCheio, Configuracao configuracao) : this()
     {
         Condutor = condutor;
         Cliente = cliente;
@@ -50,6 +51,8 @@ public class Aluguel() : EntidadeBase
         DataRetornoReal = dataRetornoReal;
         KmInicial = kmInicial;
         KmFinal = kmFinal;
+        TanqueCheio = tanqueCheio;
+        Configuracao = configuracao;
     }
 
 
@@ -105,11 +108,11 @@ public class Aluguel() : EntidadeBase
         {
             var capacidadeTanque = Veiculo.CapacidadeCombustivel;
 
-            if (Veiculo.TipoCombustivel == "Gasolina")
+            if (Veiculo.TipoCombustivel == TipoDeCombustivelEnum.Gasolina)
                 valorTotal += Configuracao.Gasolina * capacidadeTanque;
-            else if (Veiculo.TipoCombustivel == "Etanol")
+            else if (Veiculo.TipoCombustivel == TipoDeCombustivelEnum.Etanol)
                 valorTotal += Configuracao.Etanol * capacidadeTanque;
-            else if (Veiculo.TipoCombustivel == "GNV")
+            else if (Veiculo.TipoCombustivel == TipoDeCombustivelEnum.GNV)
                 valorTotal += Configuracao.GNV * capacidadeTanque;
             else
                 valorTotal += Configuracao.Diesel * capacidadeTanque;
@@ -130,7 +133,12 @@ public class Aluguel() : EntidadeBase
         VerificaNulo(ref erros, Cliente, "Cliente");
         VerificaNulo(ref erros, Veiculo, "Veiculo");
         VerificaDataInferior(ref erros, DataSaida, "O veículo deve ser retirado hoje ou após o dia de hoje");
-        VerificaDataInferior(ref erros, DataRetornoPrevista, DataSaida, "O veículo deve ser devolvido após a data de retirada");        
+        VerificaDataInferior(ref erros, DataRetornoPrevista, DataSaida, "O veículo deve ser devolvido após a data de retirada");
+
+        var dataSetup = new DateTime(1950, 1, 1);
+
+        if (DataRetornoReal != dataSetup)
+            VerificaDataInferior(ref erros, DataRetornoReal, DataSaida, "O veículo deve ser devolvido após a data de retirada");
 
         return erros;
     }

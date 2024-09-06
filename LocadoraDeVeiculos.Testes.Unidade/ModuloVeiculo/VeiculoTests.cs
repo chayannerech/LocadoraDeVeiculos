@@ -1,4 +1,5 @@
-﻿using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
+﻿using LocadoraDeVeiculos.Dominio.ModuloVeiculo;
+using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 namespace LocadoraDeVeiculos.Testes.Unidade.ModuloVeiculo
 {
     [TestClass]
@@ -8,7 +9,7 @@ namespace LocadoraDeVeiculos.Testes.Unidade.ModuloVeiculo
         [TestMethod]
         public void Deve_Validar_Veiculo_Corretamente()
         {
-            var registroInvalido = new Veiculo("", "", "", "", "", 0, 0, null, "", null);
+            var registroInvalido = new Veiculo("", "", "", "", TipoDeCombustivelEnum.Etanol, 0, 0, null, "", null, 0);
 
             List<string> errosEsperados =
             [
@@ -16,7 +17,6 @@ namespace LocadoraDeVeiculos.Testes.Unidade.ModuloVeiculo
                 "O campo \"Marca\" é obrigatório. Tente novamente ",
                 "O campo \"Cor\" é obrigatório. Tente novamente ",
                 "O campo \"Modelo\" é obrigatório. Tente novamente ",
-                "O campo \"Tipo de Combustível\" é obrigatório. Tente novamente ",
                 "O campo \"Capacidade de Combustível\" é obrigatório. Tente novamente ",
                 "O campo \"Ano\" é obrigatório. Tente novamente ",
                 "O campo \"Foto\" é obrigatório. Tente novamente ",
@@ -32,7 +32,7 @@ namespace LocadoraDeVeiculos.Testes.Unidade.ModuloVeiculo
         [TestMethod]
         public void Deve_Validar_Data_Corretamente()
         {
-            var registroInvalido = new Veiculo("", "", "", "", "", 0, 2025, null, "", null);
+            var registroInvalido = new Veiculo("", "", "", "", TipoDeCombustivelEnum.Etanol, 0, 2025, null, "", null, 0);
 
             List<string> errosEsperados =
             [
@@ -40,7 +40,6 @@ namespace LocadoraDeVeiculos.Testes.Unidade.ModuloVeiculo
                 "O campo \"Marca\" é obrigatório. Tente novamente ",
                 "O campo \"Cor\" é obrigatório. Tente novamente ",
                 "O campo \"Modelo\" é obrigatório. Tente novamente ",
-                "O campo \"Tipo de Combustível\" é obrigatório. Tente novamente ",
                 "O campo \"Capacidade de Combustível\" é obrigatório. Tente novamente ",
                 "O campo \"Foto\" é obrigatório. Tente novamente ",
                 "O campo \"Foto\" é obrigatório. Tente novamente ",
