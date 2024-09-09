@@ -1,16 +1,15 @@
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
-using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
+using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloUsuario;
 using LocadoraDeVeiculos.Infra.Orm.Compartilhado;
-using LocadoraDeVeiculos.Infra.Orm.ModuloPlanoDeCobrancas;
-using Microsoft.EntityFrameworkCore;
-namespace LocadoraDeVeiculos.Testes.Integracao.ModuloPlanoDeCobranca;
+using LocadoraDeVeiculos.Infra.Orm.ModuloCliente;
+namespace LocadoraDeVeiculos.Testes.Integracao.ModuloCliente;
 
 [TestClass]
-[TestCategory("Testes de Integração de Plano")]
-public class RepositorioPLanoEmOrmTests
+[TestCategory("Testes de Integração de Cliente")]
+public class RepositorioClienteEmOrmTests
 {
-    RepositorioPlanoDeCobrancaEmOrm? repositorioPlano;
+    RepositorioClienteEmOrm? repositorioCliente;
     LocadoraDeVeiculosDbContext? dbContext;
     Usuario usuario;
 
@@ -18,7 +17,7 @@ public class RepositorioPLanoEmOrmTests
     public async Task ConfigurarTestes()
     {
         dbContext = new();
-        repositorioPlano = new(dbContext);
+        repositorioCliente = new(dbContext);
 
         dbContext.GrupoDeAutomoveis.RemoveRange(dbContext.GrupoDeAutomoveis);
         dbContext.PlanosDeCobranca.RemoveRange(dbContext.PlanosDeCobranca);
@@ -41,65 +40,56 @@ public class RepositorioPLanoEmOrmTests
     }
 
     [TestMethod]
-    public void Deve_Inserir_PlanoDeCobranca_Corretamente()
+    public void Deve_Inserir_Cliente_Corretamente()
     {
         // Arrange
-        var grupo = new GrupoDeAutomoveis("oi", 0, 0, 0);
-        grupo.UsuarioId = usuario.Id;
-
-        var novoRegistro = new PlanoDeCobranca(grupo, 10,10,10,10,10,10);
+        var novoRegistro = new Cliente(true, "oi", "", "", "", "", "", "", "", "", "", 0);
         novoRegistro.UsuarioId = usuario.Id;
 
         // Act
-        repositorioPlano!.Inserir(novoRegistro);
+        repositorioCliente!.Inserir(novoRegistro);
 
         // Assert
-        var registroSelecionado = repositorioPlano.SelecionarPorId(novoRegistro.Id);
+        var registroSelecionado = repositorioCliente.SelecionarPorId(novoRegistro.Id);
 
         Assert.IsNotNull(registroSelecionado, "O registro selecionado não deve ser nulo");
         Assert.AreEqual(novoRegistro, registroSelecionado, "O registro inserido e o selecionado devem ser iguais");
     }
 
     [TestMethod]
-    public void Deve_Editar_PlanoDeCobranca_Corretamente()
+    public void Deve_Editar_Cliente_Corretamente()
     {
         // Arrange        
-        var grupo = new GrupoDeAutomoveis("oi", 0, 0, 0);
-        grupo.UsuarioId = usuario.Id;
-
-        var registroOriginal = new PlanoDeCobranca(grupo, 10, 10, 10, 10, 10, 10);
+        var registroOriginal = new Cliente(true, "oi", "", "", "", "", "", "", "", "", "", 0);
         registroOriginal.UsuarioId = usuario.Id;
 
-        repositorioPlano!.Inserir(registroOriginal);
+        repositorioCliente!.Inserir(registroOriginal);
 
-        var registroParaAtualizacao = repositorioPlano.SelecionarPorId(registroOriginal.Id);
+        var registroParaAtualizacao = repositorioCliente.SelecionarPorId(registroOriginal.Id);
 
-        registroParaAtualizacao!.PrecoKm = 20;
+        registroParaAtualizacao!.Nome = "Pedrinho";
 
         // Act
-        repositorioPlano.Editar(registroParaAtualizacao);
+        repositorioCliente.Editar(registroParaAtualizacao);
 
         // Assert
         Assert.AreEqual(registroOriginal, registroParaAtualizacao);
     }
 
     [TestMethod]
-    public void Deve_Excluir_PlanoDeCobranca_Corretamente()
+    public void Deve_Excluir_Cliente_Corretamente()
     {
         // Arrange
-        var grupo = new GrupoDeAutomoveis("oi", 0, 0, 0);
-        grupo.UsuarioId = usuario.Id;
-
-        var registro = new PlanoDeCobranca(grupo, 10, 10, 10, 10, 10, 10);
+        var registro = new Cliente(true, "oi", "", "", "", "", "", "", "", "", "", 0);
         registro.UsuarioId = usuario.Id;
 
-        repositorioPlano!.Inserir(registro);
+        repositorioCliente!.Inserir(registro);
 
         // Act
-        repositorioPlano.Excluir(registro);
+        repositorioCliente.Excluir(registro);
 
         // Assert
-        PlanoDeCobranca? registroSelecionado = repositorioPlano.SelecionarPorId(registro.Id);
+        Cliente? registroSelecionado = repositorioCliente.SelecionarPorId(registro.Id);
 
         Assert.IsNull(registroSelecionado);
     }
@@ -108,24 +98,21 @@ public class RepositorioPLanoEmOrmTests
     public void Deve_Selecionar_Todos_Corretamente()
     {
         // Arrange
-        var grupo = new GrupoDeAutomoveis("oi", 0, 0, 0);
-        grupo.UsuarioId = usuario.Id;
-
-        List<PlanoDeCobranca> registrosParaInserir =
+        List<Cliente> registrosParaInserir =
         [
-            new(grupo, 10, 10, 10, 10, 10, 10),
-            new(grupo, 20, 10, 10, 10, 10, 10),
-            new(grupo, 30, 10, 10, 10, 10, 10)
+            new(true, "oi", "", "", "", "", "", "", "", "", "", 0),
+            new(true, "oi", "", "", "", "", "", "", "", "", "", 0),
+            new(true, "oi", "", "", "", "", "", "", "", "", "", 0)
         ];
 
-        foreach (PlanoDeCobranca registro in registrosParaInserir)
+        foreach (Cliente registro in registrosParaInserir)
         {
             registro.UsuarioId = usuario.Id;
-            repositorioPlano!.Inserir(registro);
+            repositorioCliente!.Inserir(registro);
         }
 
         // Act
-        List<PlanoDeCobranca> registrosSelecionados = repositorioPlano!.SelecionarTodos();
+        List<Cliente> registrosSelecionados = repositorioCliente!.SelecionarTodos();
 
         // Assert
         CollectionAssert.AreEqual(registrosParaInserir, registrosSelecionados);

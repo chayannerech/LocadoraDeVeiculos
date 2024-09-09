@@ -1,16 +1,16 @@
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
-using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloUsuario;
+using LocadoraDeVeiculos.Dominio.ModuloVeiculo;
+using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.Infra.Orm.Compartilhado;
-using LocadoraDeVeiculos.Infra.Orm.ModuloPlanoDeCobrancas;
-using Microsoft.EntityFrameworkCore;
-namespace LocadoraDeVeiculos.Testes.Integracao.ModuloPlanoDeCobranca;
+using LocadoraDeVeiculos.Infra.Orm.ModuloVeiculos;
+namespace LocadoraDeVeiculos.Testes.Integracao.ModuloVeiculo;
 
 [TestClass]
-[TestCategory("Testes de Integração de Plano")]
-public class RepositorioPLanoEmOrmTests
+[TestCategory("Testes de Integração de Veiculo")]
+public class RepositorioGrupoEmOrmTests
 {
-    RepositorioPlanoDeCobrancaEmOrm? repositorioPlano;
+    RepositorioVeiculoEmOrm? repositorioVeiculo;
     LocadoraDeVeiculosDbContext? dbContext;
     Usuario usuario;
 
@@ -18,7 +18,7 @@ public class RepositorioPLanoEmOrmTests
     public async Task ConfigurarTestes()
     {
         dbContext = new();
-        repositorioPlano = new(dbContext);
+        repositorioVeiculo = new(dbContext);
 
         dbContext.GrupoDeAutomoveis.RemoveRange(dbContext.GrupoDeAutomoveis);
         dbContext.PlanosDeCobranca.RemoveRange(dbContext.PlanosDeCobranca);
@@ -41,65 +41,65 @@ public class RepositorioPLanoEmOrmTests
     }
 
     [TestMethod]
-    public void Deve_Inserir_PlanoDeCobranca_Corretamente()
+    public void Deve_Inserir_Veiculo_Corretamente()
     {
         // Arrange
         var grupo = new GrupoDeAutomoveis("oi", 0, 0, 0);
         grupo.UsuarioId = usuario.Id;
 
-        var novoRegistro = new PlanoDeCobranca(grupo, 10,10,10,10,10,10);
+        var novoRegistro = new Veiculo("1", "2", "3", "4", TipoDeCombustivelEnum.Gasolina, 50, 0, [], "5", grupo, 0);
         novoRegistro.UsuarioId = usuario.Id;
 
         // Act
-        repositorioPlano!.Inserir(novoRegistro);
+        repositorioVeiculo!.Inserir(novoRegistro);
 
         // Assert
-        var registroSelecionado = repositorioPlano.SelecionarPorId(novoRegistro.Id);
+        var registroSelecionado = repositorioVeiculo.SelecionarPorId(novoRegistro.Id);
 
         Assert.IsNotNull(registroSelecionado, "O registro selecionado não deve ser nulo");
         Assert.AreEqual(novoRegistro, registroSelecionado, "O registro inserido e o selecionado devem ser iguais");
     }
 
     [TestMethod]
-    public void Deve_Editar_PlanoDeCobranca_Corretamente()
+    public void Deve_Editar_Veiculo_Corretamente()
     {
         // Arrange        
         var grupo = new GrupoDeAutomoveis("oi", 0, 0, 0);
         grupo.UsuarioId = usuario.Id;
 
-        var registroOriginal = new PlanoDeCobranca(grupo, 10, 10, 10, 10, 10, 10);
+        var registroOriginal = new Veiculo("1", "2", "3", "4", TipoDeCombustivelEnum.Gasolina, 50, 0, [], "5", grupo, 0);
         registroOriginal.UsuarioId = usuario.Id;
 
-        repositorioPlano!.Inserir(registroOriginal);
+        repositorioVeiculo!.Inserir(registroOriginal);
 
-        var registroParaAtualizacao = repositorioPlano.SelecionarPorId(registroOriginal.Id);
+        var registroParaAtualizacao = repositorioVeiculo.SelecionarPorId(registroOriginal.Id);
 
-        registroParaAtualizacao!.PrecoKm = 20;
+        registroParaAtualizacao!.Ano = 2024;
 
         // Act
-        repositorioPlano.Editar(registroParaAtualizacao);
+        repositorioVeiculo.Editar(registroParaAtualizacao);
 
         // Assert
         Assert.AreEqual(registroOriginal, registroParaAtualizacao);
     }
 
     [TestMethod]
-    public void Deve_Excluir_PlanoDeCobranca_Corretamente()
+    public void Deve_Excluir_Veiculo_Corretamente()
     {
         // Arrange
         var grupo = new GrupoDeAutomoveis("oi", 0, 0, 0);
         grupo.UsuarioId = usuario.Id;
 
-        var registro = new PlanoDeCobranca(grupo, 10, 10, 10, 10, 10, 10);
+        var registro = new Veiculo("1", "2", "3", "4", TipoDeCombustivelEnum.Gasolina, 50, 0, [], "5", grupo, 0);
         registro.UsuarioId = usuario.Id;
 
-        repositorioPlano!.Inserir(registro);
+        repositorioVeiculo!.Inserir(registro);
 
         // Act
-        repositorioPlano.Excluir(registro);
+        repositorioVeiculo.Excluir(registro);
 
         // Assert
-        PlanoDeCobranca? registroSelecionado = repositorioPlano.SelecionarPorId(registro.Id);
+        Veiculo? registroSelecionado = repositorioVeiculo.SelecionarPorId(registro.Id);
 
         Assert.IsNull(registroSelecionado);
     }
@@ -111,21 +111,21 @@ public class RepositorioPLanoEmOrmTests
         var grupo = new GrupoDeAutomoveis("oi", 0, 0, 0);
         grupo.UsuarioId = usuario.Id;
 
-        List<PlanoDeCobranca> registrosParaInserir =
+        List<Veiculo> registrosParaInserir =
         [
-            new(grupo, 10, 10, 10, 10, 10, 10),
-            new(grupo, 20, 10, 10, 10, 10, 10),
-            new(grupo, 30, 10, 10, 10, 10, 10)
+            new("1", "2", "3", "4", TipoDeCombustivelEnum.Gasolina, 50, 0, [], "5", grupo, 0),
+            new("1", "2", "3", "4", TipoDeCombustivelEnum.Gasolina, 50, 0, [], "5", grupo, 0),
+            new("1", "2", "3", "4", TipoDeCombustivelEnum.Gasolina, 50, 0, [], "5", grupo, 0)
         ];
 
-        foreach (PlanoDeCobranca registro in registrosParaInserir)
+        foreach (Veiculo registro in registrosParaInserir)
         {
             registro.UsuarioId = usuario.Id;
-            repositorioPlano!.Inserir(registro);
+            repositorioVeiculo!.Inserir(registro);
         }
 
         // Act
-        List<PlanoDeCobranca> registrosSelecionados = repositorioPlano!.SelecionarTodos();
+        List<Veiculo> registrosSelecionados = repositorioVeiculo!.SelecionarTodos();
 
         // Assert
         CollectionAssert.AreEqual(registrosParaInserir, registrosSelecionados);

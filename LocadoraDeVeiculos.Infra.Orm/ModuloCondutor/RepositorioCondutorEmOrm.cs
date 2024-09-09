@@ -18,8 +18,7 @@ public class RepositorioCondutorEmOrm : RepositorioBaseEmOrm<Condutor>, IReposit
     public override List<Condutor> SelecionarTodos()
         => [.. ObterRegistros()
             .Where(c => c.Ativo)
-            .Include(c => c.Cliente)
-            .AsNoTracking()];
+            .Include(c => c.Cliente)];
 
     public override List<Condutor> Filtrar(Func<Condutor, bool> predicate)
         => ObterRegistros()

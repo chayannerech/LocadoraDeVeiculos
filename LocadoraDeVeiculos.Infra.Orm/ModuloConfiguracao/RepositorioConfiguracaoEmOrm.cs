@@ -22,9 +22,6 @@ public class RepositorioConfiguracaoEmOrm(LocadoraDeVeiculosDbContext _dbContext
         => _dbContext.Configuracoes;
 
     public Configuracao? Selecionar(int usuarioId)
-        => ObterRegistros()
-            .Where(c => c.UsuarioId == usuarioId)
-            .ToList().Count == 0 ? null : ObterRegistros()
-            .Where(c => c.UsuarioId == usuarioId)
-            .ToList().First();
+        => ObterRegistros().Where(c => c.UsuarioId == usuarioId).ToList().Count == 0 ? 
+            null : ObterRegistros().Where(c => c.UsuarioId == usuarioId).ToList().First();
 }

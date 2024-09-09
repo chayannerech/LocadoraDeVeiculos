@@ -2,7 +2,7 @@ using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloUsuario;
 using LocadoraDeVeiculos.Infra.Orm.Compartilhado;
 using LocadoraDeVeiculos.Infra.Orm.ModuloGrupoDeAutomoveis;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 namespace LocadoraDeVeiculos.Testes.Integracao.ModuloGrupoDeAutomoveis;
 
 [TestClass]
@@ -11,8 +11,6 @@ public class RepositorioGrupoEmOrmTests
 {
     RepositorioGrupoDeAutomoveisEmOrm? repositorioGrupo;
     LocadoraDeVeiculosDbContext? dbContext;
-    UserManager<Usuario>? userManager;
-    RoleManager<Perfil>? roleManager;
     Usuario usuario;
 
     [TestInitialize]
@@ -22,14 +20,27 @@ public class RepositorioGrupoEmOrmTests
         repositorioGrupo = new(dbContext);
 
         dbContext.GrupoDeAutomoveis.RemoveRange(dbContext.GrupoDeAutomoveis);
+        dbContext.PlanosDeCobranca.RemoveRange(dbContext.PlanosDeCobranca);
+        dbContext.Veiculos.RemoveRange(dbContext.Veiculos);
+
+        dbContext.Clientes.RemoveRange(dbContext.Clientes);
+        dbContext.Condutores.RemoveRange(dbContext.Condutores);
+
+        dbContext.Configuracoes.RemoveRange(dbContext.Configuracoes);
+        dbContext.Taxas.RemoveRange(dbContext.Taxas);
+
+        dbContext.Alugueis.RemoveRange(dbContext.Alugueis);
+
+        dbContext.Users.RemoveRange(dbContext.Users);
+        dbContext.Funcionarios.RemoveRange(dbContext.Funcionarios);
 
         usuario = new Usuario { UserName = "testuser", Email = "testuser@example.com" };
         await dbContext.Users.AddAsync(usuario);
-        await dbContext.SaveChangesAsync();
+        dbContext.SaveChanges();
     }
 
     [TestMethod]
-    public void Deve_Inserir_GrupoDeAutomoveis_Corretamente()
+    public async Task Deve_Inserir_GrupoDeAutomoveis_Corretamente()
     {
         // Arrange
         var novoRegistro = new GrupoDeAutomoveis("Oi", 1, 1, 1);
@@ -46,9 +57,9 @@ public class RepositorioGrupoEmOrmTests
     }
 
     [TestMethod]
-    public void Deve_Editar_GrupoDeAutomoveis_Corretamente()
+    public async Task Deve_Editar_GrupoDeAutomoveis_Corretamente()
     {
-        // Arrange        
+        // Arrange
         var registroOriginal = new GrupoDeAutomoveis("Oi", 1, 1, 1);
         registroOriginal.UsuarioId = usuario.Id;
 

@@ -32,8 +32,7 @@ public class RepositorioAluguelEmOrm : RepositorioBaseEmOrm<Aluguel>, IRepositor
             .Include(a => a.Plano)
             .Include(a => a.Veiculo)
             .Include(a => a.Configuracao)
-            .Include(a => a.Funcionario)
-            .AsNoTracking()];
+            .Include(a => a.Funcionario)];
 
     public override List<Aluguel> Filtrar(Func<Aluguel, bool> predicate)    
         => ObterRegistros()

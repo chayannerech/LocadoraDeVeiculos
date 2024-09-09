@@ -18,8 +18,7 @@ public class RepositorioVeiculoEmOrm : RepositorioBaseEmOrm<Veiculo>, IRepositor
     public override List<Veiculo> SelecionarTodos()
         => [.. ObterRegistros()
             .Where(v => v.Ativo)
-            .Include(v => v.GrupoDeAutomoveis)
-            .AsNoTracking()];
+            .Include(v => v.GrupoDeAutomoveis)];
 
     public List<IGrouping<string, Veiculo>> ObterVeiculosAgrupadosPorGrupo(int usuarioId)
         => [.. ObterRegistros()

@@ -18,8 +18,7 @@ public class RepositorioPlanoDeCobrancaEmOrm : RepositorioBaseEmOrm<PlanoDeCobra
     public override List<PlanoDeCobranca> SelecionarTodos()
         => [.. ObterRegistros()
             .Where(p => p.Ativo)
-            .Include(p => p.GrupoDeAutomoveis)
-            .AsNoTracking()];
+            .Include(p => p.GrupoDeAutomoveis)];
 
     public PlanoDeCobranca SelecionarPorGrupoId(int id)
         => ObterRegistros().FirstOrDefault(p => p.GrupoDeAutomoveis.Id == id && p.Ativo)!;
