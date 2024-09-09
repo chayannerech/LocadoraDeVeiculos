@@ -170,7 +170,7 @@ public class AluguelService(
         => repositorioAluguel.SelecionarTodos().Any(a => a.Veiculo.Id == registro.Id && a.AluguelAtivo);
 
     public bool AluguelRelacionadoAtivo(PlanoDeCobranca registro)
-    => repositorioAluguel.SelecionarTodos().Any(a => a.Grupo.Id == registro.GrupoDeAutomoveis.Id && a.AluguelAtivo);
+        => repositorioAluguel.SelecionarTodos().Any(a => a.Grupo.Id == registro.GrupoDeAutomoveis.Id && a.AluguelAtivo);
 
     public bool AluguelRelacionadoAtivo(Cliente registro)
     => repositorioAluguel.SelecionarTodos().Any(a => a.Cliente.Id == registro.Id && a.AluguelAtivo);
@@ -182,7 +182,7 @@ public class AluguelService(
     => repositorioAluguel.SelecionarTodos().Any(a => a.Funcionario.Id == registro.Id && a.AluguelAtivo);
 
     public bool AluguelRelacionadoAtivo(Taxa registro)
-        => repositorioAluguel.SelecionarTodos().Any(a => a.TaxasSelecionadasId.Split(',').Contains($"{registro.Id}"));
+        => repositorioAluguel.SelecionarTodos().Any(a => a.TaxasSelecionadasId.Split(',').Contains($"{registro.Id}") && a.AluguelAtivo);
     public bool SemRegistros(int usuarioId)
         => !repositorioAluguel.SelecionarTodos().Any(f => f.UsuarioId == usuarioId);
     #endregion

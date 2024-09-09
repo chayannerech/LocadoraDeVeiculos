@@ -3,23 +3,23 @@ using LocadoraDeVeiculos.Dominio.ModuloConfiguracaoe;
 using LocadoraDeVeiculos.Infra.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 namespace LocadoraDeVeiculos.Infra.Orm.ModuloConfiguracao;
-public class RepositorioConfiguracaoEmOrm(LocadoraDeVeiculosDbContext _dbContext) : IRepositorioConfiguracao
+public class RepositorioConfiguracaoEmOrm(LocadoraDeVeiculosDbContext DbContext) : IRepositorioConfiguracao
 {
     public void Inserir(Configuracao entidade)
     {
         ObterRegistros().Add(entidade);
 
-        _dbContext.SaveChanges();
+        DbContext.SaveChanges();
     }
     public void Editar(Configuracao entidade)
     {
         ObterRegistros().Update(entidade);
 
-        _dbContext.SaveChanges();
+        DbContext.SaveChanges();
     }
 
     protected DbSet<Configuracao> ObterRegistros() 
-        => _dbContext.Configuracoes;
+        => DbContext.Configuracoes;
 
     public Configuracao? Selecionar(int usuarioId)
         => ObterRegistros().Where(c => c.UsuarioId == usuarioId).ToList().Count == 0 ? 
