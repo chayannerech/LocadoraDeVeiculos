@@ -3,14 +3,17 @@
 
 @{
     ViewBag.Title = "Grupos de Automóveis Disponíveis";
+    var inserir = ViewBag.Inserir is null ? true : false;
 }
 
 <div class="col">
-    <a class="btn btn-outline-secondary px-4 mt-2" href="/GrupoDeAutomoveis/inserir">
-        <i class="bi bi-plus-circle"></i>
-        Inserir novo registro
-    </a>
-
+    @if (inserir)
+    {
+        <a class="btn btn-outline-secondary px-4 mt-2" href="/GrupoDeAutomoveis/inserir">
+            <i class="bi bi-plus-circle"></i>
+            Inserir novo registro
+        </a>
+    }
     <div class="row gap-2 my-3 my-xl-5">
         @foreach (var GrupoDeAutomoveisVm in Model)
         {

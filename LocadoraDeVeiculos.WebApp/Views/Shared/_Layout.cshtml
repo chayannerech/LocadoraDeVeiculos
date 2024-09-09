@@ -106,7 +106,7 @@
                     <ul class="navbar-nav flex-grow-1 justify-content-end">
                         @if (User.IsInRole("Empresa"))
                         {
-                            <a class="nav-link @clienteAtivo" asp-controller="Funcionario" asp-action="Listar">Funcionário</a>
+                            <a class="nav-link @funcionarioAtivo" asp-controller="Funcionario" asp-action="Listar">Funcionário</a>
                         }
                         @if (User.Identity!.IsAuthenticated)
                         {

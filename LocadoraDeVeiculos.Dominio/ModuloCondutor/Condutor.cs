@@ -12,6 +12,17 @@ public class Condutor() : EntidadeBase
     public string CNH { get; set; }
     public DateTime ValidadeCNH { get; set; }
 
+    public Condutor(Cliente cliente, string nome, string email, string telefone, string cPF, string cNH, DateTime validadeCNH) : this()
+    {
+        Cliente = cliente;
+        Nome = nome;
+        Email = email;
+        Telefone = telefone;
+        CPF = cPF;
+        CNH = cNH;
+        ValidadeCNH = validadeCNH;
+    }
+
     public List<string> Validar()
     {
         List<string> erros = [];

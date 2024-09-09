@@ -7,11 +7,10 @@ using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDeCondutor.WebApp.Controllers;
 
-[Authorize(Roles = "Empresa, Funcionário")]
-public class CondutorController(CondutorService servicoCondutor, ClienteService servicoCliente, AluguelService servicoAluguel, IMapper mapeador) : WebControllerBase
+[Authorize(Roles = "Empresa, Funcionario")]
+public class CondutorController(CondutorService servicoCondutor, ClienteService servicoCliente, AluguelService servicoAluguel, FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase(servicoFuncionario)
 {
     public IActionResult Listar()
     {
@@ -24,7 +23,7 @@ public class CondutorController(CondutorService servicoCondutor, ClienteService 
 
         ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 
-        if (servicoCondutor.SemRegistros() && ViewBag.Mensagem is null)
+        if (servicoCondutor.SemRegistros(UsuarioId.GetValueOrDefault()) && ViewBag.Mensagem is null)
             ApresentarMensagemSemRegistros();
 
         var listarCondutorVm = mapeador.Map<IEnumerable<ListarCondutorViewModel>>(registros);
@@ -37,7 +36,7 @@ public class CondutorController(CondutorService servicoCondutor, ClienteService 
 
     public IActionResult Inserir()
     {
-        if (servicoCliente.SemRegistros())
+        if (servicoCliente.SemRegistros(UsuarioId))
         {
             ApresentarMensagemSemDependencias("Clientes");
             return RedirectToAction(nameof(Listar));
@@ -52,7 +51,7 @@ public class CondutorController(CondutorService servicoCondutor, ClienteService 
             
         var novoRegistro = mapeador.Map<Condutor>(inserirRegistroVm);
 
-        if (servicoCondutor.ValidarRegistroRepetido(inserirRegistroVm.Check, novoRegistro, out string itemRepetido))
+        if (servicoCondutor.ValidarRegistroRepetido(inserirRegistroVm.Check, novoRegistro, out string itemRepetido, UsuarioId.GetValueOrDefault()))
         {
             MostrarMensagemDeRegistroRepetido(itemRepetido);
             return View(CarregarInformacoes(inserirRegistroVm));
@@ -69,6 +68,7 @@ public class CondutorController(CondutorService servicoCondutor, ClienteService 
 
         return RedirectToAction(nameof(Listar));
     }
+
 
     public IActionResult Editar(int id)
     {
@@ -99,7 +99,7 @@ public class CondutorController(CondutorService servicoCondutor, ClienteService 
 
         var registro = mapeador.Map<Condutor>(editarRegistroVm);
 
-        if (servicoCondutor.ValidarRegistroRepetido(editarRegistroVm.Check, registro, out string itemRepetido))
+        if (servicoCondutor.ValidarRegistroRepetido(editarRegistroVm.Check, registro, out string itemRepetido, UsuarioId.GetValueOrDefault()))
         {
             MostrarMensagemDeRegistroRepetido(itemRepetido);
             return View(CarregarInformacoes(editarRegistroVm));
@@ -109,8 +109,6 @@ public class CondutorController(CondutorService servicoCondutor, ClienteService 
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
-
-        servicoAluguel.AtualizarCondutorDoAluguel(registro);
 
         ApresentarMensagemSucesso($"O registro \"{registro}\" foi editado com sucesso!");
 
@@ -129,7 +127,7 @@ public class CondutorController(CondutorService servicoCondutor, ClienteService 
 
         if (servicoAluguel.AluguelRelacionadoAtivo(registro))
         {
-            ApresentarMensagemImpossivelEditar("Existe um aluguel ativo relacionado");
+            ApresentarMensagemImpossivelExcluir("Existe um aluguel ativo relacionado");
             return RedirectToAction(nameof(Listar));
         }
 
@@ -141,7 +139,7 @@ public class CondutorController(CondutorService servicoCondutor, ClienteService 
     public IActionResult Excluir(DetalhesCondutorViewModel detalhesRegistroVm)
     {
         var registro = servicoCondutor.SelecionarPorId(detalhesRegistroVm.Id).Value;
-        var resultado = servicoCondutor.Excluir(detalhesRegistroVm.Id);
+        var resultado = servicoCondutor.Desativar(detalhesRegistroVm.Id);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));

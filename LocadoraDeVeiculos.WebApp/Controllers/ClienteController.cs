@@ -2,7 +2,7 @@
 using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
-using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
+using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
 using LocadoraDeVeiculos.WebApp.Extensions;
 using LocadoraDeVeiculos.WebApp.Models;
@@ -11,11 +11,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
 
-[Authorize(Roles = "Empresa, Funcionário")]
-public class ClienteController(ClienteService servicoCliente, CondutorService servicoCondutor, AluguelService servicoAluguel, IMapper mapeador) : WebControllerBase
+[Authorize(Roles = "Empresa, Funcionario")]
+public class ClienteController(ClienteService servicoCliente, CondutorService servicoCondutor, AluguelService servicoAluguel, FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase(servicoFuncionario)
 {
     public IActionResult Listar()
-
     {
         var resultado = servicoCliente.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
@@ -24,7 +23,7 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
 
         var registros = resultado.Value;
 
-        if (servicoCliente.SemRegistros())
+        if (servicoCliente.SemRegistros(UsuarioId.GetValueOrDefault()))
             ApresentarMensagemSemRegistros();
 
         var listarClienteVm = mapeador.Map<IEnumerable<ListarClienteViewModel>>(registros);
@@ -38,19 +37,14 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
     [HttpPost]
     public IActionResult Inserir(InserirClienteViewModel inserirRegistroVm)
     {
+        AjustarDocumentosPessoaJuridica(inserirRegistroVm);
+
         if (!ModelState.IsValid)
-        {
-            if(inserirRegistroVm.PessoaFisica is false)
-            {
-                inserirRegistroVm.CNH = "";
-                inserirRegistroVm.RG = "";
-            }
-            else return View(CarregarInformacoes(inserirRegistroVm));
-        }
+            return View(CarregarInformacoes(inserirRegistroVm));
 
         var novoRegistro = mapeador.Map<Cliente>(inserirRegistroVm);
 
-        if (servicoCliente.ValidarRegistroRepetido(novoRegistro, out string itemRepetido))
+        if (servicoCliente.ValidarRegistroRepetido(novoRegistro, out string itemRepetido, UsuarioId.GetValueOrDefault()))
         {
             EnviarMensagemDeRegistroRepetido(itemRepetido);
             return View(CarregarInformacoes(inserirRegistroVm));
@@ -91,20 +85,14 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
     [HttpPost]
     public IActionResult Editar(EditarClienteViewModel editarRegistroVm)
     {
+        AjustarDocumentosPessoaJuridica(editarRegistroVm);
+
         if (!ModelState.IsValid)
-        {
-            if (editarRegistroVm.Documento is not null)
-            {
-                editarRegistroVm.CNH = "";
-                editarRegistroVm.RG = "";
-            }
-            else
-                return View(CarregarInformacoes(editarRegistroVm));
-        }
+            return View(CarregarInformacoes(editarRegistroVm));
 
         var registro = mapeador.Map<Cliente>(editarRegistroVm);
 
-        if (servicoCliente.ValidarRegistroRepetido(registro, out string itemRepetido))
+        if (servicoCliente.ValidarRegistroRepetido(registro, out string itemRepetido, UsuarioId.GetValueOrDefault()))
         {
             EnviarMensagemDeRegistroRepetido(itemRepetido);
             return View(CarregarInformacoes(editarRegistroVm));
@@ -115,13 +103,10 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        servicoAluguel.AtualizarClienteDoAluguel(registro);
-
         ApresentarMensagemSucesso($"O registro \"{registro}\" foi editado com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
-
 
     public IActionResult Excluir(int id)
     {
@@ -152,7 +137,7 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
     public IActionResult Excluir(DetalhesClienteViewModel detalhesRegistroVm)
     {
         var registro = servicoCliente.SelecionarPorId(detalhesRegistroVm.Id).Value;
-        var resultado = servicoCliente.Excluir(detalhesRegistroVm.Id);
+        var resultado = servicoCliente.Desativar(detalhesRegistroVm.Id);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
@@ -220,6 +205,28 @@ public class ClienteController(ClienteService servicoCliente, CondutorService se
             ApresentarMensagemRegistroExistente("Já existe um cadastro com esse RG");
         if (itemRepetido == "cnh")
             ApresentarMensagemRegistroExistente("Já existe um cadastro com essa CNH");
+    }
+    private void AjustarDocumentosPessoaJuridica(InserirClienteViewModel inserir)
+    {
+        if (inserir.PessoaFisica is false)
+        {
+            inserir.CNH = "";
+            inserir.RG = "";
+
+            ModelState.Remove(nameof(inserir.CNH));
+            ModelState.Remove(nameof(inserir.RG));
+        }
+    }
+    private void AjustarDocumentosPessoaJuridica(EditarClienteViewModel editarRegistroVm)
+    {
+        if (editarRegistroVm.PessoaFisica is false)
+        {
+            editarRegistroVm.CNH = "";
+            editarRegistroVm.RG = "";
+
+            ModelState.Remove(nameof(editarRegistroVm.CNH));
+            ModelState.Remove(nameof(editarRegistroVm.RG));
+        }
     }
     #endregion
 }

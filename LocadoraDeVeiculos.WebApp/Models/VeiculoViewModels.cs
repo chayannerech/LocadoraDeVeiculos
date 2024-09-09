@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
+using LocadoraDeVeiculos.Dominio.ModuloVeiculo;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 namespace LocadoraDeVeiculos.WebApp.Models;
 
@@ -30,12 +32,17 @@ public class PropriedadesVeiculosViewModel
 
 
     [Required(ErrorMessage = "O tipo de combustível é obrigatório")]
-    public string TipoCombustivel { get; set; }
+    public TipoDeCombustivelEnum TipoCombustivel { get; set; }
 
 
     [Required(ErrorMessage = "A capacidade de combustível é obrigatória")]
     [Range(30, 120, ErrorMessage = "A capacidade deve estar entre 30 e 120L")]
     public int CapacidadeCombustivel { get; set; }
+
+
+    [Required(ErrorMessage = "A quilometragem é obrigatória")]
+    [Range(0, 200000, ErrorMessage = "A quilometragem deve estar entre 0 e 200.000 Km")]
+    public int KmRodados { get; set; }
 
 
     [Required(ErrorMessage = "O ano é obrigatório")]
@@ -91,7 +98,7 @@ public class ListarVeiculosViewModel
     public string Marca { get; set; }
     public string Cor { get; set; }
     public string Modelo { get; set; }
-    public string TipoCombustivel { get; set; }
+    public TipoDeCombustivelEnum TipoCombustivel { get; set; }
     public DateTime Ano { get; set; }
 }
 
@@ -104,14 +111,16 @@ public class AgrupamentoVeiculosPorGrupoViewModel
 public class DetalhesVeiculosViewModel
 {
     public int Id { get; set; }
-    public string GrupoNome { get; set; }
+    public GrupoDeAutomoveis GrupoDeAutomoveis { get; set; }
+    public string GrupoNome { get => GrupoDeAutomoveis is null ? "" : GrupoDeAutomoveis.Nome; }
     public string Placa { get; set; }
     public string Marca { get; set; }
     public string Cor { get; set; }
     public string Modelo { get; set; }
-    public string TipoCombustivel { get; set; }
+    public TipoDeCombustivelEnum TipoCombustivel { get; set; }
     public int CapacidadeCombustivel { get; set; }
     public int Ano { get; set; }
+    public int KmRodados { get; set; }
     public byte[] ImagemEmBytes { get; set; }
     public string TipoDaImagem { get; set; }
 }

@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using LocadoraDeVeiculos.Dominio.ModuloAluguel;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloCondutor;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
@@ -57,28 +58,23 @@ public class ClienteService(IRepositorioCliente repositorioCliente, IRepositorio
     }
 
     public Result<List<Cliente>> SelecionarTodos(int usuarioId)
+        => Result.Ok(repositorioCliente.Filtrar(c => c.UsuarioId == usuarioId));
+
+    public bool SemRegistros(int? usuarioId)
+        => !repositorioCliente.SelecionarTodos().Any(f => f.UsuarioId == usuarioId);
+
+    public bool ValidarRegistroRepetido(Cliente novoRegistro, out string itemRepetido, int? usuarioId)
     {
-        var registros = repositorioCliente
-            .Filtrar(f => f.UsuarioId == usuarioId);
-
-        return Result.Ok(registros);
-    }
-
-    public bool SemRegistros()
-        => repositorioCliente.SelecionarTodos().Count == 0;
-
-    public bool ValidarRegistroRepetido(Cliente novoRegistro, out string itemRepetido)
-    {
-        var cpfsCondutores = repositorioCondutor.SelecionarTodos().Select(r => r.CPF);
-        var cnhCondutores = repositorioCondutor.SelecionarTodos().Select(r => r.CNH);
+        var cpfsCondutores = repositorioCondutor.Filtrar(c => c.UsuarioId == usuarioId).Select(c => c.CPF);
+        var cnhCondutores = repositorioCondutor.Filtrar(c => c.UsuarioId == usuarioId).Select(r => r.CNH);
         
-        var cpfsClientes = repositorioCliente.SelecionarTodos().FindAll(c => c.PessoaFisica).Select(c => c.Documento);
-        var cnhClientes = repositorioCliente.SelecionarTodos().FindAll(c => c.PessoaFisica).Select(c => c.CNH);
+        var cpfsClientes = repositorioCliente.Filtrar(c => c.PessoaFisica && c.UsuarioId == usuarioId).Select(c => c.Documento);
+        var cnhClientes = repositorioCliente.Filtrar(c => c.PessoaFisica && c.UsuarioId == usuarioId).Select(c => c.CNH);
 
         IEnumerable<string> cpfsExistentes = cpfsCondutores.Concat(cpfsClientes);
         IEnumerable<string> cnhExistentes = cnhCondutores.Concat(cnhClientes);
-        var cnpjExistente = repositorioCliente.SelecionarTodos().FindAll(c => !c.PessoaFisica).Select(c => c.Documento);
-        var rgExistentes = repositorioCliente.SelecionarTodos().FindAll(c => c.PessoaFisica).Select(c => c.RG);
+        var cnpjExistente = repositorioCliente.SelecionarTodos().FindAll(c => !c.PessoaFisica && c.UsuarioId == usuarioId).Select(c => c.Documento);
+        var rgExistentes = repositorioCliente.SelecionarTodos().FindAll(c => c.PessoaFisica && c.UsuarioId == usuarioId).Select(c => c.RG);
 
         var registroAtual = novoRegistro.Id == 0 ? new() : repositorioCliente.SelecionarPorId(novoRegistro.Id);
 
@@ -94,14 +90,24 @@ public class ClienteService(IRepositorioCliente repositorioCliente, IRepositorio
 
             if (rgExistentes.Any(c => c == novoRegistro.RG) && novoRegistro.RG != registroAtual!.RG)
                 itemRepetido = "rg";
-
-            return true;
         }
         else if (cnpjExistente.Any(c => c == novoRegistro.Documento) && novoRegistro.Documento != registroAtual!.Documento)
-        {
             itemRepetido = "cnpj";
-            return true;
-        }
-        return false;
+
+        return itemRepetido != "";
+    }
+
+    public Result<Cliente> Desativar(int id)
+    {
+        var registro = repositorioCliente.SelecionarPorId(id);
+
+        if (registro is null)
+            return Result.Fail("O cliente não foi encontrado!");
+
+        registro.Ativo = false;
+
+        repositorioCliente.Editar(registro);
+
+        return Result.Ok();
     }
 }

@@ -6,44 +6,47 @@ using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.Dominio.ModuloTaxa;
+using LocadoraDeVeiculos.Dominio.ModuloConfiguracaoe;
+using LocadoraDeVeiculos.Dominio.ModuloFuncionario;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class AluguelService(
         IRepositorioAluguel repositorioAluguel, 
         IRepositorioCondutor repositorioCondutor, 
         IRepositorioCliente repositorioCliente,
+        IRepositorioTaxa repositorioTaxa,
         IRepositorioGrupoDeAutomoveis repositorioGrupo,
+        IRepositorioPlanoDeCobranca repositorioPlano,
+        IRepositorioFuncionario repositorioFuncionario,
+        IRepositorioConfiguracao repositorioConfiguracao,
         IRepositorioVeiculo repositorioVeiculo)
 {
-    public Result<Aluguel> Inserir(Aluguel registro, int condutorId, int clienteId, int grupoId, int veiculoId)
+
+    #region CRUD
+    public Result<Aluguel> Inserir(Aluguel registro, int condutorId, int clienteId, int grupoId, int veiculoId, Funcionario funcionario)
     {
         var condutorSelecionado = repositorioCondutor.SelecionarPorId(condutorId);
         var clienteSelecionado = repositorioCliente.SelecionarPorId(clienteId);
         var grupoSelecionado = repositorioGrupo.SelecionarPorId(grupoId);
+        var planoSelecionado = repositorioPlano.SelecionarPorGrupoId(grupoId);
         var veiculoSelecionado = repositorioVeiculo.SelecionarPorId(veiculoId);
+        var configuracaoAtiva = repositorioConfiguracao.Selecionar(registro.UsuarioId);
 
-        if (condutorSelecionado is null)
-            return Result.Fail("O condutor não foi selecionado!");
-        if (clienteSelecionado is null)
-            return Result.Fail("O cliente não foi selecionado!");
-        if (grupoSelecionado is null)
-            return Result.Fail("O grupo não foi selecionado!");
-        if (veiculoSelecionado is null)
-            return Result.Fail("O veículo não foi selecionado!");
+        Result<Aluguel> resultado = TestarDependenciasEncontradas(condutorSelecionado, clienteSelecionado, grupoSelecionado, planoSelecionado, veiculoSelecionado);
+        if (resultado.IsFailed) return resultado;
 
-        registro.CondutorNome = condutorSelecionado.Nome;
-        registro.ClienteNome = clienteSelecionado.Nome;
-        registro.GrupoNome = grupoSelecionado.Nome;
-        registro.VeiculoId = veiculoSelecionado.Id;
-        registro.VeiculoPlaca = veiculoSelecionado.Placa;
-        registro.Ativo = true;
+        registro.Condutor = condutorSelecionado!;
+        registro.Cliente = clienteSelecionado!;
+        registro.Grupo = grupoSelecionado!;
+        registro.Veiculo = veiculoSelecionado!;
+        registro.Plano = planoSelecionado;
+        registro.Configuracao = configuracaoAtiva;
+        registro.Funcionario = funcionario;
+        registro.KmInicial = veiculoSelecionado!.KmRodados;
+        registro.Taxas = ListarTaxas(repositorioTaxa, registro);
+        registro.ValorTotal = registro.CalcularValorTotalRetirada();
 
-        var erros = registro.Validar();
-        if (erros.Count != 0)
-            return Result.Fail(erros[0]);
-
-        repositorioAluguel.Inserir(registro);
-
-        return Result.Ok(registro);
+        return ValidarEntidadeESubmeter(repositorioAluguel, registro,
+            () => repositorioAluguel.Inserir(registro));
     }
 
     public Result<Aluguel> Editar(Aluguel registroAtualizado,int condutorId, int clienteId, int grupoId, int veiculoId)
@@ -56,65 +59,45 @@ public class AluguelService(
         var condutorSelecionado = repositorioCondutor.SelecionarPorId(condutorId);
         var clienteSelecionado = repositorioCliente.SelecionarPorId(clienteId);
         var grupoSelecionado = repositorioGrupo.SelecionarPorId(grupoId);
+        var planoSelecionado = repositorioPlano.SelecionarPorGrupoId(grupoId);
         var veiculoSelecionado = repositorioVeiculo.SelecionarPorId(veiculoId);
 
-        if (condutorSelecionado is null)
-            return Result.Fail("O condutor não foi selecionado!");
-        if (clienteSelecionado is null)
-            return Result.Fail("O cliente não foi selecionado!");
-        if (grupoSelecionado is null)
-            return Result.Fail("O grupo não foi selecionado!");
-        if (veiculoSelecionado is null)
-            return Result.Fail("O veículo não foi selecionado!");
+        Result<Aluguel> resultado = TestarDependenciasEncontradas(condutorSelecionado, clienteSelecionado, grupoSelecionado, planoSelecionado, veiculoSelecionado);
+        if (resultado.IsFailed) return resultado;
 
-        registro.CondutorNome = condutorSelecionado.Nome;
-        registro.ClienteNome = clienteSelecionado.Nome;
-        registro.GrupoNome = grupoSelecionado.Nome;
-        registro.VeiculoPlaca = veiculoSelecionado.Placa;
-        registro.VeiculoId = veiculoSelecionado.Id;
+        registro.Condutor = condutorSelecionado!;
+        registro.Cliente = clienteSelecionado!;
+        registro.Grupo = grupoSelecionado!;
+        registro.Veiculo = veiculoSelecionado!;
+        registro.Plano = planoSelecionado;
         registro.CategoriaPlano = registroAtualizado.CategoriaPlano;
         registro.DataSaida = registroAtualizado.DataSaida;
         registro.DataRetornoPrevista = registroAtualizado.DataRetornoPrevista;
-        registro.ValorTotal = registroAtualizado.ValorTotal;
         registro.TaxasSelecionadasId = registroAtualizado.TaxasSelecionadasId;
+        registro.KmInicial = veiculoSelecionado!.KmRodados;
+        registro.Taxas = ListarTaxas(repositorioTaxa, registro);
+        registro.ValorTotal = registro.CalcularValorTotalRetirada();
 
-        var erros = registro.Validar();
-        if (erros.Count != 0)
-            return Result.Fail(erros[0]);
-
-        repositorioAluguel.Editar(registro);
-
-        return Result.Ok(registro);
+        return ValidarEntidadeESubmeter(repositorioAluguel, registro,
+            () => repositorioAluguel.Editar(registro));
     }
 
-    public Result Excluir(int registroId)
+    public Result<Aluguel> Desativar(int id)
     {
-        var registro = repositorioAluguel.SelecionarPorId(registroId);
+        var registro = repositorioAluguel.SelecionarPorId(id);
 
         if (registro is null)
-            return Result.Fail("O aluguel não foi encontrado!");
-
-        repositorioAluguel.Excluir(registro);
-
-        return Result.Ok();
-    }
-
-    public Result Devolver(int registroId, decimal valorTotal, DateTime dataDevolucaoReal)
-    {
-        var registro = repositorioAluguel.SelecionarPorId(registroId);
-
-        if (registro is null)
-            return Result.Fail("O aluguel não foi encontrado!");
+            return Result.Fail("O cliente não foi encontrado!");
 
         registro.Ativo = false;
-        registro.ValorTotal = valorTotal;
-        registro.DataRetornoReal = dataDevolucaoReal;
 
         repositorioAluguel.Editar(registro);
 
         return Result.Ok();
     }
+    #endregion
 
+    #region Ações auxiliares
     public Result<Aluguel> SelecionarPorId(int registroId)
     {
         var registro = repositorioAluguel.SelecionarPorId(registroId);
@@ -126,69 +109,81 @@ public class AluguelService(
     }
 
     public Result<List<Aluguel>> SelecionarTodos(int usuarioId)
-    {
-        var registros = repositorioAluguel
-            .Filtrar(f => f.UsuarioId == usuarioId);
+        => Result.Ok(repositorioAluguel.Filtrar(f => f.UsuarioId == usuarioId));
 
-        return Result.Ok(registros);
+    public Result Devolver(Aluguel registro, DateTime dataDevolucaoReal, bool tanqueCheio)
+    {
+        registro.AluguelAtivo = false;
+        registro.DataRetornoReal = dataDevolucaoReal;
+        registro.TanqueCheio = tanqueCheio;
+
+        registro.Taxas = ListarTaxas(repositorioTaxa, registro);
+
+        registro.ValorTotal = registro.CalcularValorTotalDevolucao();
+
+        repositorioAluguel.Editar(registro);
+
+        return Result.Ok();
     }
 
-    public void AtualizarVeiculoDoAluguel(Veiculo registro)
+    private static Result<Aluguel> ValidarEntidadeESubmeter(IRepositorioAluguel repositorioAluguel, Aluguel registro, Action acao)
     {
-        var alugueisRelacionados = repositorioAluguel.SelecionarTodos().FindAll(a => a.VeiculoId == registro.Id);
+        var erros = registro.Validar();
+        if (erros.Count != 0)
+            return Result.Fail(erros[0]);
 
-        foreach (var aluguel in alugueisRelacionados)
-        {
-            aluguel.VeiculoPlaca = registro.Placa;
-            repositorioAluguel.Editar(aluguel);
-        }
+        acao();
+
+        return Result.Ok(registro);
     }
 
-    public void AtualizarGrupoDoAluguel(GrupoDeAutomoveis registro)
+    private static List<Taxa> ListarTaxas(IRepositorioTaxa repositorioTaxa, Aluguel? registro)
     {
-        var alugueisRelacionados = repositorioAluguel.SelecionarTodos().FindAll(a => a.GrupoId == registro.Id);
+        List<Taxa> taxas = [];
 
-        foreach (var aluguel in alugueisRelacionados)
-        {
-            aluguel.GrupoNome = registro.Nome;
-            repositorioAluguel.Editar(aluguel);
-        }
+        if (registro.TaxasSelecionadasId != "")
+            foreach (var taxaId in registro.TaxasSelecionadasId.Split(','))
+                taxas.Add(repositorioTaxa.SelecionarPorId(Convert.ToInt32(taxaId))!);
+        return taxas;
     }
 
-    public void AtualizarClienteDoAluguel(Cliente registro)
+    private static Result<Aluguel> TestarDependenciasEncontradas(Condutor? condutorSelecionado, Cliente? clienteSelecionado, GrupoDeAutomoveis? grupoSelecionado, PlanoDeCobranca? planoSelecionado, Veiculo? veiculoSelecionado)
     {
-        var alugueisRelacionados = repositorioAluguel.SelecionarTodos().FindAll(a => a.ClienteId == registro.Id);
+        if (condutorSelecionado is null)
+            return Result.Fail("O condutor não foi selecionado!");
+        if (clienteSelecionado is null)
+            return Result.Fail("O cliente não foi selecionado!");
+        if (grupoSelecionado is null)
+            return Result.Fail("O grupo não foi selecionado!");
+        if (veiculoSelecionado is null)
+            return Result.Fail("O veículo não foi selecionado!");
+        if (planoSelecionado is null)
+            return Result.Fail("O plano não foi selecionado!");
 
-        foreach (var aluguel in alugueisRelacionados)
-        {
-            aluguel.ClienteNome = registro.Nome;
-            repositorioAluguel.Editar(aluguel);
-        }
+        return Result.Ok();
     }
 
-    public void AtualizarCondutorDoAluguel(Condutor registro)
-    {
-        var alugueisRelacionados = repositorioAluguel.SelecionarTodos().FindAll(a => a.CondutorId == registro.Id);
+    #endregion
 
-        foreach (var aluguel in alugueisRelacionados)
-        {
-            aluguel.CondutorNome = registro.Nome;
-            repositorioAluguel.Editar(aluguel);
-        }
-    }
-
+    #region Validações
     public bool AluguelRelacionadoAtivo(Veiculo registro)
-        => repositorioAluguel.SelecionarTodos().FindAll(a => a.VeiculoId == registro.Id).Any(a => a.Ativo);
+        => repositorioAluguel.SelecionarTodos().Any(a => a.Veiculo.Id == registro.Id && a.AluguelAtivo);
 
     public bool AluguelRelacionadoAtivo(PlanoDeCobranca registro)
-    => repositorioAluguel.SelecionarTodos().FindAll(a => a.GrupoId == registro.GrupoDeAutomoveis.Id).Any(a => a.Ativo);
+    => repositorioAluguel.SelecionarTodos().Any(a => a.Grupo.Id == registro.GrupoDeAutomoveis.Id && a.AluguelAtivo);
 
     public bool AluguelRelacionadoAtivo(Cliente registro)
-    => repositorioAluguel.SelecionarTodos().FindAll(a => a.ClienteId == registro.Id).Any(a => a.Ativo);
+    => repositorioAluguel.SelecionarTodos().Any(a => a.Cliente.Id == registro.Id && a.AluguelAtivo);
 
     public bool AluguelRelacionadoAtivo(Condutor registro)
-    => repositorioAluguel.SelecionarTodos().FindAll(a => a.CondutorId == registro.Id).Any(a => a.Ativo);
+    => repositorioAluguel.SelecionarTodos().Any(a => a.Condutor.Id == registro.Id && a.AluguelAtivo);
+
+    public bool AluguelRelacionadoAtivo(Funcionario registro)
+    => repositorioAluguel.SelecionarTodos().Any(a => a.Funcionario.Id == registro.Id && a.AluguelAtivo);
 
     public bool AluguelRelacionadoAtivo(Taxa registro)
-        => repositorioAluguel.SelecionarTodos().FindAll(a => a.TaxasSelecionadasId.Split(',').Contains($"{registro.Id}")).Any(a => a.Ativo);
+        => repositorioAluguel.SelecionarTodos().Any(a => a.TaxasSelecionadasId.Split(',').Contains($"{registro.Id}"));
+    public bool SemRegistros(int usuarioId)
+        => !repositorioAluguel.SelecionarTodos().Any(f => f.UsuarioId == usuarioId);
+    #endregion
 }

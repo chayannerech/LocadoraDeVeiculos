@@ -1,5 +1,6 @@
 ﻿using LocadoraDeVeiculos.Dominio.Compartilhado;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
+using LocadoraDeVeiculos.Dominio.ModuloVeiculo;
 namespace LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 public class Veiculo() : EntidadeBase
 {
@@ -7,13 +8,29 @@ public class Veiculo() : EntidadeBase
     public string Marca { get; set; }
     public string Cor { get; set; }
     public string Modelo { get; set; }
-    public string TipoCombustivel { get; set; }
+    public TipoDeCombustivelEnum TipoCombustivel { get; set; }
     public int CapacidadeCombustivel { get; set; }
     public int Ano { get; set; }
+    public int KmRodados { get; set; }
     public byte[] ImagemEmBytes { get; set; }
     public string TipoDaImagem { get; set; }
     public GrupoDeAutomoveis GrupoDeAutomoveis { get; set; }
     public bool Alugado { get; set; }
+
+    public Veiculo(string placa, string marca, string cor, string modelo, TipoDeCombustivelEnum tipoCombustivel, int capacidadeCombustivel, int ano, byte[] imagemEmBytes, string tipoDaImagem, GrupoDeAutomoveis grupoDeAutomoveis, int kmRodados) : this()
+    {
+        Placa = placa;
+        Marca = marca;
+        Cor = cor;
+        Modelo = modelo;
+        TipoCombustivel = tipoCombustivel;
+        CapacidadeCombustivel = capacidadeCombustivel;
+        Ano = ano;
+        ImagemEmBytes = imagemEmBytes;
+        TipoDaImagem = tipoDaImagem;
+        GrupoDeAutomoveis = grupoDeAutomoveis;
+        KmRodados = kmRodados;
+    }
 
     public List<string> Validar()
     {
@@ -23,10 +40,10 @@ public class Veiculo() : EntidadeBase
         VerificaNulo(ref erros, Marca, "Marca");
         VerificaNulo(ref erros, Cor, "Cor");
         VerificaNulo(ref erros, Modelo, "Modelo");
-        VerificaNulo(ref erros, TipoCombustivel, "TipoCombustivel");
-        VerificaNulo(ref erros, CapacidadeCombustivel, "CapacidadeCombustivel");
+        VerificaNulo(ref erros, CapacidadeCombustivel, "Capacidade de Combustível");
         VerificaNulo(ref erros, Ano, "Ano");
         VerificaNulo(ref erros, ImagemEmBytes, "Foto");
+        VerificaNulo(ref erros, TipoDaImagem, "Foto");
         VerificaNulo(ref erros, GrupoDeAutomoveis, "Grupo de Automóveis");
         VerificaDataFutura(ref erros, Ano);
 
@@ -37,11 +54,11 @@ public class Veiculo() : EntidadeBase
     protected void VerificaNulo(ref List<string> erros, byte[] campoTestado, string mostraCampo)
     {
         if (campoTestado is null)
-            erros.Add($"\nO campo \"{mostraCampo}\" é obrigatório. Tente novamente ");
+            erros.Add($"O campo \"{mostraCampo}\" é obrigatório. Tente novamente ");
     }
     protected void VerificaDataFutura(ref List<string> erros, int campoTestado)
     {
         if (campoTestado > DateTime.Now.Year)
-            erros.Add($"\nO ano precisa ser inferior a data atual. Tente novamente ");
+            erros.Add($"O ano precisa ser inferior a data atual. Tente novamente ");
     }
 }

@@ -1,14 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis.GrupoDeAutomoveis">
-    <Position X="1" Y="0.5" Width="1.5" />
+    <Position X="3.25" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAQAAAAAAAAEAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAEAEAAAAEAAAAAAQAAAAAAAAEAAAg=</HashCode>
       <FileName>ModuloGrupoDeAutomoveis\GrupoDeAutomoveis.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="LocadoraDeVeiculos.Dominio.ModuloPlanoDeCobranca.PlanoDeCobranca">
-    <Position X="4.25" Y="0.5" Width="1.5" />
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>CAAIAAAAAAAAAAAEAEAAABEAAAAAAQAAAAAAAABAAAg=</HashCode>
       <FileName>ModuloPlanoDeCobranca\PlanoDeCobranca.cs</FileName>
@@ -18,31 +24,43 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="LocadoraDeVeiculos.Dominio.ModuloVeiculos.Veiculo">
-    <Position X="2.25" Y="3.25" Width="1.5" />
+    <Position X="3.25" Y="4" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>IAABABgBAEAAAAAEAAAAABAAAEEAAQAAAAgCAAAAAAA=</HashCode>
-      <FileName>ModuloAluguel\Veiculo.cs</FileName>
+      <HashCode>IAABABgBAEAAAAAEAAAAABAAAEEAARAAAAgCAAAAAAA=</HashCode>
+      <FileName>ModuloVeiculo\Veiculo.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="GrupoDeAutomoveis" />
     </ShowAsAssociation>
   </Class>
   <Class Name="LocadoraDeVeiculos.Dominio.ModuloTaxa.Taxa">
-    <Position X="6.5" Y="0.5" Width="1.5" />
+    <Position X="5" Y="5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAQAAAAAEAAEAAIA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAQAAAAAEAAEAAKA=</HashCode>
       <FileName>ModuloTaxa\Taxa.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="LocadoraDeVeiculos.Dominio.ModuloCliente.Cliente">
     <Position X="8.75" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>CAAAAAIAgCAAAAAEAAAAAACAACAAAQBCAAAAAAEBAAo=</HashCode>
       <FileName>ModuloCliente\Cliente.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="LocadoraDeVeiculos.Dominio.ModuloCondutor.Condutor">
-    <Position X="5.5" Y="3.75" Width="1.5" />
+    <Position X="11.5" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>AAAAAAAAgCAAAAAEAACAAACAACAAAQAAAAACAAEAAAA=</HashCode>
       <FileName>ModuloCondutor\Condutor.cs</FileName>
@@ -52,10 +70,23 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="LocadoraDeVeiculos.Dominio.ModuloConfiguracao.Configuracao">
-    <Position X="0.5" Y="3" Width="1.5" />
+    <Position X="7" Y="5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
-      <HashCode>AAACAAgAAAAAAAEAAgAAAAAAAAIAAQAAAAAAABAAAAA=</HashCode>
+      <HashCode>AAACAAgAAAAAAAEAAgAAAAAAAIIAAQAAAAAEABAAAAA=</HashCode>
       <FileName>ModuloConfiguracao\Configuracao.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LocadoraDeVeiculos.Dominio.ModuloAluguel.Aluguel">
+    <Position X="6" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAEAAABAAAAAAIAEABEAQBBAIBQIAQAAgABAACEAAAA=</HashCode>
+      <FileName>ModuloAluguel\Aluguel.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

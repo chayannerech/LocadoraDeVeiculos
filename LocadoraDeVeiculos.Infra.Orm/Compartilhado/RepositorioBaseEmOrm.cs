@@ -1,7 +1,6 @@
 ﻿using LocadoraDeVeiculos.Dominio.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 namespace LocadoraDeVeiculos.Infra.Orm.Compartilhado;
-
 public abstract class RepositorioBaseEmOrm<TEntidade> where TEntidade : EntidadeBase
 {
     protected readonly LocadoraDeVeiculosDbContext _dbContext;
@@ -36,8 +35,15 @@ public abstract class RepositorioBaseEmOrm<TEntidade> where TEntidade : Entidade
     }
     #endregion
 
-    public virtual TEntidade? SelecionarPorId(int id) 
-        => ObterRegistros().FirstOrDefault(r => r.Id == id);
-    public virtual List<TEntidade> SelecionarTodos() 
-        => [.. ObterRegistros()];
+    public virtual TEntidade? SelecionarPorId(int id)
+        => ObterRegistros().Where(e => e.Ativo).FirstOrDefault(r => r.Id == id);
+
+    public virtual List<TEntidade> SelecionarTodos()
+        => [.. ObterRegistros().Where(e => e.Ativo)];
+
+    public virtual List<TEntidade> Filtrar(Func<TEntidade, bool> predicate)
+        => ObterRegistros()
+            .Where(e => e.Ativo)
+            .Where(predicate)
+            .ToList();
 }

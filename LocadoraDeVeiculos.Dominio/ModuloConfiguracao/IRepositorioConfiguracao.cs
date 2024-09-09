@@ -4,5 +4,5 @@ public interface IRepositorioConfiguracao
 {
     void Inserir(Configuracao entidade);
     void Editar(Configuracao entidadeAtualizada);
-    Configuracao Selecionar();
+    Configuracao Selecionar(int usuarioId);
 }

@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Servicos;
-using LocadoraDeVeiculos.Dominio.Compartilhado;
-using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculo;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
 using LocadoraDeVeiculos.WebApp.Controllers.Compartilhado;
@@ -11,16 +9,15 @@ using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Win32;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
-public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisService servicoGrupo, AluguelService servicoAluguel, IMapper mapeador) : WebControllerBase
+public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisService servicoGrupo, AluguelService servicoAluguel, FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase(servicoFuncionario)
 {
     public IActionResult Listar()
     {
         var resultado = servicoVeiculo.ObterVeiculosAgrupadosPorGrupo(UsuarioId.GetValueOrDefault());
 
         if (!User.Identity!.IsAuthenticated)
-            resultado = servicoVeiculo.ObterVeiculosAgrupadosPorGrupo();
+            resultado = servicoVeiculo.ObterVeiculosAgrupadosPorGrupo(UsuarioId.GetValueOrDefault());
 
         if (ValidarFalhaLista(resultado))
             return RedirectToAction(nameof(Listar));
@@ -29,8 +26,15 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
 
         ViewBag.Mensagem = TempData.DesserializarMensagemViewModel();
 
-        if (agrupamentos.Count == 0 && ViewBag.Mensagem is null)
-            ApresentarMensagemSemRegistros();
+        if (!User.Identity!.IsAuthenticated)
+        {
+            if (servicoVeiculo.SemRegistros() && ViewBag.Mensagem is null)
+                ApresentarMensagemSemRegistros();
+            ViewBag.Inserir = false;
+        }
+        else
+            if (servicoVeiculo.SemRegistros(UsuarioId.GetValueOrDefault()) && ViewBag.Mensagem is null)
+                ApresentarMensagemSemRegistros();
 
         var agrupamentosVeiculosVm = agrupamentos.Select(MapearAgrupamentoVeiculos);
 
@@ -40,10 +44,10 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Inserir()
     {
-        if (servicoGrupo.SemRegistros())
+        if (servicoGrupo.SemRegistros(UsuarioId.GetValueOrDefault()))
         {
             ApresentarMensagemSemDependencias("Grupos de Automóveis");
             return RedirectToAction(nameof(Listar));
@@ -59,7 +63,7 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
 
         var novoRegistro = mapeador.Map<Veiculo>(inserirRegistroVm);
 
-        if (servicoVeiculo.ValidarRegistroRepetido(novoRegistro))
+        if (servicoVeiculo.ValidarRegistroRepetido(novoRegistro, UsuarioId.GetValueOrDefault()))
         {
             ApresentarMensagemRegistroExistente("Já existe um veículo com essa placa");
             return View(CarregarInformacoes(inserirRegistroVm));
@@ -78,7 +82,7 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Editar(int id)
     {
         var resultado = servicoVeiculo.SelecionarPorId(id);
@@ -110,7 +114,7 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
 
         var registro = mapeador.Map<Veiculo>(editarRegistroVm);
 
-        if (servicoVeiculo.ValidarRegistroRepetido(registro))
+        if (servicoVeiculo.ValidarRegistroRepetido(registro, UsuarioId.GetValueOrDefault()))
         {
             ApresentarMensagemRegistroExistente("Já existe um veículo com essa placa");
             return View(CarregarInformacoes(editarRegistroVm));
@@ -121,15 +125,13 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        servicoAluguel.AtualizarVeiculoDoAluguel(registro);
-
         ApresentarMensagemSucesso($"O registro \"{registro}\" foi editado com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Excluir(int id)
     {
         var resultado = servicoVeiculo.SelecionarPorId(id);
@@ -153,7 +155,7 @@ public class VeiculoController(VeiculoService servicoVeiculo, GrupoDeAutomoveisS
     public IActionResult Excluir(DetalhesVeiculosViewModel detalhesRegistroVm)
     {
         var registro = servicoVeiculo.SelecionarPorId(detalhesRegistroVm.Id).Value;
-        var resultado = servicoVeiculo.Excluir(detalhesRegistroVm.Id);
+        var resultado = servicoVeiculo.Desativar(detalhesRegistroVm.Id);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));

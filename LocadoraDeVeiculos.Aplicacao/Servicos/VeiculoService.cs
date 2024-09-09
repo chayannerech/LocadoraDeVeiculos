@@ -1,9 +1,11 @@
 ﻿using FluentResults;
+using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoDeAutomoveis;
 using LocadoraDeVeiculos.Dominio.ModuloUsuario;
 using LocadoraDeVeiculos.Dominio.ModuloVeiculos;
+
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
-public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositorioGrupoDeAutomoveis repositorioGrupo)
+public class VeiculoService(IRepositorioVeiculo repositorioVeiculo, IRepositorioGrupoDeAutomoveis repositorioGrupo)
 {
     public Result<Veiculo> Inserir(Veiculo registro, int grupoId)
     {
@@ -19,14 +21,14 @@ public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositori
         if (erros.Count != 0)
             return Result.Fail(erros[0]);
 
-        repositorioVeiculos.Inserir(registro);
+        repositorioVeiculo.Inserir(registro);
 
         return Result.Ok(registro);
     }
 
     public Result<Veiculo> Editar(Veiculo registroAtualizado, int grupoId)
     {
-        var registro = repositorioVeiculos.SelecionarPorId(registroAtualizado.Id);
+        var registro = repositorioVeiculo.SelecionarPorId(registroAtualizado.Id);
 
         if (registro is null)
             return Result.Fail("O veículo não foi encontrado!");
@@ -51,26 +53,26 @@ public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositori
             if (erros.Count != 0)
                 return Result.Fail(erros[0]);
 
-        repositorioVeiculos.Editar(registro);
+        repositorioVeiculo.Editar(registro);
 
         return Result.Ok(registro);
     }
 
     public Result Excluir(int registroId)
     {
-        var registro = repositorioVeiculos.SelecionarPorId(registroId);
+        var registro = repositorioVeiculo.SelecionarPorId(registroId);
 
         if (registro is null)
             return Result.Fail("O veículo não foi encontrado!");
 
-        repositorioVeiculos.Excluir(registro);
+        repositorioVeiculo.Excluir(registro);
 
         return Result.Ok();
     }
 
     public Result<Veiculo> SelecionarPorId(int registroId)
     {
-        var registro = repositorioVeiculos.SelecionarPorId(registroId);
+        var registro = repositorioVeiculo.SelecionarPorId(registroId);
 
         if (registro is null)
             return Result.Fail("O veículo não foi encontrado!");
@@ -79,48 +81,68 @@ public class VeiculoService(IRepositorioVeiculo repositorioVeiculos, IRepositori
     }
 
     public Result<List<Veiculo>> SelecionarTodos(int usuarioId)
+        => Result.Ok(repositorioVeiculo.Filtrar(f => f.UsuarioId == usuarioId));
+
+    public Result<List<IGrouping<string, Veiculo>>> ObterVeiculosAgrupadosPorGrupo(int? usuarioId)
     {
-        var registros = repositorioVeiculos
-            .Filtrar(f => f.UsuarioId == usuarioId);
+        if (usuarioId > 0)
+            return Result.Ok(repositorioVeiculo.ObterVeiculosAgrupadosPorGrupo(usuarioId.Value));
 
-        return Result.Ok(registros);
-    }
-
-    public Result<List<IGrouping<string, Veiculo>>> ObterVeiculosAgrupadosPorGrupo(int? usuarioId = null)
-    {
-        if (usuarioId is not null)
-            return Result.Ok(repositorioVeiculos.ObterVeiculosAgrupadosPorGrupo(usuarioId.Value));
-
-        return Result.Ok(repositorioVeiculos.ObterVeiculosAgrupadosPorGrupo());
+        return Result.Ok(repositorioVeiculo.ObterVeiculosAgrupadosPorGrupo());
     }
 
     public void AlugarVeiculo(int id)
     {
-        var veiculoSelecionado = repositorioVeiculos.SelecionarPorId(id);
+        var veiculoSelecionado = repositorioVeiculo.SelecionarPorId(id);
         veiculoSelecionado!.Alugado = true;
 
-        repositorioVeiculos.Editar(veiculoSelecionado);
+        repositorioVeiculo.Editar(veiculoSelecionado);
     }
 
     public void LiberarVeiculo(int id)
     {
-        var veiculoSelecionado = repositorioVeiculos.SelecionarPorId(id);
+        var veiculoSelecionado = repositorioVeiculo.SelecionarPorId(id);
         veiculoSelecionado!.Alugado = false;
 
-        repositorioVeiculos.Editar(veiculoSelecionado);
+        repositorioVeiculo.Editar(veiculoSelecionado);
     }
 
     public bool VeiculoRelacionadoAoGrupo(GrupoDeAutomoveis registro) 
-        => repositorioVeiculos.SelecionarTodos().Any(c => c.GrupoDeAutomoveis.Id == registro.Id);
+        => repositorioVeiculo.SelecionarTodos().Any(v => v.GrupoDeAutomoveis.Id == registro.Id);
 
-    public bool ValidarRegistroRepetido(Veiculo novoRegistro)
+    public bool ValidarRegistroRepetido(Veiculo novoRegistro, int? usuarioId)
     {
-        var registrosExistentes = repositorioVeiculos.SelecionarTodos();
-        var registroAtual = novoRegistro.Id == 0 ? new() : repositorioVeiculos.SelecionarPorId(novoRegistro.Id);
+        var registrosExistentes = repositorioVeiculo.Filtrar(v => v.UsuarioId == usuarioId);
+        var registroAtual = novoRegistro.Id == 0 ? new() : repositorioVeiculo.SelecionarPorId(novoRegistro.Id);
 
         return registrosExistentes.Exists(r => r.Placa == novoRegistro.Placa && r.Placa != registroAtual!.Placa);
     }
 
+    public bool SemRegistros(int? usuarioId)
+        => !repositorioVeiculo.SelecionarTodos().Any(v => v.UsuarioId == usuarioId);
+
     public bool SemRegistros()
-        => repositorioVeiculos.SelecionarTodos().Count == 0;
+        => repositorioVeiculo.SelecionarTodos().Count == 0;
+
+    public Result<Veiculo> Desativar(int id)
+    {
+        var registro = repositorioVeiculo.SelecionarPorId(id);
+
+        if (registro is null)
+            return Result.Fail("O veículo não foi encontrado!");
+
+        registro.Ativo = false;
+
+        repositorioVeiculo.Editar(registro);
+
+        return Result.Ok();
+    }
+
+    public void AtualizarKmRodados(int id, int kmAtualizado)
+    {
+        var veiculoSelecionado = repositorioVeiculo.SelecionarPorId(id);
+        veiculoSelecionado!.KmRodados = kmAtualizado;
+
+        repositorioVeiculo.Editar(veiculoSelecionado);
+    }
 }

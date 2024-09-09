@@ -8,22 +8,28 @@ using LocadoraDeVeiculos.WebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApp.Controllers;
-public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, VeiculoService servicoVeiculo, AluguelService servicoAluguel, PlanoDeCobrancaService servicoPlano, IMapper mapeador) : WebControllerBase
+public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, VeiculoService servicoVeiculo, AluguelService servicoAluguel, PlanoDeCobrancaService servicoPlano, FuncionarioService servicoFuncionario, IMapper mapeador) : WebControllerBase(servicoFuncionario)
 {
     public IActionResult Listar()
     {
        var resultado = servicoGrupo.SelecionarTodos(UsuarioId.GetValueOrDefault());
 
-        if (!User.Identity!.IsAuthenticated)
-            resultado = servicoGrupo.SelecionarTodos();            
+        if (!User.Identity!.IsAuthenticated) 
+            resultado = servicoGrupo.SelecionarTodos();
 
         if (ValidarFalhaLista(resultado))
             return RedirectToAction(nameof(Listar));
 
         var registros = resultado.Value;
 
-        if (servicoGrupo.SemRegistros())
-            ApresentarMensagemSemRegistros();
+        if (!User.Identity!.IsAuthenticated) 
+        {
+            ViewBag.Inserir = false;
+            if (servicoGrupo.SemRegistros()) ApresentarMensagemSemRegistros();
+        }
+        else
+            if (servicoGrupo.SemRegistros(UsuarioId.GetValueOrDefault()))
+                ApresentarMensagemSemRegistros();
 
         var listarRegistrosVm = mapeador.Map<IEnumerable<ListarGrupoDeAutomoveisViewModel>>(registros);
 
@@ -33,7 +39,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Inserir() => View();
     [HttpPost]
     public IActionResult Inserir(InserirGrupoDeAutomoveisViewModel inserirRegistroVm)
@@ -43,7 +49,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
 
         var novoRegistro = mapeador.Map<GrupoDeAutomoveis>(inserirRegistroVm);
 
-        if (servicoGrupo.ValidarRegistroRepetido(novoRegistro))
+        if (servicoGrupo.ValidarRegistroRepetido(novoRegistro, UsuarioId.GetValueOrDefault()))
         {
             ApresentarMensagemRegistroExistente("Já existe um grupo com este nome");
             return View(inserirRegistroVm);
@@ -62,7 +68,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Editar(int id)
     {
         var resultado = servicoGrupo.SelecionarPorId(id);
@@ -84,7 +90,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
 
         var registro = mapeador.Map<GrupoDeAutomoveis>(editarRegistroVm);
 
-        if (servicoGrupo.ValidarRegistroRepetido(registro))
+        if (servicoGrupo.ValidarRegistroRepetido(registro, UsuarioId.GetValueOrDefault()))
         {
             ApresentarMensagemRegistroExistente("Já existe um grupo com este nome");
             return View(editarRegistroVm);
@@ -95,15 +101,13 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));
 
-        servicoAluguel.AtualizarGrupoDoAluguel(registro);
-
         ApresentarMensagemSucesso($"O registro \"{registro}\" foi editado com sucesso!");
 
         return RedirectToAction(nameof(Listar));
     }
 
 
-    [Authorize(Roles = "Empresa, Funcionário")]
+    [Authorize(Roles = "Empresa, Funcionario")]
     public IActionResult Excluir(int id)
     {
         var resultado = servicoGrupo.SelecionarPorId(id);
@@ -127,7 +131,7 @@ public class GrupoDeAutomoveisController(GrupoDeAutomoveisService servicoGrupo, 
     public IActionResult Excluir(DetalhesGrupoDeAutomoveisViewModel detalhesRegistroVm)
     {
         var registro = servicoGrupo.SelecionarPorId(detalhesRegistroVm.Id).Value;
-        var resultado = servicoGrupo.Excluir(detalhesRegistroVm.Id);
+        var resultado = servicoGrupo.Desativar(detalhesRegistroVm.Id);
 
         if (ValidarFalha(resultado))
             return RedirectToAction(nameof(Listar));

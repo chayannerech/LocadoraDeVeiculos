@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloConfiguracao;
 using LocadoraDeVeiculos.Dominio.ModuloConfiguracaoe;
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
@@ -11,7 +12,7 @@ public class ConfiguracaoService(IRepositorioConfiguracao repositorioConfiguraca
     }
     public Result<Configuracao> Editar(Configuracao registroAtualizado)
     {
-        var registro = repositorioConfiguracao.Selecionar();
+        var registro = repositorioConfiguracao.Selecionar(registroAtualizado.UsuarioId);
 
         if (registro is null)
             return Result.Fail("Ainda não existe uma configuração cadastrada!");
@@ -25,9 +26,8 @@ public class ConfiguracaoService(IRepositorioConfiguracao repositorioConfiguraca
 
         return Result.Ok(registro);
     }
-    public Configuracao Selecionar()
-        => repositorioConfiguracao.Selecionar();
-
-    public bool SemRegistros()
-        => repositorioConfiguracao.Selecionar().GNV == 0;
+    public Configuracao Selecionar(int usuarioId)
+        => repositorioConfiguracao.Selecionar(usuarioId);
+    public bool SemRegistros(int usuarioId)
+        => Selecionar(usuarioId) is null;
 }

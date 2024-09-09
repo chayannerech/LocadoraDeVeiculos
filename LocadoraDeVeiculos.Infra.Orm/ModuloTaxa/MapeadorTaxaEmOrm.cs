@@ -29,6 +29,9 @@ public class MapeadorTaxaEmOrm : IEntityTypeConfiguration<Taxa>
             .IsRequired()
             .HasColumnType("bit");
 
+        tBuilder.Property(t => t.Ativo)
+            .HasColumnType("bit");
+
         tBuilder.Property(s => s.UsuarioId)
             .IsRequired()
             .HasColumnType("int")

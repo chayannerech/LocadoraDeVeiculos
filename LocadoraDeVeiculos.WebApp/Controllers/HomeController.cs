@@ -15,13 +15,14 @@ public class HomeController(
     PlanoDeCobrancaService servicoPlano,
     TaxaService servicoTaxa,
     AluguelService servicoAluguel,
-    IMapper mapeador) : WebControllerBase
+    FuncionarioService servicoFuncionario,
+    IMapper mapeador) : WebControllerBase(servicoFuncionario)
 {
 
     public ViewResult Index()
     {
         var resultadoAgrupamentos =
-            servicoVeiculo.ObterVeiculosAgrupadosPorGrupo();
+            servicoVeiculo.ObterVeiculosAgrupadosPorGrupo(UsuarioId.GetValueOrDefault());
 
         var agrupamentos = resultadoAgrupamentos.Value;
 

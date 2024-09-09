@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using LocadoraDeVeiculos.Dominio.ModuloFuncionario;
-using LocadoraDeVeiculos.Dominio.Compartilhado.Extensions;
+using System.Security.Claims;
+
 namespace LocadoraDeVeiculos.Aplicacao.Servicos;
 public class FuncionarioService(IRepositorioFuncionario repositorioFuncionario)
 {
@@ -50,24 +51,68 @@ public class FuncionarioService(IRepositorioFuncionario repositorioFuncionario)
         return Result.Ok(registro);
     }
 
-    public Result<List<Funcionario>> SelecionarTodos(int usuarioId)
+    public Result<Funcionario> SelecionarPorLogin(string registroLogin)
     {
-        var registros = repositorioFuncionario
-            .Filtrar(f => f.UsuarioId == usuarioId);
+        var registro = repositorioFuncionario.SelecionarTodos().Find(f => f.Login == registroLogin);
 
-        return Result.Ok(registros);
+        if (registro is null)
+            return Result.Fail("O funcionário não foi encontrado!");
+
+        return Result.Ok(registro);
     }
 
-    public bool SemRegistros()
-        => repositorioFuncionario.SelecionarTodos().Count == 0;
+    public Result<List<Funcionario>> SelecionarTodos(int usuarioId)
+        => Result.Ok(repositorioFuncionario.Filtrar(f => f.UsuarioId == usuarioId && f.Nome != "Empresa"));
 
-    public bool ValidarRegistroRepetido(Funcionario novoRegistro)
+    public bool SemRegistros(int? usuarioId)
+        => !repositorioFuncionario.SelecionarTodos().Any(f => f.UsuarioId == usuarioId);
+
+    public bool ValidarRegistroRepetido(Funcionario novoRegistro, int? usuarioId)
     {
-        var registrosExistentes = repositorioFuncionario.SelecionarTodos();
+        var registrosExistentes = repositorioFuncionario.Filtrar(f => f.UsuarioId == usuarioId);
         var registroAtual = novoRegistro.Id == 0 ? new() { Nome = "" } : repositorioFuncionario.SelecionarPorId(novoRegistro.Id)!;
 
         return registrosExistentes.Exists(r =>
-            r.Nome.Validation() == novoRegistro.Nome.Validation() &&
-            r.Nome.Validation() != registroAtual.Nome.Validation());
+            r.Login == novoRegistro.Login &&
+            r.Login != registroAtual.Login);
+    }
+
+    public Result<Funcionario> Desativar(int id)
+    {
+        var registro = repositorioFuncionario.SelecionarPorId(id);
+
+        if (registro is null)
+            return Result.Fail("O funcionário não foi encontrado!");
+
+        registro.Ativo = false;
+
+        repositorioFuncionario.Editar(registro);
+
+        return Result.Ok();
+    }
+
+    public Funcionario AtribuirFuncionarioAoAluguel(ClaimsPrincipal user, int usuarioId)
+    {
+        Funcionario funcionario;
+
+        var userLogin = user
+            .FindFirst(ClaimTypes.NameIdentifier)!
+            .Subject!
+            .Name!.ToString();
+
+        if (user.IsInRole("Funcionario"))
+            funcionario = SelecionarPorLogin(userLogin).Value;
+        else
+        {
+            if (SelecionarPorLogin(userLogin).IsFailed)
+            {
+                funcionario = new($"Empresa", DateTime.Now, 10, userLogin);
+                funcionario.UsuarioId = usuarioId;
+            }
+            else
+                funcionario = SelecionarPorLogin(userLogin).Value;
+        }
+
+        return funcionario;
     }
 }

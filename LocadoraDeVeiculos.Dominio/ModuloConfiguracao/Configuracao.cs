@@ -10,6 +10,13 @@ public class Configuracao()
     public int UsuarioId { get; set; }
     public Usuario? Usuario { get; set; }
 
+    public Configuracao(decimal gasolina, decimal etanol, decimal diesel, decimal gNV) : this()
+    {
+        Gasolina = gasolina;
+        Etanol = etanol;
+        Diesel = diesel;
+        GNV = gNV;
+    }
 
     public List<string> Validar()
     {
@@ -26,6 +33,6 @@ public class Configuracao()
     protected void VerificaNulo(ref List<string> erros, decimal campoTestado, string mostraCampo)
     {
         if (campoTestado == 0)
-            erros.Add($"\nO campo \"{mostraCampo}\" é obrigatório. Tente novamente ");
+            erros.Add($"O campo \"{mostraCampo}\" é obrigatório. Tente novamente ");
     }
 }

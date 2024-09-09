@@ -16,6 +16,22 @@ public class Cliente() : EntidadeBase
     public string Rua { get; set; }
     public int Numero { get; set; }
 
+    public Cliente(bool pessoaFisica, string nome, string email, string telefone, string documento, string rG, string cNH, string estado, string cidade, string bairro, string rua, int numero) : this()
+    {
+        PessoaFisica = pessoaFisica;
+        Nome = nome;
+        Email = email;
+        Telefone = telefone;
+        Documento = documento;
+        RG = rG;
+        CNH = cNH;
+        Estado = estado;
+        Cidade = cidade;
+        Bairro = bairro;
+        Rua = rua;
+        Numero = numero;
+    }
+
     public List<string> Validar()
     {
         List<string> erros = [];
@@ -24,6 +40,13 @@ public class Cliente() : EntidadeBase
         VerificaNulo(ref erros, Email, "Email");
         VerificaNulo(ref erros, Telefone, "Telefone");
         VerificaNulo(ref erros, Documento, "Documento");
+
+        if (PessoaFisica)
+        {
+            VerificaNulo(ref erros, RG, "RG");
+            VerificaNulo(ref erros, CNH, "CNH");
+        }
+
         VerificaNulo(ref erros, Estado, "Estado");
         VerificaNulo(ref erros, Cidade, "Cidade");
         VerificaNulo(ref erros, Bairro, "Bairro");

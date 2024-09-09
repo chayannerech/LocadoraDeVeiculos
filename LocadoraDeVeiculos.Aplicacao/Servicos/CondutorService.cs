@@ -74,26 +74,21 @@ public class CondutorService(IRepositorioCondutor repositorioCondutor, IReposito
     }
 
     public Result<List<Condutor>> SelecionarTodos(int usuarioId)
-    {
-        var registros = repositorioCondutor
-            .Filtrar(f => f.UsuarioId == usuarioId);
-
-        return Result.Ok(registros);
-    }
+        => Result.Ok(repositorioCondutor.Filtrar(c => c.UsuarioId == usuarioId));
 
     public bool CondutorRelacionado(Cliente registro)
         => repositorioCondutor.SelecionarTodos().Any(c => c.Cliente.Id == registro.Id);
 
-    public bool SemRegistros()
-        => repositorioCondutor.SelecionarTodos().Count == 0;
+    public bool SemRegistros(int? usuarioId)
+        => !repositorioCondutor.SelecionarTodos().Any(f => f.UsuarioId == usuarioId);
 
-    public bool ValidarRegistroRepetido(bool check, Condutor novoRegistro, out string itemRepetido)
+    public bool ValidarRegistroRepetido(bool check, Condutor novoRegistro, out string itemRepetido, int? usuarioId)
     {
-        var cpfsCondutores = repositorioCondutor.SelecionarTodos().Select(r => r.CPF);
-        var cnhCondutores = repositorioCondutor.SelecionarTodos().Select(r => r.CNH);
+        var cpfsCondutores = repositorioCondutor.Filtrar(c => c.UsuarioId == usuarioId).Select(c => c.CPF);
+        var cnhCondutores = repositorioCondutor.Filtrar(c => c.UsuarioId == usuarioId).Select(c => c.CNH);
 
-        var cpfsClientes = repositorioCliente.SelecionarTodos().FindAll(c => c.PessoaFisica).Select(c => c.Documento);
-        var cnhClientes = repositorioCliente.SelecionarTodos().FindAll(c => c.PessoaFisica).Select(c => c.CNH);
+        var cpfsClientes = repositorioCliente.Filtrar(c => c.PessoaFisica && c.UsuarioId == usuarioId).Select(c => c.Documento);
+        var cnhClientes = repositorioCliente.Filtrar(c => c.PessoaFisica && c.UsuarioId == usuarioId).Select(c => c.CNH);
 
         IEnumerable<string> cpfsExistentes = cpfsCondutores;
         IEnumerable<string> cnhExistentes = cnhCondutores;
@@ -106,19 +101,28 @@ public class CondutorService(IRepositorioCondutor repositorioCondutor, IReposito
 
         var registroAtual = novoRegistro.Id == 0 ? new() : repositorioCondutor.SelecionarPorId(novoRegistro.Id);
 
+        itemRepetido = "";
+
         if (cpfsExistentes.Any(c => c.Equals(novoRegistro.CPF)) && novoRegistro.CPF != registroAtual!.CPF)
-        {
             itemRepetido = "cpf";
-            return true;
-        }
 
         if (cnhExistentes.Any(c => c.Equals(novoRegistro.CNH)) && novoRegistro.CNH != registroAtual!.CNH)
-        {
             itemRepetido = "cnh";
-            return true;
-        }
 
-        itemRepetido = "";
-        return false;
+        return itemRepetido != "";
+    }
+
+    public Result<Condutor> Desativar(int id)
+    {
+        var registro = repositorioCondutor.SelecionarPorId(id);
+
+        if (registro is null)
+            return Result.Fail("O condutor não foi encontrado!");
+
+        registro.Ativo = false;
+
+        repositorioCondutor.Editar(registro);
+
+        return Result.Ok();
     }
 }

@@ -60,6 +60,9 @@ public class MapeadorClienteEmOrm : IEntityTypeConfiguration<Cliente>
             .IsRequired()
             .HasColumnType("bit");
 
+        cBuilder.Property(c => c.Ativo)
+            .HasColumnType("bit");
+
         cBuilder.Property(s => s.UsuarioId)
             .IsRequired()
             .HasColumnType("int")
