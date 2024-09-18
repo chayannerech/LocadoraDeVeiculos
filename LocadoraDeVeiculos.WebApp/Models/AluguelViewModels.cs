@@ -120,7 +120,6 @@ public class DevolverAluguelViewModel
 
 
     [Required(ErrorMessage = "A quilometragem atual é obrigatória")]
-    [Range(1, 50000, ErrorMessage = "O valor deve ser maior que zero")]
     [KmMaior(ErrorMessage = "O km atual deve ser superior ao km inicial")]
     public int KmFinal {  get; set; }
 

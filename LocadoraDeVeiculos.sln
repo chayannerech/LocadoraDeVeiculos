@@ -13,21 +13,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. Infraestrutura", "4. Inf
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5. Testes", "5. Testes", "{919325C3-CE3F-43E9-B1D2-817AA7C3C7A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.Dominio", "LocadoraDeVeiculos.Dominio\LocadoraDeVeiculos.Dominio.csproj", "{2BAF13B0-BECD-47A1-AD6D-6CFDC3A74DC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocadoraDeVeiculos.Dominio", "LocadoraDeVeiculos.Dominio\LocadoraDeVeiculos.Dominio.csproj", "{2BAF13B0-BECD-47A1-AD6D-6CFDC3A74DC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.Infra.Orm", "LocadoraDeVeiculos.Infra.Orm\LocadoraDeVeiculos.Infra.Orm.csproj", "{8764EC57-F39C-4328-B4AE-DE9BBFCDE094}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocadoraDeVeiculos.Infra.Orm", "LocadoraDeVeiculos.Infra.Orm\LocadoraDeVeiculos.Infra.Orm.csproj", "{8764EC57-F39C-4328-B4AE-DE9BBFCDE094}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5.1. Unidade", "5.1. Unidade", "{E669A4D8-3579-4E3F-B8DE-1F28CB393F3C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5.2. Integração", "5.2. Integração", "{67AA8A06-1E5F-4992-86B6-76E666FF1F3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.Testes.Unidade", "LocadoraDeVeiculos.Testes.Unidade\LocadoraDeVeiculos.Testes.Unidade.csproj", "{2C2741F9-5223-41CC-95EA-09933299C56D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocadoraDeVeiculos.Testes.Unidade", "LocadoraDeVeiculos.Testes.Unidade\LocadoraDeVeiculos.Testes.Unidade.csproj", "{2C2741F9-5223-41CC-95EA-09933299C56D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.Testes.Integracao", "LocadoraDeVeiculos.Testes.Integracao\LocadoraDeVeiculos.Testes.Integracao.csproj", "{893C8304-1401-4688-A1AC-A5BB9E57A7A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocadoraDeVeiculos.Testes.Integracao", "LocadoraDeVeiculos.Testes.Integracao\LocadoraDeVeiculos.Testes.Integracao.csproj", "{893C8304-1401-4688-A1AC-A5BB9E57A7A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.Aplicacao", "LocadoraDeVeiculos.Aplicacao\LocadoraDeVeiculos.Aplicacao.csproj", "{9F27CC16-2840-4686-8B6C-91D15C888B81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocadoraDeVeiculos.Aplicacao", "LocadoraDeVeiculos.Aplicacao\LocadoraDeVeiculos.Aplicacao.csproj", "{9F27CC16-2840-4686-8B6C-91D15C888B81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.WebApp", "LocadoraDeVeiculos.WebApp\LocadoraDeVeiculos.WebApp.csproj", "{50DC93B5-75CD-490E-9232-563F0C62FDF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocadoraDeVeiculos.WebApp", "LocadoraDeVeiculos.WebApp\LocadoraDeVeiculos.WebApp.csproj", "{50DC93B5-75CD-490E-9232-563F0C62FDF6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5.3. Interface", "5.3. Interface", "{23C0A7DB-2E0C-41FF-B59F-0EECC34C7D59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.Testes.Interface", "LocadoraDeVeiculos.Testes.Interface\LocadoraDeVeiculos.Testes.Interface.csproj", "{0BCED0C9-A3B7-4BA6-B7E7-86F3B8C650BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +63,10 @@ Global
 		{50DC93B5-75CD-490E-9232-563F0C62FDF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50DC93B5-75CD-490E-9232-563F0C62FDF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50DC93B5-75CD-490E-9232-563F0C62FDF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BCED0C9-A3B7-4BA6-B7E7-86F3B8C650BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BCED0C9-A3B7-4BA6-B7E7-86F3B8C650BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BCED0C9-A3B7-4BA6-B7E7-86F3B8C650BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BCED0C9-A3B7-4BA6-B7E7-86F3B8C650BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,6 +80,8 @@ Global
 		{893C8304-1401-4688-A1AC-A5BB9E57A7A3} = {67AA8A06-1E5F-4992-86B6-76E666FF1F3F}
 		{9F27CC16-2840-4686-8B6C-91D15C888B81} = {8D7A42B9-D42B-4F6C-9066-07BB78EC749F}
 		{50DC93B5-75CD-490E-9232-563F0C62FDF6} = {8EA4DCB9-D57C-4EC0-BE9B-6ADE213BBEFD}
+		{23C0A7DB-2E0C-41FF-B59F-0EECC34C7D59} = {919325C3-CE3F-43E9-B1D2-817AA7C3C7A1}
+		{0BCED0C9-A3B7-4BA6-B7E7-86F3B8C650BE} = {23C0A7DB-2E0C-41FF-B59F-0EECC34C7D59}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0FCC4149-5777-495C-AB0D-99D563AC33AD}
