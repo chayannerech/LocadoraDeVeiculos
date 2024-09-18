@@ -111,11 +111,12 @@ public class AluguelService(
     public Result<List<Aluguel>> SelecionarTodos(int usuarioId)
         => Result.Ok(repositorioAluguel.Filtrar(f => f.UsuarioId == usuarioId));
 
-    public Result Devolver(Aluguel registro, DateTime dataDevolucaoReal, bool tanqueCheio)
+    public Result Devolver(Aluguel registro, DateTime dataDevolucaoReal, bool tanqueCheio, int kmFinal)
     {
         registro.AluguelAtivo = false;
         registro.DataRetornoReal = dataDevolucaoReal;
         registro.TanqueCheio = tanqueCheio;
+        registro.KmFinal = kmFinal;
 
         registro.Taxas = ListarTaxas(repositorioTaxa, registro);
 

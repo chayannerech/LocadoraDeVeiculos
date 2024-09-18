@@ -190,7 +190,7 @@ public class AluguelController(
             return View(CarregarInformacoes(devolverRegistroVm));
 
         var registro = servicoAluguel.SelecionarPorId(devolverRegistroVm.Id).Value;
-        var resultado = servicoAluguel.Devolver(registro, devolverRegistroVm.DataRetornoReal, devolverRegistroVm.TanqueCheio);
+        var resultado = servicoAluguel.Devolver(registro, devolverRegistroVm.DataRetornoReal, devolverRegistroVm.TanqueCheio, devolverRegistroVm.KmFinal);
 
         servicoVeiculo.LiberarVeiculo(registro.Veiculo.Id);
         servicoVeiculo.AtualizarKmRodados(registro.Veiculo.Id, devolverRegistroVm.KmFinal);
